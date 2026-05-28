@@ -1,2 +1,115 @@
-<app-sidebar></app-sidebar>
-<p>meu-ponto-componente works!</p>
+<section class="ponto-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">Área do funcionário</span>
+      <h1 class="page-title">Meu ponto</h1>
+      <p class="page-subtitle">Acompanhe sua jornada, registre os horários do dia e corrija pendências quando necessário.</p>
+    </div>
+
+    <div class="today-card">
+      <i class="bi bi-calendar2-week"></i>
+      <div>
+        <strong>Hoje</strong>
+        <span>{{ dataHoje }}</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="alert alert-warning custom-alert" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <div>
+      <strong>Atenção:</strong>
+      se esquecer algum registro, solicite correção em até 48 horas. Depois disso, o dia poderá ser tratado como falta ou pendência pelo RH.
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <article class="summary-card section-card" *ngFor="let item of resumo">
+      <div class="summary-icon">
+        <i class="bi" [ngClass]="item.icone"></i>
+      </div>
+
+      <div>
+        <span>{{ item.titulo }}</span>
+        <strong>{{ item.valor }}</strong>
+        <small>{{ item.detalhe }}</small>
+      </div>
+    </article>
+  </div>
+
+  <div class="content-grid">
+    <section class="section-card clock-card">
+      <div class="section-heading">
+        <div>
+          <h2>Bater ponto</h2>
+          <p>Use os botões abaixo conforme sua jornada.</p>
+        </div>
+
+        <span class="badge badge-soft-green rounded-pill">Online</span>
+      </div>
+
+      <div class="clock-actions">
+        <button
+          type="button"
+          class="clock-button"
+          *ngFor="let acao of acoesPonto"
+          [class.done]="registrado(acao.nome)"
+          [disabled]="registrado(acao.nome)"
+          (click)="registrarPonto(acao)"
+        >
+          <i class="bi" [ngClass]="acao.icone"></i>
+          <strong>{{ acao.nome }}</strong>
+          <span>{{ registrado(acao.nome) ? 'Registro concluído' : acao.descricao }}</span>
+        </button>
+      </div>
+    </section>
+
+    <aside class="section-card next-card">
+      <div class="section-heading compact">
+        <div>
+          <h2>Próximos alertas</h2>
+          <p>Lembretes importantes do dia.</p>
+        </div>
+      </div>
+
+      <div class="event-list">
+        <article class="event-item" *ngFor="let evento of proximosEventos">
+          <div class="event-time">{{ evento.horario }}</div>
+          <div>
+            <strong>{{ evento.titulo }}</strong>
+            <p>{{ evento.texto }}</p>
+          </div>
+        </article>
+      </div>
+    </aside>
+  </div>
+
+  <section class="section-card timeline-card">
+    <div class="section-heading">
+      <div>
+        <h2>Registros do dia</h2>
+        <p>Histórico dos pontos batidos hoje.</p>
+      </div>
+
+      <a routerLink="/solicitacao" class="correction-link">
+        Solicitar correção
+        <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="timeline">
+      <article class="timeline-item" *ngFor="let registro of registros">
+        <div class="timeline-icon">
+          <i class="bi" [ngClass]="registro.icone"></i>
+        </div>
+
+        <div class="timeline-content">
+          <strong>{{ registro.tipo }}</strong>
+          <span>{{ registro.status }}</span>
+        </div>
+
+        <time>{{ registro.horario }}</time>
+      </article>
+    </div>
+  </section>
+</section>

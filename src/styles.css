@@ -16,5 +16,11 @@ body {
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #ffffff;
+  background: #b12323;
+}
+.app-content {
+  margin-left: 280px;
+  padding: 24px;
+  min-height: 100vh;
+  background: #f5f7fb;
 }

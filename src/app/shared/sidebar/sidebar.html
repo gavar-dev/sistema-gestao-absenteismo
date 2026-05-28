@@ -1,47 +1,47 @@
-<!-- Sidebar -->
-<div class="sidebar border-end min-vh-100">
-
-  <!-- Logo -->
-  <div class="sidebar-item logo-area">
+<aside class="sidebar">
+  <div class="sidebar-header">
     <div class="logo-icon">
-      <span>◆</span>
+      <i class="bi bi-building-check"></i>
     </div>
 
-    <div>
-      <h3 class="logo-title">NexusRH</h3>
-      <p class="logo-subtitle">Sistema Integrado</p>
-    </div>
-  </div>
-
-  <!-- Perfil do usuário -->
-  <div class="sidebar-item profile-area">
-    <div class="avatar">
-      {{ usuario.iniciais }}
-    </div>
-
-    <div>
-      <h3 class="profile-name">{{ usuario.nome }}</h3>
-      <p class="profile-role">{{ usuario.cargo }}</p>
+    <div class="brand-text">
+      <h1>NexusRH</h1>
+      <span>Intranet corporativa</span>
     </div>
   </div>
 
-  <!-- Menu -->
-  <nav class="menu-area">
+  <div class="profile-card">
+    <div class="avatar">{{ usuario.iniciais }}</div>
+
+    <div class="profile-info">
+      <strong>{{ usuario.nome }}</strong>
+      <span>{{ usuario.cargo }}</span>
+      <small>{{ usuario.setor }}</small>
+    </div>
+  </div>
+
+  <nav class="sidebar-menu" aria-label="Menu principal">
     <a
       *ngFor="let item of menu"
       class="sidebar-link"
       [routerLink]="item.rota"
       routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
+      [routerLinkActiveOptions]="{ exact: item.exata }"
     >
-      {{ item.nome }}
+      <i class="bi" [ngClass]="item.icone"></i>
+      <span>{{ item.nome }}</span>
     </a>
-    <!-- <a class="sidebar-link" routerLink="">INÍCIO</a>
-    <a class="sidebar-link" routerLink="meus-pontos">Meu ponto</a>
-    <a class="sidebar-link" routerLink="solicitacao">Solicitação</a>
-    <a class="sidebar-link" routerLink="historico">Histórico</a>
-    <a class="sidebar-link" routerLink="Meus dados">Meus dados</a>
-    <a class="sidebar-link" routerLink="Avisos">Avisos</a> -->
   </nav>
 
-</div>
+  <div class="sidebar-footer">
+    <div>
+      <strong>Jornada padrão</strong>
+      <span>08:00 às 17:00</span>
+    </div>
+
+    <a class="logout-link" routerLink="/login">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Sair</span>
+    </a>
+  </div>
+</aside>
