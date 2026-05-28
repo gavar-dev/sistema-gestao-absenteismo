@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { Sidebar } from '../../../shared/sidebar/sidebar';
 
 @Component({
   selector: 'app-inicio-componente',
-  imports: [],
+  standalone: true,
+  imports: [Sidebar],
   templateUrl: './inicio-componente.html',
   styleUrl: './inicio-componente.css',
 })

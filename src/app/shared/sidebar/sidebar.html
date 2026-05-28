@@ -1,0 +1,47 @@
+<!-- Sidebar -->
+<div class="sidebar border-end min-vh-100">
+
+  <!-- Logo -->
+  <div class="sidebar-item logo-area">
+    <div class="logo-icon">
+      <span>◆</span>
+    </div>
+
+    <div>
+      <h3 class="logo-title">NexusRH</h3>
+      <p class="logo-subtitle">Sistema Integrado</p>
+    </div>
+  </div>
+
+  <!-- Perfil do usuário -->
+  <div class="sidebar-item profile-area">
+    <div class="avatar">
+      {{ usuario.iniciais }}
+    </div>
+
+    <div>
+      <h3 class="profile-name">{{ usuario.nome }}</h3>
+      <p class="profile-role">{{ usuario.cargo }}</p>
+    </div>
+  </div>
+
+  <!-- Menu -->
+  <nav class="menu-area">
+    <a
+      *ngFor="let item of menu"
+      class="sidebar-link"
+      [routerLink]="item.rota"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      {{ item.nome }}
+    </a>
+    <!-- <a class="sidebar-link" routerLink="">INÍCIO</a>
+    <a class="sidebar-link" routerLink="meus-pontos">Meu ponto</a>
+    <a class="sidebar-link" routerLink="solicitacao">Solicitação</a>
+    <a class="sidebar-link" routerLink="historico">Histórico</a>
+    <a class="sidebar-link" routerLink="Meus dados">Meus dados</a>
+    <a class="sidebar-link" routerLink="Avisos">Avisos</a> -->
+  </nav>
+
+</div>

@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { Sidebar } from '../../../shared/sidebar/sidebar';
 
 @Component({
   selector: 'app-historico-componente',
-  imports: [],
+  standalone:true,
+  imports: [Sidebar],
   templateUrl: './historico-componente.html',
   styleUrl: './historico-componente.css',
 })
