@@ -5,12 +5,15 @@ import { SolicitacaoComponente } from './pages/funcionario/solicitacao-component
 import { InicioComponente } from './pages/funcionario/inicio-componente/inicio-componente';
 import { MeusDadosComponente } from './pages/funcionario/meus-dados-componente/meus-dados-componente';
 import { HistoricoComponente } from './pages/funcionario/historico-componente/historico-componente';
+import { LoginComponent } from './pages/login-component/login-component';
 
 export const routes: Routes = [
-     { path: '', component: InicioComponente},
-     { path: 'solicitacao', component: SolicitacaoComponente},
-     { path: 'historico', component: HistoricoComponente},
-     { path: 'meus-dados', component: MeusDadosComponente},
-     { path: 'meus-pontos', component: MeuPontoComponente},
-     { path: 'avisos', component: AvisoComponente}
+     { path: 'login', component: LoginComponent },
+     { path: '', component: InicioComponente },
+     { path: 'meus-pontos', component: MeuPontoComponente },
+     { path: 'solicitacao', component: SolicitacaoComponente },
+     { path: 'historico', component: HistoricoComponente },
+     { path: 'meus-dados', component: MeusDadosComponente },
+     { path: 'avisos', component: AvisoComponente },
+     { path: '**', redirectTo: '' }
 ];

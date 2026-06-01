@@ -1,0 +1,15 @@
+.app-content {
+  min-height: 100vh;
+  background: var(--bs-tertiary-bg);
+}
+
+.login-content {
+  min-height: 100vh;
+  background: var(--bs-tertiary-bg);
+}
+
+@media (min-width: 992px) {
+  .app-content {
+    margin-left: 280px;
+  }
+}
