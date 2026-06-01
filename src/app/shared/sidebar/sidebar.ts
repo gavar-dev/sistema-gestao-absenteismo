@@ -1,15 +1,19 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+
+type Tema = 'light' | 'dark';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLink, RouterModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css'
 })
-export class Sidebar {
+export class Sidebar implements OnInit {
+  temaAtual: Tema = 'light';
+
   usuario = {
     nome: 'Maria Silva',
     cargo: 'Analista de Vendas',
@@ -25,4 +29,22 @@ export class Sidebar {
     { nome: 'Meus dados', rota: '/meus-dados', icone: 'bi-person-vcard', exata: false },
     { nome: 'Avisos', rota: '/avisos', icone: 'bi-megaphone', exata: false }
   ];
+
+  constructor(@Inject(DOCUMENT) private document: Document) {}
+
+  ngOnInit(): void {
+    const temaSalvo = localStorage.getItem('tema') as Tema | null;
+    this.aplicarTema(temaSalvo === 'dark' ? 'dark' : 'light');
+  }
+
+  alternarTema(): void {
+    const proximoTema: Tema = this.temaAtual === 'dark' ? 'light' : 'dark';
+    this.aplicarTema(proximoTema);
+  }
+
+  private aplicarTema(tema: Tema): void {
+    this.temaAtual = tema;
+    this.document.documentElement.setAttribute('data-bs-theme', tema);
+    localStorage.setItem('tema', tema);
+  }
 }
