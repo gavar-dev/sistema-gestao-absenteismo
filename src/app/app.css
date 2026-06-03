@@ -1,11 +1,7 @@
-.app-content {
-  min-height: 100vh;
-  background: var(--bs-tertiary-bg);
-}
-
+.app-content,
 .login-content {
   min-height: 100vh;
-  background: var(--bs-tertiary-bg);
+  background-color: var(--app-bg);
 }
 
 @media (min-width: 992px) {
