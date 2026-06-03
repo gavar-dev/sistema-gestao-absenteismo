@@ -47,6 +47,28 @@
   color: var(--app-sidebar-active-text);
 }
 
+
+.sidebar-menu-btn {
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: var(--app-text);
+  box-shadow: none;
+}
+
+.sidebar-menu-btn:hover {
+  background-color: rgba(13, 110, 253, 0.08);
+  border-color: rgba(13, 110, 253, 0.2);
+  color: var(--app-primary);
+}
+
+.sidebar-menu-btn:focus,
+.sidebar-menu-btn:active {
+  background-color: transparent;
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+  box-shadow: none;
+}
+
 @media (min-width: 992px) {
   .sidebar-bootstrap {
     position: fixed;
