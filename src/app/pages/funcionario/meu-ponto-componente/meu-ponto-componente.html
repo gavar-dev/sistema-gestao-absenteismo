@@ -23,13 +23,13 @@
     </div>
   </div>
 
-  <div class="alert alert-warning d-flex align-items-start gap-3 shadow-sm border-0" role="alert">
+  <!-- <div class="alert alert-warning d-flex align-items-start gap-3 shadow-sm border-0" role="alert">
     <i class="bi bi-exclamation-triangle-fill fs-5"></i>
     <div>
       <strong>Atenção:</strong>
       se esquecer algum registro, solicite correção em até 48 horas. Depois disso, o dia poderá ser tratado como falta ou pendência pelo RH.
     </div>
-  </div>
+  </div> -->
 
   <div class="row g-4 mb-4">
     <div class="col-12 col-sm-6 col-xl-3" *ngFor="let item of resumo">
@@ -65,8 +65,8 @@
             <div class="col-12 col-md-6" *ngFor="let acao of acoesPonto">
               <button
                 type="button"
-                class="btn w-100 h-100 text-start p-3 border shadow-sm"
-                [ngClass]="registrado(acao.nome) ? 'btn-success' : 'btn-light'"
+                class="btn w-100 h-100 text-start p-3 border shadow-s m"
+                [ngClass]="registrado(acao.nome) ? 'btn-success' : 'btn-light ponto-action-btn'"
                 [disabled]="registrado(acao.nome)"
                 (click)="registrarPonto(acao)"
               >
@@ -85,7 +85,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-xl-4">
+    <!-- <div class="col-12 col-xl-4">
       <div class="card border-0 shadow-sm h-100">
         <div class="card-header bg-body border-0 pt-4 px-4">
           <h2 class="h4 fw-bold mb-1">Próximos alertas</h2>
@@ -104,7 +104,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <div class="card border-0 shadow-sm">

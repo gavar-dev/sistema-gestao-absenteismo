@@ -4,9 +4,14 @@
   min-width: 48px;
 }
 
-.btn-light {
-  --bs-btn-bg: var(--bs-body-bg);
-  --bs-btn-border-color: var(--bs-border-color);
-  --bs-btn-hover-bg: var(--bs-tertiary-bg);
-  --bs-btn-hover-border-color: var(--bs-primary);
+.ponto-action-btn {
+  background-color: var(--app-surface);
+  border-color: var(--app-border);
+  color: var(--app-text);
+}
+
+.ponto-action-btn:hover {
+  background-color: var(--app-primary-soft);
+  border-color: var(--app-primary);
+  color: var(--app-primary);
 }
