@@ -2,11 +2,12 @@ import { Component, DOCUMENT, Inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { Sidebar } from './shared/sidebar/sidebar';
 import { CommonModule } from '@angular/common';
+import { FooterComponent } from './shared/footer-component/footer-component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Sidebar, CommonModule],
+  imports: [RouterOutlet, Sidebar, CommonModule, FooterComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
