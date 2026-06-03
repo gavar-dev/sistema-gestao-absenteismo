@@ -15,3 +15,9 @@
   border-color: var(--app-primary);
   color: var(--app-primary);
 }
+
+.registro-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+}

@@ -49,11 +49,6 @@ export class MeuPontoComponente {
     { tipo: 'Almoço', horario: '12:05', status: 'Registrado', icone: 'bi-cup-hot' }
   ];
 
-  proximosEventos = [
-    { titulo: 'Retorno do almoço', horario: '13:05', texto: 'O sistema pode lembrar o funcionário caso não registre o retorno.' },
-    { titulo: 'Saída prevista', horario: '17:00', texto: 'O horário pode variar conforme saldo e jornada do dia.' }
-  ];
-
   registrado(nome: string): boolean {
     return this.registros.some((registro) => registro.tipo === nome);
   }
