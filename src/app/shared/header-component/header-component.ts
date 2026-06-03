@@ -8,6 +8,12 @@ import { filter } from 'rxjs';
   styleUrl: './header-component.css',
 })
 export class HeaderComponent {
+  dataHoje = new Date().toLocaleDateString('pt-BR', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
   titulo = 'Início';
   subtitulo = 'Área do funcionário';
   descricao = 'Acompanhe suas informações principais.';
