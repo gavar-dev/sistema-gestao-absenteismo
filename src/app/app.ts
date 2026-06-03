@@ -13,16 +13,10 @@ import { CommonModule } from '@angular/common';
 export class App {
   protected readonly title = signal('sistema-gestao-absenteismo');
 
-  // constructor(public router: Router) {}
-
-  // esconderSidebar(): boolean {
-  //   return this.router.url === '/login';
-  // }
-
   constructor(
     public router: Router,
     @Inject(DOCUMENT) private document: Document
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const temaSalvo = localStorage.getItem('tema');
