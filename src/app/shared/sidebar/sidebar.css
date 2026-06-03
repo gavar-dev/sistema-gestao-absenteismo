@@ -1,5 +1,7 @@
 .sidebar-bootstrap {
   --bs-offcanvas-width: 280px;
+  background-color: var(--app-sidebar-bg);
+  color: var(--app-sidebar-text);
 }
 
 .sidebar-avatar {
@@ -8,13 +10,41 @@
   flex: 0 0 48px;
 }
 
-.sidebar-bootstrap .nav-link:hover {
-  background: rgba(255, 255, 255, .16);
+.sidebar-user-card,
+.sidebar-info-card {
+  background-color: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--app-sidebar-text);
 }
 
-.sidebar-bootstrap .nav-link.active {
-  color: var(--bs-primary) !important;
-  background: var(--bs-white);
+.sidebar-link {
+  color: var(--app-sidebar-text);
+}
+
+.sidebar-link:hover {
+  background-color: var(--app-sidebar-hover);
+  color: var(--app-sidebar-text);
+}
+
+.sidebar-link.active {
+  background-color: var(--app-sidebar-active-bg);
+  color: var(--app-sidebar-active-text);
+}
+
+.sidebar-logo-box {
+  background-color: #ffc107;
+  color: var(--app-primary);
+}
+
+.sidebar-logout-btn {
+  background-color: var(--app-sidebar-active-bg);
+  border-color: var(--app-sidebar-active-bg);
+  color: var(--app-sidebar-active-text);
+}
+
+.sidebar-logout-btn:hover {
+  filter: brightness(0.96);
+  color: var(--app-sidebar-active-text);
 }
 
 @media (min-width: 992px) {
@@ -26,10 +56,18 @@
     visibility: visible !important;
     transform: none !important;
     border-right: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-bootstrap .offcanvas-header {
+    display: flex !important;
+    flex: 0 0 auto;
   }
 
   .sidebar-bootstrap .offcanvas-body {
-    height: calc(100vh - 73px);
-    overflow-y: auto;
+    flex: 1 1 auto;
+    overflow-y: hidden;
   }
 }

@@ -1,20 +1,10 @@
-<button
-  type="button"
-  class="btn btn-primary d-lg-none position-fixed top-0 start-0 m-3 shadow z-3"
-  data-bs-toggle="offcanvas"
-  data-bs-target="#menuLateral"
-  aria-controls="menuLateral"
-  aria-label="Abrir menu"
->
+<button type="button" class="btn btn-primary d-lg-none position-fixed top-0 start-0 m-3 shadow z-3"
+  data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menu">
   <i class="bi bi-list fs-4"></i>
 </button>
 
-<aside
-  id="menuLateral"
-  class="offcanvas-lg offcanvas-start text-bg-primary sidebar-bootstrap"
-  tabindex="-1"
-  aria-labelledby="menuLateralTitulo"
->
+<aside id="menuLateral" class="offcanvas-lg offcanvas-start text-bg-primary sidebar-bootstrap" tabindex="-1"
+  aria-labelledby="menuLateralTitulo">
   <div class="offcanvas-header border-bottom border-light border-opacity-25">
     <div class="d-flex align-items-center gap-3">
       <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-warning text-primary p-2 fs-4">
@@ -27,19 +17,19 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      class="btn-close btn-close-white d-lg-none"
-      data-bs-dismiss="offcanvas"
-      data-bs-target="#menuLateral"
-      aria-label="Fechar menu"
-    ></button>
+    <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas"
+      data-bs-target="#menuLateral" aria-label="Fechar menu"></button>
   </div>
+<!-- -------------------------------------------------------------------- -->
+ 
+<!-- -------------------------------------------------------------------- -->
+  
 
   <div class="offcanvas-body d-flex flex-column p-3">
     <div class="card bg-white bg-opacity-10 border-light border-opacity-25 text-white mb-4">
       <div class="card-body d-flex align-items-center gap-3 p-3">
-        <div class="rounded-circle bg-info text-white fw-bold d-inline-flex align-items-center justify-content-center sidebar-avatar">
+        <div
+          class="rounded-circle bg-info text-white fw-bold d-inline-flex align-items-center justify-content-center sidebar-avatar">
           {{ usuario.iniciais }}
         </div>
 
@@ -52,15 +42,10 @@
     </div>
 
     <nav class="nav nav-pills flex-column gap-2" aria-label="Menu principal">
-      <a
-        *ngFor="let item of menu"
+      <a *ngFor="let item of menu"
         class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 text-white fw-semibold"
-        [routerLink]="item.rota"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: item.exata }"
-        data-bs-dismiss="offcanvas"
-        data-bs-target="#menuLateral"
-      >
+        [routerLink]="item.rota" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.exata }"
+        data-bs-dismiss="offcanvas" data-bs-target="#menuLateral">
         <i class="bi fs-5" [ngClass]="item.icone"></i>
         <span>{{ item.nome }}</span>
       </a>
