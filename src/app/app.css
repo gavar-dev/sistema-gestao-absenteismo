@@ -4,6 +4,10 @@
   background-color: var(--app-bg);
 }
 
+.login-main {
+  min-height: 100vh;
+}
+
 @media (min-width: 992px) {
   .app-content {
     margin-left: 280px;
