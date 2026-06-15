@@ -1,58 +1,102 @@
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-  Solicitar Correção
-</button>
+<!-- Botão de solicitação -->
+<div class="d-flex justify-content-end mb-3">
+  <button
+    type="button"
+    class="btn btn-primary btn-solicitacao"
+    data-bs-toggle="modal"
+    data-bs-target="#staticBackdrop"
+  >
+    Solicitar Correção
+  </button>
+</div>
 
 <!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<div
+  class="modal fade"
+  id="staticBackdrop"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+          Solicitar Correção de Dados
+        </h1>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Fechar"
+        ></button>
       </div>
+
       <div class="modal-body">
-        ...
+        <p class="mb-0">
+          Informe ao RH quais dados precisam ser corrigidos.
+        </p>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Understood</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+
+        <button type="button" class="btn btn-primary">
+          Enviar Solicitação
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 <section id="tabela">
-  <h1>Tabela de Dados</h1>
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+    <div>
+      <h1>Meus Dados</h1>
+      <p class="text-secondary mb-0">
+        Confira suas informações pessoais e profissionais.
+      </p>
+    </div>
+  </div>
 
-  <table border="1">
-    <thead>
-      <tr>
-        <th colspan="3">Informações Pessoais</th>
-      </tr>
-      <tr>
-        <th>Nome</th>
-        <th>Setor</th>
-        <th>Status</th>
-        <th>Telefone</th>
-        <th>Matrícula</th>
-        <th>Cargo</th>
-        <th>Horário Padrão</th>
-        <th>E-mail Corporativo</th>
-      </tr>
-    </thead>
-    <tbody>
-  <tr>
-    <td>Maria Silva</td>
-    <td>Analista de Vendas</td>
-    <td>Ativo</td>
-    <td>(21) 9 9999-9999</td>
-    <td>1024</td>
-    <td>Desenvolvedor</td>
-    <td>08:00 às 17:00</td>
-    <td>maria.silva@gmail.com</td>
-  </tr>
-</tbody>
+  <div class="table-responsive-wrapper">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th colspan="8">Informações Pessoais</th>
+        </tr>
 
-  </table>
+        <tr>
+          <th>Nome</th>
+          <th>Setor</th>
+          <th>Status</th>
+          <th>Telefone</th>
+          <th>Matrícula</th>
+          <th>Cargo</th>
+          <th>Horário Padrão</th>
+          <th>E-mail Corporativo</th>
+        </tr>
+      </thead>
 
+      <tbody>
+        <tr>
+          <td>Maria Silva</td>
+          <td>Vendas</td>
+          <td>
+            <span class="badge text-bg-success">Ativo</span>
+          </td>
+          <td>(21) 9 9999-9999</td>
+          <td>1024</td>
+          <td>Desenvolvedor</td>
+          <td>08:00 às 17:00</td>
+          <td>maria.silva@gmail.com</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </section>

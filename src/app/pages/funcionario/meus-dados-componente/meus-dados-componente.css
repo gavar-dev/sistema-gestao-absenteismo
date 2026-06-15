@@ -1,21 +1,14 @@
 /* =====================
    BOTÃO DE SOLICITAÇÃO
    ===================== */
-.meus-dados-icon {
-  background-color: var(--app-primary);
-  color: var(--app-sidebar-text);
-  border: none;
-  padding: 0.5rem 1.25rem;
-  border-radius: 0.5rem;
+.btn-solicitacao {
+  border-radius: 0.75rem;
   font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: var(--app-transition);
-  margin-bottom: 1.5rem;
+  padding: 0.55rem 1.25rem;
 }
 
-.btn-solicitar:hover {
-  opacity: 0.88;
+.btn-solicitacao:hover {
+  opacity: 0.9;
 }
 
 /* =====================
@@ -50,37 +43,25 @@
   flex-wrap: wrap;
 }
 
-/* Botões do modal em telas pequenas */
-@media (max-width: 576px) {
-  .modal-footer {
-    flex-direction: column;
-  }
-
-  .modal-footer .btn {
-    width: 100%;
-  }
-
-  .modal-dialog {
-    margin: 0.5rem;
-  }
-}
-
 /* =====================
    SEÇÃO DA TABELA
    ===================== */
 #tabela {
+  width: 100%;
   padding: 1.5rem;
   background-color: var(--app-surface);
   border-radius: 1rem;
   border: 1px solid var(--app-border);
-  overflow: hidden;
+
+  /* importante: não usar overflow hidden aqui */
+  overflow: visible;
 }
 
 #tabela h1 {
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--app-text);
-  margin-bottom: 1rem;
+  margin-bottom: 0.25rem;
 }
 
 /* =====================
@@ -89,8 +70,10 @@
 .table-responsive-wrapper {
   width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--app-border);
 }
 
 /* =====================
@@ -98,44 +81,41 @@
    ===================== */
 #tabela table {
   width: 100%;
-  min-width: 700px; /* força scroll horizontal em telas pequenas */
+  min-width: 900px;
   border-collapse: collapse;
   font-size: 0.9rem;
   color: var(--app-text);
 }
 
 #tabela thead tr:first-child th {
-  background-color: var(--app-primary);
-  color: var(--app-sidebar-text);
+  background-color: var(--app-primary-meus-dados);
+  color: var(--app-meus-dados-text);
   text-align: center;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   font-size: 1rem;
   letter-spacing: 0.03em;
+  border: none;
 }
 
 #tabela thead tr:nth-child(2) th {
   background-color: var(--app-primary-soft);
   color: var(--app-primary);
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 1rem;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
-  border-bottom: 2px solid var(--app-border);
+  border-bottom: 1px solid var(--app-border);
 }
 
-#tabela tbody tr {
-  transition: var(--app-transition);
+#tabela tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--app-border);
+  white-space: nowrap;
+  color: var(--app-text-muted);
 }
 
 #tabela tbody tr:hover {
   background-color: var(--app-primary-soft);
-}
-
-#tabela tbody td {
-  padding: 0.65rem 1rem;
-  border-bottom: 1px solid var(--app-border);
-  white-space: nowrap;
-  color: var(--app-text-muted);
 }
 
 #tabela tbody tr:last-child td {
@@ -143,7 +123,7 @@
 }
 
 /* =====================
-   RESPONSIVO GERAL
+   RESPONSIVO
    ===================== */
 @media (max-width: 768px) {
   #tabela {
@@ -155,19 +135,43 @@
     font-size: 1.15rem;
   }
 
-  #tabela tbody td,
-  #tabela thead tr:nth-child(2) th {
-    padding: 0.5rem 0.75rem;
+  .btn-solicitacao {
+    width: 100%;
+  }
+
+  #tabela table {
+    min-width: 850px;
     font-size: 0.82rem;
+  }
+
+  #tabela thead tr:nth-child(2) th,
+  #tabela tbody td {
+    padding: 0.6rem 0.75rem;
+  }
+
+  #tabela thead tr:first-child th{
+    text-align: justify;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+
   #tabela {
     padding: 0.75rem;
   }
 
   #tabela h1 {
-    font-size: 1rem;
+    font-size: 1.05rem;
+  }
+
+  .table-responsive-wrapper {
+    border-radius: 0.5rem;
   }
 }
