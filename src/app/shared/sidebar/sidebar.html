@@ -59,9 +59,14 @@
         </div>
       </div>
 
-      <button type="button" class="btn btn-outline-light w-100 mb-2" (click)="alternarTema()">
+      <button
+        type="button"
+        class="btn app-theme-toggle app-theme-toggle--sidebar w-100 mb-2"
+        (click)="alternarTema()"
+        [attr.aria-label]="temaAtual === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+      >
         <i class="bi" [ngClass]="temaAtual === 'dark' ? 'bi-sun' : 'bi-moon-stars'"></i>
-        {{ temaAtual === 'dark' ? 'Tema claro' : 'Tema escuro' }}
+        <span>{{ temaAtual === 'dark' ? 'Tema claro' : 'Tema escuro' }}</span>
       </button>
 
       <a class="btn btn-light w-100 text-primary fw-semibold" routerLink="/login">

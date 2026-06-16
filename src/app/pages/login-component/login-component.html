@@ -3,6 +3,16 @@
   <div class="login-bg-shape shape-two"></div>
   <div class="login-bg-shape shape-three"></div>
 
+  <button
+    type="button"
+    class="btn app-theme-toggle app-theme-toggle--login login-theme-toggle"
+    (click)="alternarTema()"
+    [attr.aria-label]="temaAtual === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+  >
+    <i class="bi" [ngClass]="temaAtual === 'dark' ? 'bi-sun' : 'bi-moon-stars'"></i>
+    <span>{{ temaAtual === 'dark' ? 'claro' : 'escuro' }}</span>
+  </button>
+
   <div class="login-container">
     <div class="row min-vh-100 align-items-center justify-content-center g-0">
       <div class="col-12 col-lg-6 col-xl-7 d-none d-lg-block">
@@ -53,7 +63,7 @@
 
             <div class="hero-card floating-card card-two shadow">
               <i class="bi bi-file-earmark-text me-2"></i>
-              Solicite alterações cadastrais 
+              Solicite alterações cadastrais
             </div>
           </div>
         </div>
