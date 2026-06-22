@@ -1,0 +1,23 @@
+.ponto-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+}
+
+.ponto-action-btn {
+  background-color: var(--app-surface);
+  border-color: var(--app-border);
+  color: var(--app-text);
+}
+
+.ponto-action-btn:hover {
+  background-color: var(--app-primary-soft);
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+}
+
+.registro-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+}

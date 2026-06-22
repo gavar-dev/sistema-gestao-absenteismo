@@ -1,0 +1,220 @@
+:root {
+  --app-primary: #0d6efd;
+  --app-primary-meus-dados: #ffffff;
+  --app-primary-soft: #e7f1ff;
+  --app-bg: #f5f7fb;
+  --app-surface: #ffffff;
+  --app-border: #dee2e6;
+  --app-text: #212529;
+  --app-text-muted: #6c757d;
+  --app-sidebar-bg: #0d6efd;
+  --app-sidebar-text: #ffffff;
+  --app-meus-dados-text: #0d6efd;
+  --app-sidebar-hover: #ffffff29;
+  --app-sidebar-active-bg: #ffffff;
+  --app-sidebar-active-text: #0d6efd;
+
+  /* Sidebar Gestão/RH */
+  --app-admin-sidebar-bg: #0f172a;
+  --app-admin-sidebar-text: #ffffff;
+  --app-admin-sidebar-hover: rgba(255, 255, 255, 0.10);
+  --app-admin-sidebar-active-bg: #ffffff;
+  --app-admin-sidebar-active-text: #0f172a;
+  --app-admin-sidebar-card-bg: rgba(255, 255, 255, 0.08);
+  --app-admin-sidebar-card-border: rgba(255, 255, 255, 0.16);
+  --app-admin-sidebar-logo-bg: #38bdf8;
+  --app-admin-sidebar-logo-text: #0f172a;
+  --app-admin-sidebar-avatar-bg: #38bdf8;
+  --app-admin-sidebar-avatar-text: #0f172a;
+
+  --app-transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+  /* Login */
+  --app-login-page-bg:
+    radial-gradient(circle at top left, rgba(13, 110, 253, 0.22), transparent 32rem),
+    linear-gradient(135deg, #f5f7fb 0%, #eef4ff 48%, #ffffff 100%);
+  --app-login-hero-bg:
+    linear-gradient(135deg, rgba(13, 110, 253, 0.96), rgba(9, 31, 74, 0.98)),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18), transparent 18rem);
+  --app-login-grid-line: rgba(255, 255, 255, 0.06);
+  --app-login-card-bg: rgba(255, 255, 255, 0.92);
+  --app-login-strong-text: #0f172a;
+  --app-login-input-border: #dee2e6;
+  --app-login-input-bg: #ffffff;
+  --app-login-input-icon-bg: #f8fbff;
+  --app-login-input-icon-text: #0d6efd;
+  --app-login-input-focus-border: #86b7fe;
+  --app-login-input-focus-shadow: rgba(13, 110, 253, 0.12);
+  --app-login-badge-bg: rgba(13, 110, 253, 0.10);
+  --app-login-help-bg: rgba(13, 110, 253, 0.06);
+  --app-login-help-border: rgba(13, 110, 253, 0.12);
+  --app-login-submit-bg: linear-gradient(135deg, #0d6efd, #084298);
+  --app-login-submit-shadow: rgba(13, 110, 253, 0.25);
+  --app-login-submit-shadow-hover: rgba(13, 110, 253, 0.32);
+  --app-login-shape-one-bg: rgba(13, 110, 253, 0.18);
+  --app-login-shape-two-bg: rgba(255, 193, 7, 0.18);
+  --app-login-shape-three-bg: rgba(13, 202, 240, 0.18);
+  --app-login-brand-icon-bg: #ffc107;
+  --app-login-brand-icon-color: #0d6efd;
+  --app-login-kicker-bg: rgba(255, 255, 255, 0.12);
+  --app-login-kicker-border: rgba(255, 255, 255, 0.25);
+  --app-login-hero-card-bg: rgba(255, 255, 255, 0.13);
+  --app-login-hero-card-border: rgba(255, 255, 255, 0.18);
+  --app-login-hero-card-icon-bg: rgba(255, 255, 255, 0.16);
+  --app-login-status-dot-bg: #20c997;
+  --app-login-status-dot-shadow: rgba(32, 201, 151, 0.18);
+  --app-login-ring-border: rgba(255, 255, 255, 0.22);
+  --app-login-help-icon-bg: rgba(13, 110, 253, 0.10);
+  --app-login-help-icon-color: #0d6efd;
+
+  /* Botão de tema */
+  --app-theme-toggle-gap: 0.5rem;
+  --app-theme-toggle-radius: 0.75rem;
+  --app-theme-toggle-min-height: 2.75rem;
+  --app-theme-toggle-sidebar-color: #ffffff;
+  --app-theme-toggle-sidebar-bg: transparent;
+  --app-theme-toggle-sidebar-border: rgba(255, 255, 255, 0.55);
+  --app-theme-toggle-sidebar-hover-bg: #ffffff29;
+  --app-theme-toggle-sidebar-hover-border: rgba(255, 255, 255, 0.78);
+  --app-theme-toggle-login-color: #0d6efd;
+  --app-theme-toggle-login-bg: rgba(255, 255, 255, 0.82);
+  --app-theme-toggle-login-border: rgba(13, 110, 253, 0.16);
+  --app-theme-toggle-login-hover-bg: #ffffff;
+  --app-theme-toggle-login-shadow: rgba(15, 23, 42, 0.12);
+  --app-theme-toggle-login-hover-shadow: rgba(15, 23, 42, 0.16);
+}
+
+[data-bs-theme="dark"] {
+  --app-primary: #ffffff;
+  --app-primary-meus-dados: #121826a1;
+  --app-bg: #121826;
+  --app-surface: #121826a1;
+  --app-border: #374151;
+  --app-text: #f8f9fa;
+  --app-meus-dados-text: #ffffff;
+  --app-text-muted: #adb5bd;
+  --app-primary-soft: #0d6efd2e;
+  --app-sidebar-bg: #0b1324;
+  --app-sidebar-hover: rgba(255, 255, 255, 0.12);
+  --app-sidebar-active-bg: #1f2937;
+  --app-sidebar-active-text: #8bb9fe;
+
+  /* Sidebar Gestão/RH */
+  --app-admin-sidebar-bg: #020617;
+  --app-admin-sidebar-hover: rgba(255, 255, 255, 0.12);
+  --app-admin-sidebar-active-bg: #1f2937;
+  --app-admin-sidebar-active-text: #93c5fd;
+  --app-admin-sidebar-card-bg: rgba(255, 255, 255, 0.07);
+  --app-admin-sidebar-card-border: rgba(255, 255, 255, 0.14);
+  --app-admin-sidebar-logo-bg: #38bdf8;
+  --app-admin-sidebar-logo-text: #020617;
+  --app-admin-sidebar-avatar-bg: #38bdf8;
+  --app-admin-sidebar-avatar-text: #020617;
+
+  /* Login */
+  --app-login-page-bg:
+    radial-gradient(circle at top left, rgba(13, 110, 253, 0.20), transparent 32rem),
+    linear-gradient(135deg, #0b1324 0%, #121826 55%, #0b1324 100%);
+  --app-login-card-bg: rgba(18, 24, 38, 0.92);
+  --app-login-strong-text: #f8f9fa;
+  --app-login-input-border: #374151;
+  --app-login-input-bg: #111827;
+  --app-login-input-icon-bg: #111827;
+  --app-login-input-icon-text: #8bb9fe;
+  --app-login-help-bg: rgba(13, 110, 253, 0.12);
+  --app-login-help-border: rgba(139, 185, 254, 0.16);
+
+  /* Botão de tema */
+  --app-theme-toggle-login-color: #f8f9fa;
+  --app-theme-toggle-login-bg: rgba(18, 24, 38, 0.78);
+  --app-theme-toggle-login-border: rgba(255, 255, 255, 0.14);
+  --app-theme-toggle-login-hover-bg: rgba(31, 41, 55, 0.95);
+  --app-theme-toggle-login-shadow: rgba(0, 0, 0, 0.28);
+  --app-theme-toggle-login-hover-shadow: rgba(0, 0, 0, 0.34);
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+}
+
+.app-surface {
+  background-color: var(--app-surface);
+}
+
+.app-card {
+  border-radius: 1rem;
+}
+
+.app-icon-box {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+}
+
+.app-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-theme-toggle-gap);
+  min-height: var(--app-theme-toggle-min-height);
+  font-weight: 700;
+  border-radius: var(--app-theme-toggle-radius);
+  transition: var(--app-transition), transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-theme-toggle i {
+  font-size: 1rem;
+}
+
+.app-theme-toggle--sidebar {
+  color: var(--app-theme-toggle-sidebar-color);
+  background-color: var(--app-theme-toggle-sidebar-bg);
+  border-color: var(--app-theme-toggle-sidebar-border);
+}
+
+.app-theme-toggle--sidebar:hover,
+.app-theme-toggle--sidebar:focus {
+  color: var(--app-theme-toggle-sidebar-color);
+  background-color: var(--app-theme-toggle-sidebar-hover-bg);
+  border-color: var(--app-theme-toggle-sidebar-hover-border);
+  box-shadow: none;
+}
+
+.app-theme-toggle--login {
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  color: var(--app-theme-toggle-login-color);
+  background-color: var(--app-theme-toggle-login-bg);
+  border-color: var(--app-theme-toggle-login-border);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 12px 28px var(--app-theme-toggle-login-shadow);
+}
+
+.app-theme-toggle--login:hover,
+.app-theme-toggle--login:focus {
+  color: var(--app-theme-toggle-login-color);
+  background-color: var(--app-theme-toggle-login-hover-bg);
+  border-color: var(--app-theme-toggle-login-border);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px var(--app-theme-toggle-login-hover-shadow);
+}
+
+.app-theme-transition,
+.card,
+.alert,
+.form-control,
+.form-select,
+.list-group-item,
+.offcanvas {
+  transition: var(--app-transition);
+}
