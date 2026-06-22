@@ -1,7 +1,8 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TipoUsuario, UsuarioLogadoService } from '../../core/services/usuario-logado.service';
+import { UsuarioLogadoService } from '../../core/services/usuario-logado.service';
+import { TipoUsuario } from '../../models/tipoUsuario';
 
 type Tema = 'light' | 'dark';
 
