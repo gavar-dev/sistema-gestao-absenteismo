@@ -71,10 +71,10 @@
   --app-theme-toggle-gap: 0.5rem;
   --app-theme-toggle-radius: 0.75rem;
   --app-theme-toggle-min-height: 2.75rem;
-  --app-theme-toggle-sidebar-color: var(--app-sidebar-text);
+  --app-theme-toggle-sidebar-color: #ffffff;
   --app-theme-toggle-sidebar-bg: transparent;
   --app-theme-toggle-sidebar-border: rgba(255, 255, 255, 0.55);
-  --app-theme-toggle-sidebar-hover-bg: var(--app-sidebar-hover);
+  --app-theme-toggle-sidebar-hover-bg: #ffffff29;
   --app-theme-toggle-sidebar-hover-border: rgba(255, 255, 255, 0.78);
   --app-theme-toggle-login-color: #0d6efd;
   --app-theme-toggle-login-bg: rgba(255, 255, 255, 0.82);
