@@ -1,1 +1,54 @@
-<p>gestao-component works!</p>
+<section class="admin-page">
+  <div class="card border-0 shadow-sm app-card mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+        <div>
+          <h2 class="h5 fw-bold mb-1">Base de colaboradores</h2>
+          <p class="text-secondary mb-0">Use esta área para consultar status, atrasos e faltas por funcionário.</p>
+        </div>
+        <a routerLink="/gestao/cadastro" class="btn btn-primary">
+          <i class="bi bi-person-plus me-2"></i>
+          Novo funcionário
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm app-card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0 admin-table">
+          <thead>
+            <tr>
+              <th>Funcionário</th>
+              <th>Setor</th>
+              <th>Cargo</th>
+              <th>Status</th>
+              <th>Atrasos</th>
+              <th>Faltas</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let funcionario of funcionarios">
+              <td class="fw-semibold">{{ funcionario.nome }}</td>
+              <td>{{ funcionario.setor }}</td>
+              <td>{{ funcionario.cargo }}</td>
+              <td>
+                <span class="badge rounded-pill" [ngClass]="statusClasse(funcionario.status)">
+                  {{ funcionario.status }}
+                </span>
+              </td>
+              <td>{{ funcionario.atrasos }}</td>
+              <td>{{ funcionario.faltas }}</td>
+              <td class="text-end">
+                <button type="button" class="btn btn-sm btn-outline-primary me-2">Editar</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Detalhes</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
