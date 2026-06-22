@@ -1,1 +1,0 @@
-export type TipoUsuario = 'funcionario' | 'gestor' | 'rh';
