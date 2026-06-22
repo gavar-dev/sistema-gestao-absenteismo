@@ -36,19 +36,63 @@
       </div>
 
       <div class="modal-body">
-        <p class="mb-0">
-          Informe ao RH quais dados precisam ser corrigidos.
-        </p>
-      </div>
+  <p class="text-secondary small mb-3">
+    Informe ao RH quais dados precisam ser corrigidos.
+  </p>
+
+  <!-- Chips de seleção dos campos -->
+  <label class="form-label small">Campos com erro <span class="text-danger">*</span></label>
+  <div class="d-flex flex-wrap gap-2 mb-3" id="chips">
+    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
+          style="cursor:pointer; padding: 6px 14px;" 
+          onclick="toggleChip(this)">Nome</span>
+    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
+          style="cursor:pointer; padding: 6px 14px;" 
+          onclick="toggleChip(this)">Setor</span>
+    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
+          style="cursor:pointer; padding: 6px 14px;" 
+          onclick="toggleChip(this)">Cargo</span>
+    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
+          style="cursor:pointer; padding: 6px 14px;" 
+          onclick="toggleChip(this)">Telefone</span>
+    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
+          style="cursor:pointer; padding: 6px 14px;" 
+          onclick="toggleChip(this)">Matrícula</span>
+    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
+          style="cursor:pointer; padding: 6px 14px;" 
+          onclick="toggleChip(this)">E-mail corporativo</span>
+    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
+          style="cursor:pointer; padding: 6px 14px;" 
+          onclick="toggleChip(this)">Horário padrão</span>
+  </div>
+
+  <!-- Tipo de solicitação -->
+  <label class="form-label small">Tipo de solicitação</label>
+  <select class="form-select form-select-sm mb-3" id="tipoCorrecao">
+    <option value="">Selecione...</option>
+    <option>Dado incorreto</option>
+    <option>Dado desatualizado</option>
+    <option>Dado ausente</option>
+  </select>
+
+  <!-- Descrição -->
+  <label class="form-label small">Descrição <span class="text-danger">*</span></label>
+  <textarea class="form-control form-control-sm" id="descCorrecao" rows="3"
+    placeholder="Descreva o que está errado e qual deveria ser o valor correto..."></textarea>
+
+  <p class="text-danger small mt-2 d-none" id="erroModal">
+    Selecione ao menos um campo e preencha a descrição.
+  </p>
+</div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancelar
         </button>
 
-        <button type="button" class="btn btn-primary">
-          Enviar Solicitação
-        </button>
+        <button type="button" class="btn btn-primary" onclick="enviarCorrecao()">
+  Enviar Solicitação
+</button>
       </div>
     </div>
   </div>
@@ -83,20 +127,117 @@
         </tr>
       </thead>
 
-      <tbody>
-        <tr>
-          <td>Maria Silva</td>
-          <td>Vendas</td>
-          <td>
-            <span class="badge text-bg-success">Ativo</span>
-          </td>
-          <td>(21) 9 9999-9999</td>
-          <td>1024</td>
-          <td>Desenvolvedor</td>
-          <td>08:00 às 17:00</td>
-          <td>maria.silva@gmail.com</td>
-        </tr>
-      </tbody>
+     <tbody>
+  <tr>
+    <td>Maria Silva</td>
+    <td>Vendas</td>
+    <td><span class="badge text-bg-success">Ativo</span></td>
+    <td>(21) 9 9999-9999</td>
+    <td>1024</td>
+    <td>Desenvolvedor</td>
+    <td>08:00 às 17:00</td>
+    <td>maria.silva@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>João Santos</td>
+    <td>TI</td>
+    <td><span class="badge text-bg-success">Ativo</span></td>
+    <td>(21) 9 8888-8888</td>
+    <td>1025</td>
+    <td>Analista de Sistemas</td>
+    <td>09:00 às 18:00</td>
+    <td>joao.santos@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>Ana Oliveira</td>
+    <td>RH</td>
+    <td><span class="badge" style="background-color: purple;">Férias</span></td>
+    <td>(21) 9 7777-7777</td>
+    <td>1026</td>
+    <td>Gerente de RH</td>
+    <td>08:00 às 17:00</td>
+    <td>ana.oliveira@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>Carlos Pereira</td>
+    <td>Financeiro</td>
+    <td><span class="badge text-bg-success">Ativo</span></td>
+    <td>(21) 9 6666-6666</td>
+    <td>1027</td>
+    <td>Contador</td>
+    <td>08:00 às 17:00</td>
+    <td>carlos.pereira@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>Fernanda Lima</td>
+    <td>Marketing</td>
+    <td><span class="badge text-bg-success">Ativo</span></td>
+    <td>(21) 9 5555-5555</td>
+    <td>1028</td>
+    <td>Designer</td>
+    <td>09:00 às 18:00</td>
+    <td>fernanda.lima@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>Roberto Souza</td>
+    <td>Operações</td>
+    <td><span class="badge text-bg-warning text-dark">Afastado</span></td>
+    <td>(21) 9 4444-4444</td>
+    <td>1029</td>
+    <td>Supervisor</td>
+    <td>07:00 às 16:00</td>
+    <td>roberto.souza@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>Juliana Costa</td>
+    <td>Jurídico</td>
+    <td><span class="badge" style="background-color: purple;">Férias</span></td>
+    <td>(21) 9 3333-3333</td>
+    <td>1030</td>
+    <td>Advogada</td>
+    <td>09:00 às 18:00</td>
+    <td>juliana.costa@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>Marcos Alves</td>
+    <td>TI</td>
+    <td><span class="badge text-bg-success">Ativo</span></td>
+    <td>(21) 9 2222-2222</td>
+    <td>1031</td>
+    <td>Suporte Técnico</td>
+    <td>08:00 às 17:00</td>
+    <td>marcos.alves@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>Patrícia Rocha</td>
+    <td>Comercial</td>
+    <td><span class="badge text-bg-danger">Inativo</span></td>
+    <td>(21) 9 1111-1111</td>
+    <td>1032</td>
+    <td>Consultora</td>
+    <td>09:00 às 18:00</td>
+    <td>patricia.rocha@empresa.com</td>
+  </tr>
+
+  <tr>
+    <td>Lucas Ferreira</td>
+    <td>Logística</td>
+    <td><span class="badge text-bg-success">Ativo</span></td>
+    <td>(21) 9 0000-0000</td>
+    <td>1033</td>
+    <td>Coordenador</td>
+    <td>07:00 às 16:00</td>
+    <td>lucas.ferreira@empresa.com</td>
+  </tr>
+</tbody>
     </table>
   </div>
 </section>
