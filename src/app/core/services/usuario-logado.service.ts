@@ -1,16 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
-export type TipoUsuario = 'funcionario' | 'gestor' | 'rh';
-
-export interface UsuarioLogado {
-  nome: string;
-  email: string;
-  cargo: string;
-  setor: string;
-  iniciais: string;
-  tipo: TipoUsuario;
-}
+import { UsuarioLogado } from '../../models/usuarioLogado';
+import { TipoUsuario } from '../../models/tipoUsuario';
 
 @Injectable({
   providedIn: 'root',
