@@ -1,6 +1,7 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { TipoUsuario, UsuarioLogadoService } from '../../core/services/usuario-logado.service';
 
 type Tema = 'light' | 'dark';
 
@@ -15,8 +16,14 @@ export class LoginComponent implements OnInit {
   senhaVisivel = false;
   temaAtual: Tema = 'light';
 
+  private readonly usuariosMock: Record<string, TipoUsuario> = {
+    'fed.silva.corporativo@gmail.com': 'gestor',
+    'rh.corporativo@gmail.com': 'rh',
+  };
+
   constructor(
     private router: Router,
+    private usuarioLogadoService: UsuarioLogadoService,
     @Inject(DOCUMENT) private document: Document
   ) {}
 
@@ -34,12 +41,18 @@ export class LoginComponent implements OnInit {
     this.senhaVisivel = !this.senhaVisivel;
   }
 
-  entrar(event: Event): void {
+  entrar(event: Event, email: string, _senha: string): void {
     event.preventDefault();
 
-    // Por enquanto, esse login apenas simula a entrada no sistema.
-    // Quando criar autenticação real, a validação entra aqui.
-    this.router.navigate(['/']);
+    const tipoUsuario = this.identificarTipoUsuario(email);
+    this.usuarioLogadoService.definirTipoUsuario(tipoUsuario);
+
+    this.router.navigateByUrl(this.usuarioLogadoService.obterRotaInicial());
+  }
+
+  private identificarTipoUsuario(email: string): TipoUsuario {
+    const emailNormalizado = email.trim().toLowerCase();
+    return this.usuariosMock[emailNormalizado] ?? 'funcionario';
   }
 
   private aplicarTema(tema: Tema): void {

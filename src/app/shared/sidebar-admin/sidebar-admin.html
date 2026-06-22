@@ -84,10 +84,10 @@
         <span>{{ temaAtual === 'dark' ? 'Tema claro' : 'Tema escuro' }}</span>
       </button>
 
-      <a class="btn admin-sidebar-logout-btn w-100 fw-semibold" routerLink="/login">
+      <button type="button" class="btn admin-sidebar-logout-btn w-100 fw-semibold" (click)="sair()">
         <i class="bi bi-box-arrow-right me-2"></i>
         Sair
-      </a>
+      </button>
     </div>
   </div>
 </aside>

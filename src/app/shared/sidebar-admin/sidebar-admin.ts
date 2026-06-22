@@ -45,6 +45,10 @@ export class SidebarAdmin implements OnInit {
     this.aplicarTema(proximoTema);
   }
 
+  sair(): void {
+    this.usuarioLogadoService.logout();
+  }
+
   private aplicarTema(tema: Tema): void {
     this.temaAtual = tema;
     this.document.documentElement.setAttribute('data-bs-theme', tema);
@@ -52,23 +56,17 @@ export class SidebarAdmin implements OnInit {
   }
 
   private atualizarUsuarioPeloPerfil(): void {
-    const perfil = this.usuarioLogadoService.obterTipoUsuario();
+    const usuarioLogado = this.usuarioLogadoService.obterUsuarioLogado();
 
-    if (perfil === 'rh') {
-      this.usuario = {
-        nome: 'Renata Souza',
-        cargo: 'Analista de RH',
-        setor: 'Recursos Humanos',
-        iniciais: 'RS'
-      };
+    if (!usuarioLogado) {
       return;
     }
 
     this.usuario = {
-      nome: 'Carla Mendes',
-      cargo: 'Gestora de RH',
-      setor: 'Gestão de Pessoas',
-      iniciais: 'CM'
+      nome: usuarioLogado.nome,
+      cargo: usuarioLogado.cargo,
+      setor: usuarioLogado.setor,
+      iniciais: usuarioLogado.iniciais,
     };
   }
 }

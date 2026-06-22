@@ -92,7 +92,7 @@
                 </p>
               </div>
 
-              <form (submit)="entrar($event)">
+              <form (submit)="entrar($event, email.value, senha.value)">
                 <div class="mb-3">
                   <label for="email" class="form-label fw-semibold">E-mail corporativo</label>
                   <div class="input-group input-group-lg login-input-group">
@@ -101,6 +101,7 @@
                     </span>
                     <input
                       type="email"
+                      #email
                       id="email"
                       class="form-control"
                       placeholder="nome@empresa.com"
@@ -122,6 +123,7 @@
                     </span>
                     <input
                       [type]="senhaVisivel ? 'text' : 'password'"
+                      #senha
                       id="senha"
                       class="form-control"
                       placeholder="Digite sua senha"
