@@ -1,0 +1,96 @@
+.admin-sidebar-bootstrap {
+  --bs-offcanvas-width: 280px;
+  background-color: var(--app-admin-sidebar-bg);
+  color: var(--app-admin-sidebar-text);
+}
+
+.admin-sidebar-logo {
+  background-color: var(--app-admin-sidebar-logo-bg);
+  color: var(--app-admin-sidebar-logo-text);
+}
+
+.admin-sidebar-avatar {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  background-color: var(--app-admin-sidebar-avatar-bg);
+  color: var(--app-admin-sidebar-avatar-text);
+}
+
+.admin-sidebar-user-card,
+.admin-sidebar-info-card {
+  background-color: var(--app-admin-sidebar-card-bg);
+  border: 1px solid var(--app-admin-sidebar-card-border);
+  color: var(--app-admin-sidebar-text);
+}
+
+.admin-sidebar-link {
+  color: var(--app-admin-sidebar-text);
+}
+
+.admin-sidebar-link:hover {
+  background-color: var(--app-admin-sidebar-hover);
+  color: var(--app-admin-sidebar-text);
+}
+
+.admin-sidebar-link.active {
+  background-color: var(--app-admin-sidebar-active-bg);
+  color: var(--app-admin-sidebar-active-text);
+}
+
+.admin-sidebar-logout-btn {
+  background-color: var(--app-admin-sidebar-active-bg);
+  border-color: var(--app-admin-sidebar-active-bg);
+  color: var(--app-admin-sidebar-active-text);
+}
+
+.admin-sidebar-logout-btn:hover {
+  filter: brightness(0.96);
+  color: var(--app-admin-sidebar-active-text);
+}
+
+.admin-sidebar-menu-btn {
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: var(--app-text);
+  box-shadow: none;
+}
+
+.admin-sidebar-menu-btn:hover {
+  background-color: rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.2);
+  color: var(--app-text);
+}
+
+.admin-sidebar-menu-btn:focus,
+.admin-sidebar-menu-btn:active {
+  background-color: transparent;
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+  box-shadow: none;
+}
+
+@media (min-width: 992px) {
+  .admin-sidebar-bootstrap {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 280px;
+    height: 100vh;
+    visibility: visible !important;
+    transform: none !important;
+    border-right: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-sidebar-bootstrap .offcanvas-header {
+    display: flex !important;
+    flex: 0 0 auto;
+  }
+
+  .admin-sidebar-bootstrap .offcanvas-body {
+    flex: 1 1 auto;
+    overflow-y: hidden;
+  }
+}

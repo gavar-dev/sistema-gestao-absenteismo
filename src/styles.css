@@ -13,6 +13,20 @@
   --app-sidebar-hover: #ffffff29;
   --app-sidebar-active-bg: #ffffff;
   --app-sidebar-active-text: #0d6efd;
+
+  /* Sidebar Gestão/RH */
+  --app-admin-sidebar-bg: #0f172a;
+  --app-admin-sidebar-text: #ffffff;
+  --app-admin-sidebar-hover: rgba(255, 255, 255, 0.10);
+  --app-admin-sidebar-active-bg: #ffffff;
+  --app-admin-sidebar-active-text: #0f172a;
+  --app-admin-sidebar-card-bg: rgba(255, 255, 255, 0.08);
+  --app-admin-sidebar-card-border: rgba(255, 255, 255, 0.16);
+  --app-admin-sidebar-logo-bg: #38bdf8;
+  --app-admin-sidebar-logo-text: #0f172a;
+  --app-admin-sidebar-avatar-bg: #38bdf8;
+  --app-admin-sidebar-avatar-text: #0f172a;
+
   --app-transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 
   /* Login */
@@ -84,6 +98,18 @@
   --app-sidebar-hover: rgba(255, 255, 255, 0.12);
   --app-sidebar-active-bg: #1f2937;
   --app-sidebar-active-text: #8bb9fe;
+
+  /* Sidebar Gestão/RH */
+  --app-admin-sidebar-bg: #020617;
+  --app-admin-sidebar-hover: rgba(255, 255, 255, 0.12);
+  --app-admin-sidebar-active-bg: #1f2937;
+  --app-admin-sidebar-active-text: #93c5fd;
+  --app-admin-sidebar-card-bg: rgba(255, 255, 255, 0.07);
+  --app-admin-sidebar-card-border: rgba(255, 255, 255, 0.14);
+  --app-admin-sidebar-logo-bg: #38bdf8;
+  --app-admin-sidebar-logo-text: #020617;
+  --app-admin-sidebar-avatar-bg: #38bdf8;
+  --app-admin-sidebar-avatar-text: #020617;
 
   /* Login */
   --app-login-page-bg:
