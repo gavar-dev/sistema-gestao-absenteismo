@@ -1,1 +1,259 @@
-<p>cadastro-funcionario-component works!</p>
+<div class="cadastro-funcionario">
+  <form [formGroup]="formulario" (ngSubmit)="salvar()">
+
+    <!-- Cabeçalho -->
+    <div class="card cadastro-card cadastro-header mb-3">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="icone-cabecalho flex-shrink-0">
+          <i class="bi bi-person-plus-fill"></i>
+        </div>
+        <div>
+          <h1 class="h5 mb-1">Novo funcionário</h1>
+          <p class="text-body-secondary mb-0">Preencha as informações abaixo para cadastrar um novo funcionário no sistema.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+
+      <!-- Dados pessoais -->
+      <div class="col-12 col-xl-8">
+        <div class="card cadastro-card h-100">
+          <div class="card-body">
+            <h2 class="card-title-secao">
+              <i class="bi bi-person"></i>
+              Dados pessoais
+            </h2>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label for="nomeCompleto" class="form-label">Nome completo <span class="text-danger">*</span></label>
+                <input id="nomeCompleto" type="text" class="form-control" placeholder="Digite o nome completo" formControlName="nomeCompleto">
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="emailCorporativo" class="form-label">E-mail corporativo <span class="text-danger">*</span></label>
+                <input id="emailCorporativo" type="email" class="form-control" placeholder="exemplo@empresa.com.br" formControlName="emailCorporativo">
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label for="cpf" class="form-label">CPF <span class="text-danger">*</span></label>
+                <input id="cpf" type="text" class="form-control" placeholder="000.000.000-00" formControlName="cpf">
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="telefone" class="form-label">Telefone <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input id="telefone" type="text" class="form-control" placeholder="(00) 00000-0000" formControlName="telefone">
+                  <span class="input-group-text"><i class="bi bi-whatsapp"></i></span>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="dataNascimento" class="form-label">Data de nascimento <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input id="dataNascimento" type="date" class="form-control" formControlName="dataNascimento">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label for="estadoCivil" class="form-label">Estado civil</label>
+                <select id="estadoCivil" class="form-select" formControlName="estadoCivil">
+                  <option value="" selected>Selecione</option>
+                  <option *ngFor="let opcao of estadosCivis" [value]="opcao">{{ opcao }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="nacionalidade" class="form-label">Nacionalidade</label>
+                <input id="nacionalidade" type="text" class="form-control" formControlName="nacionalidade">
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="naturalidade" class="form-label">Naturalidade</label>
+                <input id="naturalidade" type="text" class="form-control" placeholder="Digite a naturalidade" formControlName="naturalidade">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Foto do funcionário -->
+      <div class="col-12 col-xl-4">
+        <div class="card cadastro-card h-100">
+          <div class="card-body d-flex flex-column">
+            <h2 class="card-title-secao">
+              <i class="bi bi-camera"></i>
+              Foto do funcionário
+            </h2>
+
+            <input #inputArquivo type="file" accept="image/png, image/jpeg" class="d-none" (change)="aoSelecionarArquivo($event)">
+
+            <div class="area-upload flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center"
+                 [class.arrastando]="arrastandoArquivo"
+                 (click)="abrirSeletorArquivo()"
+                 (dragover)="aoArrastarSobre($event)"
+                 (dragleave)="aoSairArraste()"
+                 (drop)="aoSoltarArquivo($event)">
+
+              <ng-container *ngIf="!previewFoto">
+                <div class="avatar-placeholder mb-3">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <p class="mb-1 fw-medium">Clique para selecionar</p>
+                <p class="mb-1 text-body-secondary">ou arraste a imagem aqui</p>
+                <p class="mb-3 text-body-secondary small">Formatos: JPG, PNG. Tamanho máximo: 2MB</p>
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="$event.stopPropagation(); abrirSeletorArquivo()">
+                  <i class="bi bi-upload me-1"></i>
+                  Selecionar arquivo
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="previewFoto">
+                <img [src]="previewFoto" alt="Pré-visualização da foto do funcionário" class="preview-foto mb-3">
+                <button type="button" class="btn btn-outline-danger btn-sm" (click)="$event.stopPropagation(); removerFoto()">
+                  <i class="bi bi-trash me-1"></i>
+                  Remover foto
+                </button>
+              </ng-container>
+            </div>
+
+            <div class="text-danger small mt-2" *ngIf="erroFoto">{{ erroFoto }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados profissionais -->
+      <div class="col-12 col-xl-8">
+        <div class="card cadastro-card h-100">
+          <div class="card-body">
+            <h2 class="card-title-secao">
+              <i class="bi bi-briefcase"></i>
+              Dados profissionais
+            </h2>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-4">
+                <label for="matricula" class="form-label">Matrícula <span class="text-danger">*</span></label>
+                <input id="matricula" type="text" class="form-control" placeholder="Ex.: 1001" formControlName="matricula">
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="cargo" class="form-label">Cargo <span class="text-danger">*</span></label>
+                <select id="cargo" class="form-select" formControlName="cargo">
+                  <option value="" selected>Selecione o cargo</option>
+                  <option *ngFor="let opcao of cargos" [value]="opcao">{{ opcao }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="setor" class="form-label">Setor <span class="text-danger">*</span></label>
+                <select id="setor" class="form-select" formControlName="setor">
+                  <option value="" selected>Selecione o setor</option>
+                  <option *ngFor="let opcao of setores" [value]="opcao">{{ opcao }}</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label for="dataAdmissao" class="form-label">Data de admissão <span class="text-danger">*</span></label>
+                <input id="dataAdmissao" type="date" class="form-control" formControlName="dataAdmissao">
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="tipoVinculo" class="form-label">Tipo de vínculo <span class="text-danger">*</span></label>
+                <select id="tipoVinculo" class="form-select" formControlName="tipoVinculo">
+                  <option value="" selected>Selecione o vínculo</option>
+                  <option *ngFor="let opcao of tiposVinculo" [value]="opcao">{{ opcao }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="cargaHorariaSemanal" class="form-label">Carga horária semanal</label>
+                <div class="input-group">
+                  <input id="cargaHorariaSemanal" type="text" class="form-control" placeholder="Ex.: 44h" formControlName="cargaHorariaSemanal">
+                  <span class="input-group-text">h/sem</span>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="gestorImediato" class="form-label">Gestor imediato</label>
+                <select id="gestorImediato" class="form-select" formControlName="gestorImediato">
+                  <option value="" selected>Selecione o gestor</option>
+                  <option *ngFor="let opcao of gestores" [value]="opcao">{{ opcao }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="localTrabalho" class="form-label">Local de trabalho</label>
+                <select id="localTrabalho" class="form-select" formControlName="localTrabalho">
+                  <option value="" selected>Selecione o local</option>
+                  <option *ngFor="let opcao of locaisTrabalho" [value]="opcao">{{ opcao }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Permissões de acesso -->
+      <div class="col-12 col-xl-4">
+        <div class="card cadastro-card h-100">
+          <div class="card-body">
+            <h2 class="card-title-secao">
+              <i class="bi bi-shield-check"></i>
+              Permissões de acesso
+            </h2>
+
+            <div class="row g-3">
+              <div class="col-12 col-sm-6 col-xl-12">
+                <label for="tipoAcesso" class="form-label">Tipo de acesso <span class="text-danger">*</span></label>
+                <select id="tipoAcesso" class="form-select" formControlName="tipoAcesso">
+                  <option value="" selected>Selecione o tipo de acesso</option>
+                  <option *ngFor="let opcao of tiposAcesso" [value]="opcao">{{ opcao }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-sm-6 col-xl-12">
+                <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                <select id="status" class="form-select select-status" formControlName="status">
+                  <option value="Ativo">Ativo</option>
+                  <option value="Inativo">Inativo</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label for="senhaProvisoria" class="form-label">Senha provisória <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input id="senhaProvisoria" [type]="senhaVisivel ? 'text' : 'password'" class="form-control" placeholder="Mínimo 8 caracteres" formControlName="senhaProvisoria">
+                  <button type="button" class="btn btn-outline-secondary" (click)="alternarVisibilidadeSenha()">
+                    <i class="bi" [class.bi-eye]="!senhaVisivel" [class.bi-eye-slash]="senhaVisivel"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" (click)="gerarSenha()">
+                    <i class="bi bi-magic me-1"></i>
+                    Gerar senha
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="alert alert-info d-flex align-items-start gap-2 mb-0">
+                  <i class="bi bi-info-circle mt-1"></i>
+                  <span>O funcionário deverá alterar a senha no primeiro acesso.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Ações -->
+    <div class="card cadastro-card cadastro-acoes mt-3">
+      <div class="card-body d-flex flex-column flex-sm-row justify-content-sm-end gap-2">
+        <button type="button" class="btn btn-outline-secondary" (click)="cancelar()">
+          <i class="bi bi-x-lg me-1"></i>
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="limparFormulario()">
+          <i class="bi bi-eraser me-1"></i>
+          Limpar
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-floppy me-1"></i>
+          Salvar
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>

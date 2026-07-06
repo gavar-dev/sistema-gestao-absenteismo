@@ -1,243 +1,125 @@
-<!-- Botão de solicitação -->
-<div class="d-flex justify-content-end mb-3">
-  <button
-    type="button"
-    class="btn btn-primary btn-solicitacao"
-    data-bs-toggle="modal"
-    data-bs-target="#staticBackdrop"
-  >
-    Solicitar Correção
-  </button>
-</div>
+<div class="dados-pessoais-card">
 
-<!-- Modal -->
-<div
-  class="modal fade"
-  id="staticBackdrop"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="staticBackdropLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">
-          Solicitar Correção de Dados
-        </h1>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="titulo-secao mb-0">Dados Pessoais</h3>
 
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Fechar"
-        ></button>
-      </div>
+    <ng-container *ngIf="!emEdicao; else botoesEdicao">
+      <button type="button" class="btn btn-solicitar" (click)="solicitarCorrecao()">
+        Solicitar correção
+      </button>
+    </ng-container>
 
-      <div class="modal-body">
-  <p class="text-secondary small mb-3">
-    Informe ao RH quais dados precisam ser corrigidos.
-  </p>
-
-  <!-- Chips de seleção dos campos -->
-  <label class="form-label small">Campos com erro <span class="text-danger">*</span></label>
-  <div class="d-flex flex-wrap gap-2 mb-3" id="chips">
-    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
-          style="cursor:pointer; padding: 6px 14px;" 
-          onclick="toggleChip(this)">Nome</span>
-    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
-          style="cursor:pointer; padding: 6px 14px;" 
-          onclick="toggleChip(this)">Setor</span>
-    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
-          style="cursor:pointer; padding: 6px 14px;" 
-          onclick="toggleChip(this)">Cargo</span>
-    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
-          style="cursor:pointer; padding: 6px 14px;" 
-          onclick="toggleChip(this)">Telefone</span>
-    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
-          style="cursor:pointer; padding: 6px 14px;" 
-          onclick="toggleChip(this)">Matrícula</span>
-    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
-          style="cursor:pointer; padding: 6px 14px;" 
-          onclick="toggleChip(this)">E-mail corporativo</span>
-    <span class="badge rounded-pill border border-secondary text-secondary chip-item" 
-          style="cursor:pointer; padding: 6px 14px;" 
-          onclick="toggleChip(this)">Horário padrão</span>
-  </div>
-
-  <!-- Tipo de solicitação -->
-  <label class="form-label small">Tipo de solicitação</label>
-  <select class="form-select form-select-sm mb-3" id="tipoCorrecao">
-    <option value="">Selecione...</option>
-    <option>Dado incorreto</option>
-    <option>Dado desatualizado</option>
-    <option>Dado ausente</option>
-  </select>
-
-  <!-- Descrição -->
-  <label class="form-label small">Descrição <span class="text-danger">*</span></label>
-  <textarea class="form-control form-control-sm" id="descCorrecao" rows="3"
-    placeholder="Descreva o que está errado e qual deveria ser o valor correto..."></textarea>
-
-  <p class="text-danger small mt-2 d-none" id="erroModal">
-    Selecione ao menos um campo e preencha a descrição.
-  </p>
-</div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+    <ng-template #botoesEdicao>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-cancelar" (click)="cancelarEdicao()">
           Cancelar
         </button>
-
-        <button type="button" class="btn btn-primary" onclick="enviarCorrecao()">
-  Enviar Solicitação
-</button>
+        <button type="button" class="btn btn-salvar" (click)="salvarCorrecao()">
+          Salvar correção
+        </button>
       </div>
+    </ng-template>
+  </div>
+
+  <div class="dados-container">
+    <div class="row g-3">
+
+      <!-- Nome -->
+      <div class="col-12 col-md-6">
+        <div class="campo-box">
+          <label class="campo-label">Nome</label>
+          <input *ngIf="emEdicao; else viewNome" type="text" class="campo-input"
+                 [(ngModel)]="dados.nome" name="nome">
+          <ng-template #viewNome>
+            <div class="campo-valor">{{ dados.nome }}</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Matrícula -->
+      <div class="col-12 col-md-6">
+        <div class="campo-box">
+          <label class="campo-label">Matrícula</label>
+          <input *ngIf="emEdicao; else viewMatricula" type="text" class="campo-input"
+                 [(ngModel)]="dados.matricula" name="matricula">
+          <ng-template #viewMatricula>
+            <div class="campo-valor">{{ dados.matricula }}</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Setor -->
+      <div class="col-12 col-md-6">
+        <div class="campo-box">
+          <label class="campo-label">Setor</label>
+          <input *ngIf="emEdicao; else viewSetor" type="text" class="campo-input"
+                 [(ngModel)]="dados.setor" name="setor">
+          <ng-template #viewSetor>
+            <div class="campo-valor">{{ dados.setor }}</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Cargo -->
+      <div class="col-12 col-md-6">
+        <div class="campo-box">
+          <label class="campo-label">Cargo</label>
+          <input *ngIf="emEdicao; else viewCargo" type="text" class="campo-input"
+                 [(ngModel)]="dados.cargo" name="cargo">
+          <ng-template #viewCargo>
+            <div class="campo-valor">{{ dados.cargo }}</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="col-12 col-md-6">
+        <div class="campo-box">
+          <label class="campo-label">Status</label>
+          <input *ngIf="emEdicao; else viewStatus" type="text" class="campo-input"
+                 [(ngModel)]="dados.status" name="status">
+          <ng-template #viewStatus>
+            <div class="campo-valor">{{ dados.status }}</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Horário padrão -->
+      <div class="col-12 col-md-6">
+        <div class="campo-box">
+          <label class="campo-label">Horário padrão</label>
+          <input *ngIf="emEdicao; else viewHorario" type="text" class="campo-input"
+                 [(ngModel)]="dados.horarioPadrao" name="horarioPadrao">
+          <ng-template #viewHorario>
+            <div class="campo-valor">{{ dados.horarioPadrao }}</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Telefone -->
+      <div class="col-12 col-md-6">
+        <div class="campo-box">
+          <label class="campo-label">Telefone</label>
+          <input *ngIf="emEdicao; else viewTelefone" type="text" class="campo-input"
+                 [(ngModel)]="dados.telefone" name="telefone">
+          <ng-template #viewTelefone>
+            <div class="campo-valor">{{ dados.telefone }}</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- E-mail corporativo -->
+      <div class="col-12 col-md-6">
+        <div class="campo-box">
+          <label class="campo-label">E-mail corporativo</label>
+          <input *ngIf="emEdicao; else viewEmail" type="email" class="campo-input"
+                 [(ngModel)]="dados.emailCorporativo" name="emailCorporativo">
+          <ng-template #viewEmail>
+            <div class="campo-valor">{{ dados.emailCorporativo }}</div>
+          </ng-template>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
-
-<section id="tabela">
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-    <div>
-      <h1>Meus Dados</h1>
-      <p class="text-secondary mb-0">
-        Confira suas informações pessoais e profissionais.
-      </p>
-    </div>
-  </div>
-
-  <div class="table-responsive-wrapper">
-    <table class="table table-hover align-middle mb-0">
-      <thead>
-        <tr>
-          <th colspan="8">Informações Pessoais</th>
-        </tr>
-
-        <tr>
-          <th>Nome</th>
-          <th>Setor</th>
-          <th>Status</th>
-          <th>Telefone</th>
-          <th>Matrícula</th>
-          <th>Cargo</th>
-          <th>Horário Padrão</th>
-          <th>E-mail Corporativo</th>
-        </tr>
-      </thead>
-
-     <tbody>
-  <tr>
-    <td>Maria Silva</td>
-    <td>Vendas</td>
-    <td><span class="badge text-bg-success">Ativo</span></td>
-    <td>(21) 9 9999-9999</td>
-    <td>1024</td>
-    <td>Desenvolvedor</td>
-    <td>08:00 às 17:00</td>
-    <td>maria.silva@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>João Santos</td>
-    <td>TI</td>
-    <td><span class="badge text-bg-success">Ativo</span></td>
-    <td>(21) 9 8888-8888</td>
-    <td>1025</td>
-    <td>Analista de Sistemas</td>
-    <td>09:00 às 18:00</td>
-    <td>joao.santos@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>Ana Oliveira</td>
-    <td>RH</td>
-    <td><span class="badge" style="background-color: purple;">Férias</span></td>
-    <td>(21) 9 7777-7777</td>
-    <td>1026</td>
-    <td>Gerente de RH</td>
-    <td>08:00 às 17:00</td>
-    <td>ana.oliveira@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>Carlos Pereira</td>
-    <td>Financeiro</td>
-    <td><span class="badge text-bg-success">Ativo</span></td>
-    <td>(21) 9 6666-6666</td>
-    <td>1027</td>
-    <td>Contador</td>
-    <td>08:00 às 17:00</td>
-    <td>carlos.pereira@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>Fernanda Lima</td>
-    <td>Marketing</td>
-    <td><span class="badge text-bg-success">Ativo</span></td>
-    <td>(21) 9 5555-5555</td>
-    <td>1028</td>
-    <td>Designer</td>
-    <td>09:00 às 18:00</td>
-    <td>fernanda.lima@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>Roberto Souza</td>
-    <td>Operações</td>
-    <td><span class="badge text-bg-warning text-dark">Afastado</span></td>
-    <td>(21) 9 4444-4444</td>
-    <td>1029</td>
-    <td>Supervisor</td>
-    <td>07:00 às 16:00</td>
-    <td>roberto.souza@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>Juliana Costa</td>
-    <td>Jurídico</td>
-    <td><span class="badge" style="background-color: purple;">Férias</span></td>
-    <td>(21) 9 3333-3333</td>
-    <td>1030</td>
-    <td>Advogada</td>
-    <td>09:00 às 18:00</td>
-    <td>juliana.costa@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>Marcos Alves</td>
-    <td>TI</td>
-    <td><span class="badge text-bg-success">Ativo</span></td>
-    <td>(21) 9 2222-2222</td>
-    <td>1031</td>
-    <td>Suporte Técnico</td>
-    <td>08:00 às 17:00</td>
-    <td>marcos.alves@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>Patrícia Rocha</td>
-    <td>Comercial</td>
-    <td><span class="badge text-bg-danger">Inativo</span></td>
-    <td>(21) 9 1111-1111</td>
-    <td>1032</td>
-    <td>Consultora</td>
-    <td>09:00 às 18:00</td>
-    <td>patricia.rocha@empresa.com</td>
-  </tr>
-
-  <tr>
-    <td>Lucas Ferreira</td>
-    <td>Logística</td>
-    <td><span class="badge text-bg-success">Ativo</span></td>
-    <td>(21) 9 0000-0000</td>
-    <td>1033</td>
-    <td>Coordenador</td>
-    <td>07:00 às 16:00</td>
-    <td>lucas.ferreira@empresa.com</td>
-  </tr>
-</tbody>
-    </table>
-  </div>
-</section>

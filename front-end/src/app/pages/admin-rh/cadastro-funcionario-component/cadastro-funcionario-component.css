@@ -1,0 +1,115 @@
+:host {
+  --cadastro-radius: 0.9rem;
+  --cadastro-accent: #2f6feb;
+  --cadastro-accent-soft: rgba(47, 111, 235, 0.12);
+  display: block;
+}
+
+.cadastro-funcionario {
+  padding: 1.5rem;
+}
+
+/* Cards ---------------------------------------------------------------- */
+
+.cadastro-card {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--cadastro-radius);
+  background-color: var(--bs-body-bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cadastro-header .card-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.icone-cabecalho {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cadastro-accent);
+  color: #fff;
+  font-size: 1.15rem;
+}
+
+.card-title-secao {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.card-title-secao i {
+  color: var(--cadastro-accent);
+  font-size: 1.05rem;
+}
+
+/* Upload de foto --------------------------------------------------------- */
+
+.area-upload {
+  border: 1.5px dashed var(--bs-border-color);
+  border-radius: 0.75rem;
+  padding: 2rem 1rem;
+  min-height: 260px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.area-upload:hover,
+.area-upload.arrastando {
+  border-color: var(--cadastro-accent);
+  background-color: var(--cadastro-accent-soft);
+}
+
+.avatar-placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-secondary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.preview-foto {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid var(--bs-border-color);
+}
+
+/* Status select tinted like an "ativo" badge ---------------------------- */
+
+.select-status {
+  color: #157347;
+  font-weight: 500;
+}
+
+[data-bs-theme='dark'] .select-status {
+  color: #75d19c;
+}
+
+/* Ações ------------------------------------------------------------------ */
+
+.cadastro-acoes .card-body {
+  padding: 1rem 1.5rem;
+}
+
+/* Responsivo -------------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+  .cadastro-funcionario {
+    padding: 1rem;
+  }
+
+  .cadastro-acoes .btn {
+    width: 100%;
+  }
+}
