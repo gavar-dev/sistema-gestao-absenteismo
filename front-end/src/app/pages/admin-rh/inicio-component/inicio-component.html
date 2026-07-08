@@ -1,1 +1,284 @@
-<p>inicio-component works!</p>
+<section class="painel-gestao">
+  <div class="painel-hero card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 p-lg-5">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-xl-7">
+          <span class="painel-kicker d-inline-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-speedometer2"></i>
+            Visão administrativa
+          </span>
+
+          <h2 class="display-6 fw-bold mb-3">Painel de gestão de jornada e absenteísmo</h2>
+          <p class="lead mb-4">
+            Acompanhe presença, atrasos, faltas, solicitações pendentes e pontos de atenção da equipe em um só lugar.
+          </p>
+
+          <div class="d-flex flex-column flex-sm-row gap-2">
+            <a routerLink="/gestao/funcionarios" class="btn btn-light fw-semibold">
+              <i class="bi bi-people me-2"></i>
+              Ver funcionários
+            </a>
+            <a routerLink="/gestao/solicitacoes" class="btn btn-outline-light fw-semibold">
+              <i class="bi bi-inbox me-2"></i>
+              Analisar solicitações
+            </a>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <div class="painel-hero-card">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+              <div>
+                <span class="text-white-50 small text-uppercase fw-bold">Resumo de hoje</span>
+                <h3 class="h5 fw-bold mb-0">104 registros de ponto</h3>
+              </div>
+              <div class="painel-hero-icon">
+                <i class="bi bi-clock-history"></i>
+              </div>
+            </div>
+
+            <div class="vstack gap-3">
+              <div class="resumo-linha" *ngFor="let item of resumoHoje">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.valor }}/{{ item.total }}</strong>
+                </div>
+
+                <div
+                  class="painel-tooltip-area"
+                  tabindex="0"
+                  [attr.aria-label]="resumoDetalhe(item)"
+                >
+                  <div class="progress painel-progress" role="progressbar" [attr.aria-label]="item.label">
+                    <div class="progress-bar" [style.width.%]="porcentagem(item.valor, item.total)"></div>
+                  </div>
+
+                  <span class="painel-tooltip">
+                    <strong>{{ item.label }}</strong>
+                    <span>{{ item.valor }} de {{ item.total }} registros</span>
+                    <span>{{ porcentagem(item.valor, item.total) }}% do resumo de hoje</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let indicador of indicadores">
+      <article class="card indicador-card border-0 shadow-sm h-100" [ngClass]="'indicador-' + indicador.tipo">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+            <div class="indicador-icon d-inline-flex align-items-center justify-content-center rounded-4">
+              <i class="bi" [ngClass]="indicador.icone"></i>
+            </div>
+            <span class="indicador-variacao rounded-pill px-2 py-1 small fw-bold">{{ indicador.variacao }}</span>
+          </div>
+
+          <p class="text-secondary fw-semibold mb-1">{{ indicador.titulo }}</p>
+          <strong class="indicador-valor d-block mb-1">{{ indicador.valor }}</strong>
+          <small class="text-secondary">{{ indicador.descricao }}</small>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-xl-4">
+      <div class="card painel-card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Status da equipe</h3>
+              <p class="text-secondary mb-0">Distribuição atual dos funcionários.</p>
+            </div>
+            <i class="bi bi-pie-chart-fill painel-card-icon"></i>
+          </div>
+
+          <div
+            class="status-chart-wrap painel-tooltip-area mx-auto mb-4"
+            tabindex="0"
+            aria-label="Passe o mouse para ver o resumo do status da equipe"
+          >
+            <div
+              class="status-chart"
+              [attr.data-total]="totalStatusFuncionarios()"
+              aria-hidden="true"
+            ></div>
+
+            <span class="painel-tooltip painel-tooltip-lg">
+              <strong>Status da equipe</strong>
+              <span>Total: {{ totalStatusFuncionarios() }} funcionários cadastrados</span>
+              <span *ngFor="let status of statusFuncionarios">
+                {{ status.nome }}: {{ status.quantidade }} funcionários ({{ status.percentual }}%)
+              </span>
+            </span>
+          </div>
+
+          <div class="vstack gap-3">
+            <div
+              class="status-row painel-tooltip-area d-flex align-items-center justify-content-between gap-3"
+              *ngFor="let status of statusFuncionarios"
+              tabindex="0"
+              [attr.aria-label]="statusDetalhe(status)"
+            >
+              <div class="d-flex align-items-center gap-2">
+                <span class="status-dot" [ngClass]="status.classe"></span>
+                <span class="fw-semibold">{{ status.nome }}</span>
+              </div>
+              <div class="text-end">
+                <strong>{{ status.quantidade }}</strong>
+                <small class="text-secondary ms-1">{{ status.percentual }}%</small>
+              </div>
+
+              <span class="painel-tooltip">
+                <strong>{{ status.nome }}</strong>
+                <span>{{ status.quantidade }} funcionários</span>
+                <span>{{ status.percentual }}% do total cadastrado</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-8">
+      <div class="card painel-card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Faltas e atrasos por setor</h3>
+              <p class="text-secondary mb-0">Setores com maior volume de ocorrências no mês.</p>
+            </div>
+            <a routerLink="/gestao/funcionarios" class="btn btn-sm btn-outline-primary fw-semibold">
+              Abrir gestão
+            </a>
+          </div>
+
+          <div class="setores-lista vstack gap-3">
+            <div class="setor-item" *ngFor="let setor of indicadoresSetor">
+              <div class="d-flex justify-content-between gap-3 mb-2 flex-wrap">
+                <div>
+                  <strong>{{ setor.nome }}</strong>
+                  <small class="text-secondary d-block">{{ setor.funcionarios }} funcionários</small>
+                </div>
+                <div class="d-flex gap-3 small text-secondary">
+                  <span><strong class="text-body">{{ setor.atrasos }}</strong> atrasos</span>
+                  <span><strong class="text-body">{{ setor.faltas }}</strong> faltas</span>
+                </div>
+              </div>
+
+              <div
+                class="bar-tooltip-wrap painel-tooltip-area"
+                tabindex="0"
+                [attr.aria-label]="setorDetalhe(setor)"
+              >
+                <div class="bar-track">
+                  <div class="bar-fill" [style.width.%]="setor.percentual"></div>
+                </div>
+
+                <span class="painel-tooltip">
+                  <strong>{{ setor.nome }}</strong>
+                  <span>{{ setor.funcionarios }} funcionários no setor</span>
+                  <span>{{ setor.atrasos }} atrasos e {{ setor.faltas }} faltas</span>
+                  <span>{{ setor.percentual }}% em relação ao setor com mais ocorrências</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12 col-xl-7">
+      <div class="card painel-card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Funcionários com maior atenção</h3>
+              <p class="text-secondary mb-0">Ranking baseado em atrasos e faltas do mês.</p>
+            </div>
+            <span class="badge text-bg-light border">Atualizado hoje</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle painel-table mb-0">
+              <thead>
+                <tr>
+                  <th>Funcionário</th>
+                  <th>Setor</th>
+                  <th>Atrasos</th>
+                  <th>Faltas</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let funcionario of funcionariosCriticos">
+                  <td class="fw-semibold">{{ funcionario.nome }}</td>
+                  <td>{{ funcionario.setor }}</td>
+                  <td>{{ funcionario.atrasos }}</td>
+                  <td>{{ funcionario.faltas }}</td>
+                  <td>
+                    <span class="badge rounded-pill" [ngClass]="statusClasseFuncionario(funcionario.status)">
+                      {{ funcionario.status }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-5">
+      <div class="card painel-card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Solicitações recentes</h3>
+              <p class="text-secondary mb-0">Últimas demandas enviadas pelos funcionários.</p>
+            </div>
+            <a routerLink="/gestao/solicitacoes" class="btn btn-sm btn-outline-primary fw-semibold">Ver todas</a>
+          </div>
+
+          <div class="vstack gap-3">
+            <div class="solicitacao-item d-flex justify-content-between gap-3" *ngFor="let solicitacao of solicitacoesRecentes">
+              <div>
+                <strong class="d-block">{{ solicitacao.funcionario }}</strong>
+                <small class="text-secondary d-block">{{ solicitacao.tipo }}</small>
+                <small class="text-secondary">{{ solicitacao.data }}</small>
+              </div>
+              <span class="badge rounded-pill align-self-start" [ngClass]="statusClasseSolicitacao(solicitacao.status)">
+                {{ solicitacao.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="row g-3">
+        <div class="col-12 col-lg-4" *ngFor="let alerta of alertas">
+          <div class="alerta-card h-100" [ngClass]="alertaClasse(alerta.tipo)">
+            <div class="d-flex gap-3">
+              <div class="alerta-icon">
+                <i class="bi" [ngClass]="alerta.icone"></i>
+              </div>
+              <div>
+                <strong class="d-block mb-1">{{ alerta.titulo }}</strong>
+                <p class="mb-0">{{ alerta.descricao }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
