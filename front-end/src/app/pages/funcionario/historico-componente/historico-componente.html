@@ -1,1 +1,230 @@
-<p>historico-componente works!</p>
+<section class="historico-funcionario">
+  <div class="historico-hero card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 p-lg-5">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-xl-7">
+          <span class="historico-kicker d-inline-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-clock-history"></i>
+            Histórico de jornada
+          </span>
+
+          <h2 class="display-6 fw-bold mb-3">Registros do funcionário</h2>
+          <p class="lead mb-4">
+            Consulte seus pontos anteriores, acompanhe faltas, atrasos e solicitações feitas para o RH.
+          </p>
+
+          <div class="d-flex flex-column flex-sm-row gap-2">
+            <a routerLink="/meus-pontos" class="btn btn-light fw-semibold">
+              <i class="bi bi-fingerprint me-2"></i>
+              Bater ponto
+            </a>
+            <a routerLink="/solicitacao" class="btn btn-outline-light fw-semibold">
+              <i class="bi bi-plus-lg me-2"></i>
+              Nova solicitação
+            </a>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <div class="historico-hero-card">
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+              <div>
+                <span class="text-white-50 small text-uppercase fw-bold">Mês selecionado</span>
+                <h3 class="h5 fw-bold mb-0">Julho de 2026</h3>
+              </div>
+
+              <div class="historico-hero-icon">
+                <i class="bi bi-calendar3"></i>
+              </div>
+            </div>
+
+            <div class="historico-meta-box">
+              <small class="text-white-50 d-block mb-1">Resumo mensal</small>
+              <strong>126h40 registradas de 176h previstas</strong>
+              <div class="progress historico-progress mt-3" role="progressbar" aria-label="Progresso mensal">
+                <div class="progress-bar" style="width: 72%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let item of resumo">
+      <article class="card historico-indicador-card border-0 shadow-sm h-100" [ngClass]="'historico-indicador-' + item.tipo">
+        <div class="card-body p-4">
+          <div class="historico-indicador-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
+            <i class="bi" [ngClass]="item.icone"></i>
+          </div>
+
+          <p class="text-secondary fw-semibold mb-1">{{ item.titulo }}</p>
+          <strong class="historico-indicador-valor d-block mb-1">{{ item.valor }}</strong>
+          <small class="text-secondary">{{ item.detalhe }}</small>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-xl-8">
+      <div class="card historico-card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Histórico de pontos</h3>
+              <p class="text-secondary mb-0">Filtre e acompanhe os registros do mês.</p>
+            </div>
+          </div>
+
+          <form class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-semibold" for="filtroMes">Mês</label>
+              <input id="filtroMes" type="month" class="form-control" [(ngModel)]="filtroMes" name="filtroMes">
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-semibold" for="filtroStatus">Status</label>
+              <select id="filtroStatus" class="form-select" [(ngModel)]="filtroStatus" name="filtroStatus">
+                <option *ngFor="let status of statusDisponiveis" [value]="status">{{ status }}</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-semibold" for="filtroBusca">Buscar</label>
+              <input
+                id="filtroBusca"
+                type="text"
+                class="form-control"
+                placeholder="Data, status ou observação"
+                [(ngModel)]="filtroBusca"
+                name="filtroBusca"
+              >
+            </div>
+
+            <div class="col-12">
+              <button type="button" class="btn btn-outline-secondary fw-semibold" (click)="limparFiltros()">
+                <i class="bi bi-x-circle me-2"></i>
+                Limpar filtros
+              </button>
+            </div>
+          </form>
+
+          <div class="table-responsive">
+            <table class="table align-middle historico-table mb-0">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Entrada</th>
+                  <th>Almoço</th>
+                  <th>Retorno</th>
+                  <th>Saída</th>
+                  <th>Horas</th>
+                  <th>Status</th>
+                  <th>Observação</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let registro of registrosFiltrados">
+                  <td>
+                    <strong class="d-block">{{ registro.data }}</strong>
+                    <small class="text-secondary">{{ registro.diaSemana }}</small>
+                  </td>
+                  <td>{{ registro.entrada }}</td>
+                  <td>{{ registro.almoco }}</td>
+                  <td>{{ registro.retorno }}</td>
+                  <td>{{ registro.saida }}</td>
+                  <td class="fw-semibold">{{ registro.horas }}</td>
+                  <td>
+                    <span class="badge rounded-pill" [ngClass]="classeStatus(registro.status)">
+                      {{ registro.status }}
+                    </span>
+                  </td>
+                  <td class="historico-observacao">{{ registro.observacao }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="text-center text-secondary py-5" *ngIf="registrosFiltrados.length === 0">
+            <i class="bi bi-search fs-2 d-block mb-2"></i>
+            Nenhum registro encontrado com os filtros selecionados.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-4">
+      <div class="card historico-card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Horas por semana</h3>
+              <p class="text-secondary mb-0">Passe o mouse para ver detalhes.</p>
+            </div>
+          </div>
+
+          <div class="historico-semanas vstack gap-3">
+            <div class="historico-semana-item" *ngFor="let item of graficoSemanas">
+              <div class="d-flex justify-content-between small mb-1">
+                <strong>{{ item.semana }}</strong>
+                <span class="text-secondary">{{ horasSemanaFormatadas(item.horas) }}</span>
+              </div>
+
+              <div class="historico-tooltip-area" tabindex="0" [attr.aria-label]="detalheSemana(item)">
+                <div class="historico-barra-track">
+                  <div class="historico-barra-fill" [style.width.%]="percentualHoras(item.horas)"></div>
+                </div>
+
+                <span class="historico-tooltip">
+                  <strong>{{ item.semana }}</strong>
+                  <span>{{ horasSemanaFormatadas(item.horas) }} registradas</span>
+                  <span>{{ item.atrasos }} atraso(s)</span>
+                  <span>{{ item.faltas }} falta(s)</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="historico-legenda mt-4">
+            <small class="text-secondary d-block mb-2">Referência</small>
+            <div class="d-flex align-items-center gap-2 small">
+              <span class="historico-legenda-dot"></span>
+              <span>40h semanais previstas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card historico-card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
+        <div>
+          <h3 class="h5 fw-bold mb-1">Solicitações vinculadas ao histórico</h3>
+          <p class="text-secondary mb-0">Pedidos de correção ou justificativa feitos pelo funcionário.</p>
+        </div>
+        <a routerLink="/solicitacao" class="btn btn-sm btn-outline-primary fw-semibold">
+          Nova solicitação
+        </a>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-md-4" *ngFor="let solicitacao of solicitacoes">
+          <article class="historico-solicitacao h-100">
+            <div class="d-flex justify-content-between gap-3 mb-3">
+              <strong>{{ solicitacao.tipo }}</strong>
+              <span class="badge rounded-pill align-self-start" [ngClass]="classeSolicitacao(solicitacao.status)">
+                {{ solicitacao.status }}
+              </span>
+            </div>
+            <small class="text-secondary d-block">Referência: {{ solicitacao.referencia }}</small>
+            <small class="text-secondary">Enviada em: {{ solicitacao.enviadaEm }}</small>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

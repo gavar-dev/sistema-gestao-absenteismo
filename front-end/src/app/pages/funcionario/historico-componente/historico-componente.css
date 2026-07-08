@@ -1,0 +1,286 @@
+.historico-funcionario {
+  color: var(--app-text);
+}
+
+.historico-hero {
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at top right, rgba(13, 202, 240, 0.28), transparent 24rem),
+    linear-gradient(135deg, #0b1324 0%, #0d6efd 100%);
+  border-radius: 1.25rem;
+}
+
+.historico-kicker {
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  color: #e7f1ff;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.historico-hero .lead {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.historico-hero-card {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+.historico-hero-icon {
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  color: #0d6efd;
+  background-color: #ffffff;
+  font-size: 1.25rem;
+}
+
+.historico-meta-box {
+  padding: 1rem;
+  border-radius: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.historico-progress {
+  height: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+.historico-progress .progress-bar {
+  background-color: #ffffff;
+}
+
+.historico-card,
+.historico-indicador-card {
+  border-radius: 1rem;
+  background-color: var(--app-surface);
+}
+
+.historico-indicador-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.historico-indicador-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -2rem -3rem auto;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 999px;
+  background-color: currentColor;
+  opacity: 0.08;
+}
+
+.historico-indicador-icon {
+  width: 52px;
+  height: 52px;
+  font-size: 1.35rem;
+  background-color: currentColor;
+}
+
+.historico-indicador-icon i {
+  color: var(--app-surface);
+}
+
+.historico-indicador-valor {
+  color: var(--app-text);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.historico-indicador-positivo {
+  color: #198754;
+}
+
+.historico-indicador-atencao {
+  color: #b58100;
+}
+
+.historico-indicador-neutro {
+  color: #0d6efd;
+}
+
+.historico-indicador-perigo {
+  color: #dc3545;
+}
+
+.historico-table th {
+  color: var(--app-text-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.historico-table td {
+  color: var(--app-text);
+  white-space: nowrap;
+}
+
+.historico-observacao {
+  min-width: 220px;
+  white-space: normal !important;
+}
+
+.historico-barra-track {
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--app-primary-soft);
+}
+
+.historico-barra-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0d6efd, #38bdf8);
+  transform-origin: left center;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.historico-legenda-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  display: inline-block;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #0d6efd, #38bdf8);
+}
+
+.historico-solicitacao {
+  padding: 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--app-surface) 92%, var(--app-bg));
+}
+
+.historico-tooltip-area {
+  position: relative;
+  cursor: help;
+  outline: none;
+}
+
+.historico-tooltip-area:focus-visible {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.historico-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.75rem);
+  z-index: 30;
+  width: max-content;
+  min-width: 190px;
+  max-width: min(280px, 82vw);
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.85rem;
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.28);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 0.4rem);
+  transition: opacity 0.18s ease, visibility 0.18s ease, transform 0.18s ease;
+}
+
+.historico-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -0.38rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: rgba(15, 23, 42, 0.96);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.historico-tooltip strong,
+.historico-tooltip span {
+  display: block;
+}
+
+.historico-tooltip strong {
+  margin-bottom: 0.25rem;
+  font-size: 0.82rem;
+}
+
+.historico-tooltip span {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.historico-tooltip-area:hover > .historico-tooltip,
+.historico-tooltip-area:focus > .historico-tooltip,
+.historico-tooltip-area:focus-within > .historico-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.historico-tooltip-area:hover .historico-barra-fill,
+.historico-tooltip-area:focus .historico-barra-fill,
+.historico-tooltip-area:focus-within .historico-barra-fill {
+  filter: brightness(1.08);
+  transform: scaleX(1.015);
+}
+
+[data-bs-theme='dark'] .historico-indicador-icon i {
+  color: #0b1324;
+}
+
+[data-bs-theme='dark'] .historico-solicitacao {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+[data-bs-theme='dark'] .historico-tooltip {
+  background: rgba(2, 6, 23, 0.98);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme='dark'] .historico-tooltip::after {
+  background: rgba(2, 6, 23, 0.98);
+}
+
+@media (max-width: 575.98px) {
+  .historico-hero .card-body,
+  .historico-card .card-body,
+  .historico-indicador-card .card-body {
+    padding: 1.25rem !important;
+  }
+
+  .historico-indicador-valor {
+    font-size: 1.75rem;
+  }
+
+  .historico-tooltip {
+    left: 0;
+    max-width: calc(100vw - 3rem);
+    transform: translate(0, 0.4rem);
+  }
+
+  .historico-tooltip::after {
+    left: 1.25rem;
+  }
+
+  .historico-tooltip-area:hover > .historico-tooltip,
+  .historico-tooltip-area:focus > .historico-tooltip,
+  .historico-tooltip-area:focus-within > .historico-tooltip {
+    transform: translate(0, 0);
+  }
+}
