@@ -12,6 +12,7 @@
 }
 
 .admin-table td {
+
   color: var(--app-text);
   white-space: nowrap;
 }
