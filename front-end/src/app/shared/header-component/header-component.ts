@@ -61,22 +61,22 @@ export class HeaderComponent {
         descricao: 'Acompanhe comunicados importantes da empresa.',
       },
       '/gestao/inicio': {
-        titulo: 'Painel de absenteismo',
+        titulo: 'Análise de absenteísmo',
         subtitulo: 'Área de Gestão dos funcionários',
         descricao: 'Dashboard com a análise do absenteismo da empresa.',
       },
       '/gestao/funcionarios': {
-        titulo: 'Gestão dos Funcionarios',
+        titulo: 'Gestão dos funcionários',
         subtitulo: 'Área de Gestão dos funcionários',
         descricao: 'Dados dos funcionarios.',
       },
       '/gestao/solicitacoes': {
-        titulo: 'Solicitações',
+        titulo: 'Solicitações dos funcionários',
         subtitulo: 'Área de Gestão dos funcionários',
         descricao: 'Solicitações feitas pelos funcionarios.',
       },
       '/gestao/cadastro': {
-        titulo: 'Cadastro dos funcionarios',
+        titulo: 'Cadastro dos funcionários',
         subtitulo: 'Área de Gestão dos funcionários',
         descricao: 'Cadastrar novos funcionarios.',
       },
