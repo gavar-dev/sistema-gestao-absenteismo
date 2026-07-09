@@ -1,125 +1,258 @@
-<div class="dados-pessoais-card">
+<section class="meus-dados-page">
+  <div class="card dados-hero border-0 shadow-sm mb-4">
+    <div class="card-body p-4 p-lg-5">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-xl-8">
+          <span class="dados-kicker d-inline-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-person-badge"></i>
+            Área do funcionário
+          </span>
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="titulo-secao mb-0">Dados Pessoais</h3>
+          <h2 class="display-6 fw-bold mb-3">Meus dados</h2>
+          <p class="lead mb-4">
+            Consulte suas informações cadastrais e solicite ao RH a alteração dos dados permitidos.
+          </p>
 
-    <ng-container *ngIf="!emEdicao; else botoesEdicao">
-      <button type="button" class="btn btn-solicitar" (click)="solicitarCorrecao()">
-        Solicitar correção
-      </button>
-    </ng-container>
+          <button type="button" class="btn btn-light fw-semibold" data-bs-toggle="modal"
+            data-bs-target="#modalSolicitacaoDados">
+            <i class="bi bi-pencil-square me-2"></i>
+            Solicitar alteração
+          </button>
+        </div>
 
-    <ng-template #botoesEdicao>
-      <div class="d-flex gap-2">
-        <button type="button" class="btn btn-cancelar" (click)="cancelarEdicao()">
-          Cancelar
-        </button>
-        <button type="button" class="btn btn-salvar" (click)="salvarCorrecao()">
-          Salvar correção
-        </button>
+        <div class="col-12 col-xl-4">
+          <div class="dados-hero-card">
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="dados-avatar d-inline-flex align-items-center justify-content-center rounded-circle">
+                MS
+              </div>
+
+              <div class="min-w-0">
+                <small class="text-white-50 text-uppercase fw-bold">Funcionária</small>
+                <h3 class="h5 fw-bold mb-0 text-truncate">{{ dados.nome }}</h3>
+                <span class="text-white-50 d-block text-truncate">{{ dados.cargo }}</span>
+              </div>
+            </div>
+
+            <div class="dados-hero-row d-flex justify-content-between gap-3">
+              <span>Matrícula</span>
+              <strong>{{ dados.matricula }}</strong>
+            </div>
+
+            <div class="dados-hero-row d-flex justify-content-between gap-3">
+              <span>Status</span>
+              <strong>{{ dados.status }}</strong>
+            </div>
+
+            <div class="dados-hero-row d-flex justify-content-between gap-3">
+              <span>Jornada</span>
+              <strong>{{ dados.horarioPadrao }}</strong>
+            </div>
+          </div>
+        </div>
       </div>
-    </ng-template>
+    </div>
   </div>
 
-  <div class="dados-container">
-    <div class="row g-3">
+  <div class="alert alert-success d-flex align-items-start gap-3 shadow-sm border-0 mb-4" *ngIf="solicitacaoEnviada"
+    role="alert">
+    <i class="bi bi-check-circle-fill fs-4"></i>
+    <div>
+      <strong class="d-block">Solicitação enviada com sucesso!</strong>
+      <span>
+        Seu pedido para alterar <strong>{{ solicitacaoEnviada.campo }}</strong> foi registrado como
+        <strong>{{ solicitacaoEnviada.codigo }}</strong> e ficará pendente para análise do RH.
+      </span>
+    </div>
+  </div>
 
-      <!-- Nome -->
-      <div class="col-12 col-md-6">
-        <div class="campo-box">
-          <label class="campo-label">Nome</label>
-          <input *ngIf="emEdicao; else viewNome" type="text" class="campo-input"
-                 [(ngModel)]="dados.nome" name="nome">
-          <ng-template #viewNome>
-            <div class="campo-valor">{{ dados.nome }}</div>
-          </ng-template>
+  <div class="row g-4">
+    <div class="col-12 col-xl-8">
+      <div class="card border-0 shadow-sm app-card h-100">
+        <div class="card-header bg-body border-0 pt-4 px-4">
+          <h3 class="h4 fw-bold mb-1">Dados pessoais e profissionais</h3>
+          <p class="text-body-secondary mb-0">
+            Informações exibidas conforme cadastro atual do funcionário.
+          </p>
+        </div>
+
+        <div class="card-body p-4">
+          <div class="row g-3">
+            <div class="col-12 col-md-6" *ngFor="let item of dadosVisiveis">
+              <article class="dados-info-item h-100" [class.dados-info-item--bloqueado]="item.bloqueado">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="dados-info-icon d-inline-flex align-items-center justify-content-center rounded-3">
+                    <i class="bi" [ngClass]="item.icone"></i>
+                  </div>
+
+                  <div class="min-w-0 flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                      <span class="dados-info-label">{{ item.label }}</span>
+
+                      <span class="badge rounded-pill text-bg-secondary" *ngIf="item.bloqueado">
+                        Bloqueado
+                      </span>
+                    </div>
+
+                    <strong class="dados-info-value d-block text-truncate">{{ item.valor }}</strong>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-4">
+      <div class="card border-0 shadow-sm app-card mb-4">
+        <div class="card-header bg-body border-0 pt-4 px-4">
+          <h3 class="h5 fw-bold mb-1">Campos permitidos</h3>
+          <p class="text-body-secondary mb-0">O RH pode analisar estes pedidos.</p>
+        </div>
+
+        <div class="card-body p-4">
+          <div class="vstack gap-3">
+            <div class="campo-permitido d-flex gap-3" *ngFor="let campo of camposAlteraveis">
+              <div class="campo-permitido-icon d-inline-flex align-items-center justify-content-center rounded-3">
+                <i class="bi" [ngClass]="campo.icone"></i>
+              </div>
+
+              <div>
+                <strong class="d-block">{{ campo.label }}</strong>
+                <small class="text-body-secondary">{{ campo.descricao }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-warning d-flex gap-3 mt-4 mb-0" role="alert">
+            <i class="bi bi-shield-lock fs-4"></i>
+            <div>
+              <strong class="d-block">Matrícula bloqueada</strong>
+              <small>A matrícula é identificador interno e não pode ser alterada nem solicitada pelo
+                funcionário.</small>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Matrícula -->
-      <div class="col-12 col-md-6">
-        <div class="campo-box">
-          <label class="campo-label">Matrícula</label>
-          <input *ngIf="emEdicao; else viewMatricula" type="text" class="campo-input"
-                 [(ngModel)]="dados.matricula" name="matricula">
-          <ng-template #viewMatricula>
-            <div class="campo-valor">{{ dados.matricula }}</div>
+      <div class="card border-0 shadow-sm app-card">
+        <div class="card-header bg-body border-0 pt-4 px-4">
+          <h3 class="h5 fw-bold mb-1">Últimas solicitações</h3>
+          <p class="text-body-secondary mb-0">Pedidos recentes de atualização cadastral.</p>
+        </div>
+
+        <div class="card-body p-4">
+          <div class="vstack gap-3" *ngIf="historicoSolicitacoes.length > 0; else semSolicitacoes">
+            <div class="solicitacao-card" *ngFor="let item of historicoSolicitacoes">
+              <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                <div>
+                  <strong class="d-block">{{ item.codigo }}</strong>
+                  <small class="text-body-secondary">{{ item.data }}</small>
+                </div>
+
+                <span class="badge rounded-pill" [ngClass]="item.classe">{{ item.status }}</span>
+              </div>
+
+              <span class="d-block fw-semibold">{{ item.campo }}</span>
+              <small class="text-body-secondary d-block text-truncate">Novo dado: {{ item.novoValor }}</small>
+            </div>
+          </div>
+
+          <ng-template #semSolicitacoes>
+            <div class="text-center text-body-secondary py-4">
+              <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+              Nenhuma solicitação enviada ainda.
+            </div>
           </ng-template>
         </div>
       </div>
+    </div>
+  </div>
+</section>
 
-      <!-- Setor -->
-      <div class="col-12 col-md-6">
-        <div class="campo-box">
-          <label class="campo-label">Setor</label>
-          <input *ngIf="emEdicao; else viewSetor" type="text" class="campo-input"
-                 [(ngModel)]="dados.setor" name="setor">
-          <ng-template #viewSetor>
-            <div class="campo-valor">{{ dados.setor }}</div>
-          </ng-template>
+<div class="modal fade" id="modalSolicitacaoDados" tabindex="-1" aria-labelledby="modalSolicitacaoDadosLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <form #formAlteracao="ngForm" (ngSubmit)="enviarSolicitacaoDados(formAlteracao)">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <span class="badge text-bg-primary-subtle text-primary-emphasis mb-2">Atualização cadastral</span>
+            <h2 class="modal-title h4 fw-bold" id="modalSolicitacaoDadosLabel">
+              Solicitar alteração de dados
+            </h2>
+            <p class="text-body-secondary mb-0">
+              Escolha o campo, informe o novo dado e explique o motivo para o RH avaliar.
+            </p>
+          </div>
+
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
         </div>
-      </div>
 
-      <!-- Cargo -->
-      <div class="col-12 col-md-6">
-        <div class="campo-box">
-          <label class="campo-label">Cargo</label>
-          <input *ngIf="emEdicao; else viewCargo" type="text" class="campo-input"
-                 [(ngModel)]="dados.cargo" name="cargo">
-          <ng-template #viewCargo>
-            <div class="campo-valor">{{ dados.cargo }}</div>
-          </ng-template>
+        <div class="modal-body p-4">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label for="campoAlteracao" class="form-label fw-semibold">Campo de alteração</label>
+              <select id="campoAlteracao" name="campo" class="form-select form-select-lg"
+                [(ngModel)]="solicitacaoAtual.campo" required #campo="ngModel">
+                <option value="" disabled>Selecione o campo</option>
+                <option *ngFor="let campo of camposAlteraveis" [value]="campo.valor">
+                  {{ campo.label }}
+                </option>
+              </select>
+              <small class="text-danger" *ngIf="campo.invalid && campo.touched">
+                Selecione um campo para alteração.
+              </small>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="novoValor" class="form-label fw-semibold">Novo dado</label>
+              <input id="novoValor" name="novoValor" type="text" class="form-control form-control-lg"
+                [placeholder]="placeholderNovoDado" [(ngModel)]="solicitacaoAtual.novoValor" required minlength="3"
+                #novoValor="ngModel" />
+              <small class="text-danger" *ngIf="novoValor.invalid && novoValor.touched">
+                Informe o novo dado com pelo menos 3 caracteres.
+              </small>
+            </div>
+
+            <div class="col-12">
+              <label for="justificativa" class="form-label fw-semibold">Justificativa</label>
+              <textarea id="justificativa" name="justificativa" class="form-control" rows="5"
+                placeholder="Explique por que esse dado precisa ser atualizado. Exemplo: troquei de telefone e preciso manter o cadastro atualizado."
+                [(ngModel)]="solicitacaoAtual.justificativa" required minlength="10"
+                #justificativa="ngModel"></textarea>
+              <small class="text-danger" *ngIf="justificativa.invalid && justificativa.touched">
+                Escreva uma justificativa com pelo menos 10 caracteres.
+              </small>
+            </div>
+
+            <div class="col-12">
+              <div class="alert alert-primary d-flex gap-3 mb-0" role="alert">
+                <i class="bi bi-info-circle fs-4"></i>
+                <div>
+                  <strong class="d-block">Importante</strong>
+                  <small>
+                    Essa ação não altera o cadastro automaticamente. Ela apenas envia uma solicitação para análise do
+                    RH.
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Status -->
-      <div class="col-12 col-md-6">
-        <div class="campo-box">
-          <label class="campo-label">Status</label>
-          <input *ngIf="emEdicao; else viewStatus" type="text" class="campo-input"
-                 [(ngModel)]="dados.status" name="status">
-          <ng-template #viewStatus>
-            <div class="campo-valor">{{ dados.status }}</div>
-          </ng-template>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+            (click)="limparFormulario(formAlteracao)">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="formAlteracao.invalid" data-bs-dismiss="modal">
+            <i class="bi bi-send me-2"></i>
+            Enviar solicitação
+          </button>
         </div>
-      </div>
-
-      <!-- Horário padrão -->
-      <div class="col-12 col-md-6">
-        <div class="campo-box">
-          <label class="campo-label">Horário padrão</label>
-          <input *ngIf="emEdicao; else viewHorario" type="text" class="campo-input"
-                 [(ngModel)]="dados.horarioPadrao" name="horarioPadrao">
-          <ng-template #viewHorario>
-            <div class="campo-valor">{{ dados.horarioPadrao }}</div>
-          </ng-template>
-        </div>
-      </div>
-
-      <!-- Telefone -->
-      <div class="col-12 col-md-6">
-        <div class="campo-box">
-          <label class="campo-label">Telefone</label>
-          <input *ngIf="emEdicao; else viewTelefone" type="text" class="campo-input"
-                 [(ngModel)]="dados.telefone" name="telefone">
-          <ng-template #viewTelefone>
-            <div class="campo-valor">{{ dados.telefone }}</div>
-          </ng-template>
-        </div>
-      </div>
-
-      <!-- E-mail corporativo -->
-      <div class="col-12 col-md-6">
-        <div class="campo-box">
-          <label class="campo-label">E-mail corporativo</label>
-          <input *ngIf="emEdicao; else viewEmail" type="email" class="campo-input"
-                 [(ngModel)]="dados.emailCorporativo" name="emailCorporativo">
-          <ng-template #viewEmail>
-            <div class="campo-valor">{{ dados.emailCorporativo }}</div>
-          </ng-template>
-        </div>
-      </div>
-
+      </form>
     </div>
   </div>
 </div>

@@ -1,100 +1,150 @@
-.dados-pessoais-card {
-  background-color: #1b2138;
-  border-radius: 16px;
-  padding: 24px 28px;
-  color: #fff;
+.meus-dados-page {
+  color: var(--app-text);
 }
 
-.titulo-secao {
+.dados-hero {
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at top right, rgba(13, 202, 240, 0.34), transparent 28rem),
+    linear-gradient(135deg, #0d6efd 0%, #0b1324 100%);
+  border-radius: 1.25rem;
+}
+
+.dados-kicker {
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  color: #e7f1ff;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dados-hero .lead {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.dados-hero-card {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+.dados-avatar {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  color: #0d6efd;
+  background-color: #ffffff;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.dados-hero-row {
+  padding: 0.8rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.dados-hero-row strong {
+  color: #ffffff;
+  text-align: right;
+}
+
+.dados-info-item {
+  padding: 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--app-surface) 92%, var(--app-bg));
+  transition: var(--app-transition), transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dados-info-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.75rem 1.5rem rgba(15, 23, 42, 0.08);
+}
+
+.dados-info-item--bloqueado {
+  background-color: color-mix(in srgb, var(--app-surface) 86%, var(--app-border));
+}
+
+.dados-info-icon,
+.campo-permitido-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  color: var(--app-primary);
+  background-color: var(--app-primary-soft);
+  font-size: 1.15rem;
+}
+
+.dados-info-label {
+  color: var(--app-text-muted);
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #fff;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.btn-solicitar {
-  background-color: #2f6bff;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.btn-solicitar:hover {
-  background-color: #1f57e0;
-  color: #fff;
-}
-
-.btn-salvar {
-  background-color: #22c55e;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-weight: 600;
-}
-
-.btn-salvar:hover {
-  background-color: #16a34a;
-  color: #fff;
-}
-
-.btn-cancelar {
-  background-color: transparent;
-  color: #cbd5e1;
-  border: 1px solid #475569;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-weight: 600;
-}
-
-.btn-cancelar:hover {
-  background-color: #2a3350;
-  color: #fff;
-}
-
-.dados-container {
-  background-color: #232a45;
-  border: 1px solid #333d5c;
-  border-radius: 14px;
-  padding: 20px;
-}
-
-.campo-box {
-  background-color: #2a3251;
-  border: 1px solid #3a4568;
-  border-radius: 10px;
-  padding: 12px 16px;
-  height: 100%;
-}
-
-.campo-label {
-  display: block;
-  color: #93a2c7;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.campo-valor {
-  color: #fff;
-  font-weight: 600;
+.dados-info-value {
+  color: var(--app-text);
   font-size: 1rem;
 }
 
-.campo-input {
-  width: 100%;
-  background-color: #1b2138;
-  border: 1px solid #4c5a86;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 600;
-  padding: 6px 10px;
-  font-size: 0.95rem;
+.campo-permitido {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--app-border);
 }
 
-.campo-input:focus {
-  outline: none;
-  border-color: #2f6bff;
-  box-shadow: 0 0 0 2px rgba(47, 107, 255, 0.3);
+.campo-permitido:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.solicitacao-card {
+  padding: 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--app-surface) 90%, var(--app-bg));
+}
+
+.modal-content {
+  color: var(--app-text);
+  background-color: var(--app-surface);
+  border-radius: 1.25rem;
+}
+
+.form-control,
+.form-select {
+  border-color: var(--app-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.14);
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+@media (max-width: 575.98px) {
+  .dados-hero .btn {
+    width: 100%;
+  }
+
+  .dados-hero-row {
+    flex-direction: column;
+    gap: 0.2rem !important;
+  }
+
+  .dados-hero-row strong {
+    text-align: left;
+  }
 }
