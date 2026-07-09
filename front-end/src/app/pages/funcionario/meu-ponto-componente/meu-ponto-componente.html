@@ -1,52 +1,117 @@
-<div class="container-fluid py-4 py-lg-5">
-  
-  <div class="row g-4 mb-4">
-    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let item of resumo">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body d-flex gap-3">
-          <div class="rounded-3 bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center ponto-icon">
-            <i class="bi fs-4" [ngClass]="item.icone"></i>
-          </div>
+<section class="ponto-page">
+  <div class="card ponto-hero border-0 shadow-sm mb-4">
+    <div class="card-body p-4 p-lg-5">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-xl-7">
+          <span class="ponto-kicker d-inline-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-fingerprint"></i>
+            Controle de jornada
+          </span>
 
-          <div>
-            <small class="text-body-secondary fw-semibold">{{ item.titulo }}</small>
-            <strong class="d-block fs-4 lh-1 mt-2">{{ item.valor }}</strong>
-            <small class="text-body-tertiary d-block mt-2">{{ item.detalhe }}</small>
+          <h2 class="display-6 fw-bold mb-3">Meu ponto</h2>
+          <p class="lead mb-4">
+            Registre sua entrada, intervalo, retorno e saída. O sistema acompanha sua jornada do dia em tempo real.
+          </p>
+
+          <div class="d-flex flex-column flex-sm-row gap-2">
+            <button type="button" class="btn btn-light fw-semibold" (click)="registrarProximaAcao()">
+              <i class="bi bi-plus-circle me-2"></i>
+              Registrar próxima ação
+            </button>
+
+            <a routerLink="/historico" class="btn btn-outline-light fw-semibold">
+              <i class="bi bi-clock-history me-2"></i>
+              Ver histórico
+            </a>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <div class="ponto-hero-card">
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+              <div>
+                <span class="text-white-50 small text-uppercase fw-bold">Status de hoje</span>
+                <h3 class="h5 fw-bold mb-1">{{ statusDoDia }}</h3>
+                <small class="text-white-50 text-capitalize">{{ dataHoje }}</small>
+              </div>
+
+              <div class="ponto-hero-icon">
+                <i class="bi bi-activity"></i>
+              </div>
+            </div>
+
+            <div class="ponto-progresso-box">
+              <div class="d-flex justify-content-between small mb-2">
+                <span>Jornada registrada</span>
+                <strong>{{ percentualJornada }}%</strong>
+              </div>
+
+              <div class="ponto-progress progress mb-3" role="progressbar" [attr.aria-valuenow]="percentualJornada"
+                aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" [style.width.%]="percentualJornada"></div>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between gap-3">
+                <span class="text-white-50">Próxima ação</span>
+                <strong>{{ proximaAcao?.nome || 'Jornada finalizada' }}</strong>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row g-4">
-    <div class="col-12 col-xl-8">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-header bg-body border-0 pt-4 px-4 d-flex flex-column flex-sm-row justify-content-between gap-2">
-          <div>
-            <h2 class="h4 fw-bold mb-1">Bater ponto</h2>
-            <p class="text-body-secondary mb-0">Use os botões abaixo conforme sua jornada.</p>
-          </div>
-          <span class="badge text-bg-success align-self-start rounded-pill">Online</span>
-        </div>
-
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let item of resumo">
+      <article class="card ponto-indicador-card border-0 shadow-sm h-100" [ngClass]="'ponto-indicador-' + item.tipo">
         <div class="card-body p-4">
+          <div class="ponto-indicador-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
+            <i class="bi" [ngClass]="item.icone"></i>
+          </div>
+
+          <p class="text-secondary fw-semibold mb-1">{{ item.titulo }}</p>
+          <strong class="ponto-indicador-valor d-block mb-1">{{ item.valor }}</strong>
+          <small class="text-secondary">{{ item.detalhe }}</small>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-xl-8">
+      <div class="card ponto-card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Bater ponto</h3>
+              <p class="text-secondary mb-0">Use os botões abaixo conforme sua jornada.</p>
+            </div>
+
+            <span class="badge rounded-pill text-bg-success">
+              <i class="bi bi-wifi me-1"></i>
+              Online
+            </span>
+          </div>
+
           <div class="row g-3">
             <div class="col-12 col-md-6" *ngFor="let acao of acoesPonto">
-              <button
-                type="button"
-                class="btn w-100 h-100 text-start p-3 border shadow-sm"
-                [ngClass]="registrado(acao.nome) ? 'btn-success' : 'btn-light ponto-action-btn'"
-                [disabled]="registrado(acao.nome)"
-                (click)="registrarPonto(acao)"
-              >
-                <span class="d-inline-flex align-items-center justify-content-center rounded-3 p-2 mb-3"
-                  [ngClass]="registrado(acao.nome) ? 'bg-white bg-opacity-25' : 'bg-primary-subtle text-primary'">
-                  <i class="bi fs-4" [ngClass]="acao.icone"></i>
+              <button type="button" class="ponto-acao-card w-100 h-100 text-start" [class.ponto-acao-concluida]="registrado(acao.nome)"
+                [disabled]="registrado(acao.nome)" (click)="registrarPonto(acao)">
+                <span class="ponto-acao-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
+                  <i class="bi" [ngClass]="acao.icone"></i>
                 </span>
-                <strong class="d-block fs-5">{{ acao.nome }}</strong>
-                <small class="d-block mt-1">
-                  {{ registrado(acao.nome) ? 'Registro concluído' : acao.descricao }}
-                </small>
+
+                <span class="d-flex align-items-start justify-content-between gap-3">
+                  <span>
+                    <strong class="d-block fs-5">{{ acao.nome }}</strong>
+                    <small class="d-block mt-1">
+                      {{ registrado(acao.nome) ? horarioRegistrado(acao.nome) : acao.descricao }}
+                    </small>
+                  </span>
+
+                  <i class="bi" [ngClass]="registrado(acao.nome) ? 'bi-check-circle-fill' : 'bi-arrow-right-circle'"></i>
+                </span>
               </button>
             </div>
           </div>
@@ -55,57 +120,102 @@
     </div>
 
     <div class="col-12 col-xl-4">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-header bg-body border-0 pt-4 px-4 d-flex flex-column gap-3">
-          <div>
-            <h2 class="h4 fw-bold mb-1">Registros do dia</h2>
-            <p class="text-body-secondary mb-0">Pontos batidos hoje.</p>
-          </div>
-
-          <a routerLink="/solicitacao" class="btn btn-outline-primary align-self-start">
-            Solicitar correção
-            <i class="bi bi-arrow-right ms-1"></i>
-          </a>
-        </div>
-
+      <div class="card ponto-card border-0 shadow-sm h-100">
         <div class="card-body p-4">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead>
-                <tr>
-                  <th scope="col">Tipo</th>
-                  <th scope="col">Horário</th>
-                  <th scope="col">Status</th>
-                </tr>
-              </thead>
+          <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Linha do tempo</h3>
+              <p class="text-secondary mb-0">Registros feitos hoje.</p>
+            </div>
 
-              <tbody>
-                <tr *ngFor="let registro of registros">
-                  <td>
-                    <div class="d-flex align-items-center gap-2">
-                      <span class="rounded-3 bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center registro-icon">
-                        <i class="bi" [ngClass]="registro.icone"></i>
-                      </span>
-                      <strong>{{ registro.tipo }}</strong>
-                    </div>
-                  </td>
-                  <td class="fw-bold">{{ registro.horario }}</td>
-                  <td>
-                    <span class="badge text-bg-success-subtle text-success-emphasis">
-                      {{ registro.status }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <a routerLink="/solicitacao" class="btn btn-sm btn-outline-primary fw-semibold">
+              Corrigir
+            </a>
           </div>
 
-          <div class="text-center text-body-secondary py-4" *ngIf="registros.length === 0">
-            <i class="bi bi-clock-history fs-2 d-block mb-2"></i>
-            Nenhum ponto registrado hoje.
+          <div class="ponto-timeline vstack gap-3" *ngIf="registros.length > 0; else semRegistros">
+            <article class="ponto-timeline-item d-flex gap-3" *ngFor="let registro of registros">
+              <span class="ponto-timeline-icon d-inline-flex align-items-center justify-content-center rounded-circle">
+                <i class="bi" [ngClass]="registro.icone"></i>
+              </span>
+
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                  <strong>{{ registro.tipo }}</strong>
+                  <span class="badge rounded-pill" [ngClass]="classeStatus(registro.status)">
+                    {{ registro.status }}
+                  </span>
+                </div>
+                <small class="text-secondary">Horário: {{ registro.horario }}</small>
+              </div>
+            </article>
           </div>
+
+          <ng-template #semRegistros>
+            <div class="ponto-empty text-center py-5">
+              <i class="bi bi-clock-history fs-2 d-block mb-2"></i>
+              <strong class="d-block">Nenhum ponto registrado</strong>
+              <small>O primeiro registro do dia será a entrada.</small>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+  <div class="card ponto-card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
+        <div>
+          <h3 class="h5 fw-bold mb-1">Registros do dia</h3>
+          <p class="text-secondary mb-0">Conferência dos horários registrados hoje.</p>
+        </div>
+
+        <a routerLink="/solicitacao" class="btn btn-outline-primary fw-semibold">
+          <i class="bi bi-pencil-square me-2"></i>
+          Solicitar correção
+        </a>
+      </div>
+
+      <div class="table-responsive" *ngIf="registros.length > 0; else tabelaVazia">
+        <table class="table table-hover align-middle mb-0 ponto-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Horário</th>
+              <th>Status</th>
+              <th>Observação</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let registro of registros">
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="ponto-registro-icon rounded-3 d-inline-flex align-items-center justify-content-center">
+                    <i class="bi" [ngClass]="registro.icone"></i>
+                  </span>
+                  <strong>{{ registro.tipo }}</strong>
+                </div>
+              </td>
+              <td class="fw-bold">{{ registro.horario }}</td>
+              <td>
+                <span class="badge rounded-pill" [ngClass]="classeStatus(registro.status)">
+                  {{ registro.status }}
+                </span>
+              </td>
+              <td class="text-secondary">{{ registro.observacao }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #tabelaVazia>
+        <div class="ponto-empty text-center py-5">
+          <i class="bi bi-calendar2-x fs-2 d-block mb-2"></i>
+          Nenhum registro encontrado para hoje.
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</section>
