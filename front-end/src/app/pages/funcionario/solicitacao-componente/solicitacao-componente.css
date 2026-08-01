@@ -1,4 +1,239 @@
-.solicitacao-icon {
-  width: 48px;
-  height: 48px;
+.solicitacao-page {
+  color: var(--app-text);
+}
+
+.solicitacao-hero {
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at top right, rgba(13, 202, 240, 0.26), transparent 24rem),
+    linear-gradient(135deg, #0d6efd 0%, #084298 100%);
+  border-radius: 1.25rem;
+}
+
+.solicitacao-kicker {
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  color: #e7f1ff;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.solicitacao-hero .lead {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.solicitacao-hero-card {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+.solicitacao-hero-icon {
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  color: #0d6efd;
+  background-color: #ffffff;
+  font-size: 1.25rem;
+}
+
+.solicitacao-prazo-box {
+  padding: 1rem;
+  border-radius: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.solicitacao-card,
+.solicitacao-tipo-card {
+  border-radius: 1rem;
+  background-color: var(--app-surface);
+}
+
+.solicitacao-tipo-card {
+  position: relative;
+  overflow: hidden;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.solicitacao-tipo-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -2rem -3rem auto;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 999px;
+  background-color: currentColor;
+  opacity: 0.07;
+}
+
+.solicitacao-tipo-card:hover,
+.solicitacao-tipo-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.12) !important;
+}
+
+.solicitacao-tipo-card:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.2), 0 1rem 2rem rgba(15, 23, 42, 0.12) !important;
+}
+
+.solicitacao-tipo-icon {
+  width: 52px;
+  height: 52px;
+  font-size: 1.35rem;
+  background-color: currentColor;
+}
+
+.solicitacao-tipo-icon i {
+  color: var(--app-surface);
+}
+
+.solicitacao-tipo-link {
+  font-size: 0.85rem;
+}
+
+.solicitacao-tipo-neutro {
+  color: #0d6efd;
+}
+
+.solicitacao-tipo-atencao {
+  color: #b58100;
+}
+
+.solicitacao-tipo-positivo {
+  color: #198754;
+}
+
+.solicitacao-tipo-perigo {
+  color: #dc3545;
+}
+
+.solicitacao-tipo-card strong,
+.solicitacao-tipo-card small {
+  color: var(--app-text);
+}
+
+.solicitacao-feedback {
+  padding: 1rem;
+  color: #146c43;
+  border: 1px solid rgba(25, 135, 84, 0.25);
+  border-radius: 1rem;
+  background-color: rgba(25, 135, 84, 0.08);
+}
+
+.solicitacao-feedback-icon {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  color: #ffffff;
+  background-color: #198754;
+}
+
+.solicitacao-regra {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--app-border);
+  color: var(--app-text-muted);
+}
+
+.solicitacao-regra:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.solicitacao-regra-icon {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  color: #198754;
+  background-color: rgba(25, 135, 84, 0.12);
+}
+
+.solicitacao-ajuda {
+  padding: 1rem;
+  border: 1px solid rgba(13, 110, 253, 0.2);
+  border-radius: 1rem;
+  background-color: var(--app-primary-soft);
+}
+
+.solicitacao-ajuda-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  color: #0d6efd;
+  background-color: #ffffff;
+  font-size: 1.15rem;
+}
+
+.solicitacao-table th {
+  color: var(--app-text-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.solicitacao-table td {
+  color: var(--app-text);
+  white-space: nowrap;
+}
+
+.form-control,
+.form-select {
+  color: var(--app-text);
+  background-color: var(--app-surface);
+  border-color: var(--app-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.14);
+}
+
+.scroll-anchor {
+  scroll-margin-top: 1rem;
+}
+
+[data-bs-theme='dark'] .solicitacao-tipo-icon i {
+  color: #0b1324;
+}
+
+[data-bs-theme='dark'] .solicitacao-feedback {
+  color: #75d9a3;
+  border-color: rgba(117, 217, 163, 0.24);
+  background-color: rgba(25, 135, 84, 0.12);
+}
+
+[data-bs-theme='dark'] .solicitacao-ajuda-icon {
+  color: #0d6efd;
+}
+
+@media (max-width: 575.98px) {
+  .solicitacao-hero .card-body,
+  .solicitacao-card .card-body,
+  .solicitacao-tipo-card .card-body {
+    padding: 1.25rem !important;
+  }
+
+  .solicitacao-prazo-box .d-flex {
+    align-items: flex-start !important;
+    flex-direction: column;
+  }
+
+  .solicitacao-table .btn {
+    min-width: 38px;
+  }
 }

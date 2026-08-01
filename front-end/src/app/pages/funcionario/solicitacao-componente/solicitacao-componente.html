@@ -1,158 +1,258 @@
-<div class="container-fluid py-4 py-lg-5">
-    <div class="row align-items-start g-3 mb-4">
-        <div class="col-12 col-xl">
-            <span class="badge text-bg-primary-subtle text-primary-emphasis text-uppercase mb-2">Central de
-                atendimento</span>
-            <h1 class="display-6 fw-bold mb-1">Solicitações</h1>
-            <p class="text-body-secondary mb-0">
-                Abra pedidos para o RH analisar correções, justificativas, férias e atualização cadastral.
-            </p>
+<section class="solicitacao-page">
+  <div class="solicitacao-hero card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 p-lg-5">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-xl-7">
+          <span class="solicitacao-kicker d-inline-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-send-check"></i>
+            Central de atendimento
+          </span>
+
+          <h2 class="display-6 fw-bold mb-3">Solicitações ao RH</h2>
+          <p class="lead mb-4">
+            Envie correções, justificativas, pedidos de férias e atualizações cadastrais em um único lugar.
+          </p>
+
+          <div class="d-flex flex-column flex-sm-row gap-2">
+            <a href="#formulario-solicitacao" class="btn btn-light fw-semibold">
+              <i class="bi bi-plus-lg me-2"></i>
+              Abrir solicitação
+            </a>
+            <a href="#historico-solicitacoes" class="btn btn-outline-light fw-semibold">
+              <i class="bi bi-clock-history me-2"></i>
+              Acompanhar pedidos
+            </a>
+          </div>
         </div>
 
-        <div class="col-12 col-xl-auto">
-            <button type="button" class="btn btn-primary btn-lg shadow-sm" (click)="criarSolicitacao()">
-                <i class="bi bi-plus-lg me-2"></i>
-                Nova solicitação
-            </button>
+        <div class="col-12 col-xl-5">
+          <div class="solicitacao-hero-card">
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+              <div>
+                <span class="text-white-50 small text-uppercase fw-bold">Situação atual</span>
+                <h3 class="h5 fw-bold mb-1">{{ totalPendentes }} pedido(s) em análise</h3>
+                <small class="text-white-50">Acompanhe as atualizações pelo histórico abaixo.</small>
+              </div>
+
+              <div class="solicitacao-hero-icon">
+                <i class="bi bi-headset"></i>
+              </div>
+            </div>
+
+            <div class="solicitacao-prazo-box">
+              <small class="text-white-50 d-block mb-1">Prazo para correção de ponto</small>
+              <div class="d-flex align-items-center justify-content-between gap-3">
+                <strong>Até 48 horas após o registro</strong>
+                <span class="badge rounded-pill text-bg-light">Importante</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let tipo of tipos">
+      <button
+        type="button"
+        class="card solicitacao-tipo-card border-0 shadow-sm h-100 w-100 text-start"
+        [ngClass]="'solicitacao-tipo-' + tipo.tipo"
+        (click)="selecionarTipo(tipo.titulo)"
+      >
+        <span class="card-body p-4 d-block">
+          <span class="solicitacao-tipo-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
+            <i class="bi" [ngClass]="tipo.icone"></i>
+          </span>
+
+          <strong class="h5 d-block mb-2">{{ tipo.titulo }}</strong>
+          <small class="text-secondary d-block mb-3">{{ tipo.descricao }}</small>
+          <span class="solicitacao-tipo-link d-inline-flex align-items-center gap-2 fw-semibold">
+            Selecionar
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-xl-8">
+      <div id="formulario-solicitacao" class="card solicitacao-card border-0 shadow-sm h-100 scroll-anchor">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
+            <div>
+              <h3 class="h5 fw-bold mb-1">Abrir nova solicitação</h3>
+              <p class="text-secondary mb-0">Preencha os dados para que o RH analise o pedido com clareza.</p>
+            </div>
+            <span class="badge text-bg-light border">Protocolo automático</span>
+          </div>
+
+          <div *ngIf="mensagemSucesso" class="solicitacao-feedback d-flex align-items-start gap-3 mb-4" role="status">
+            <span class="solicitacao-feedback-icon d-inline-flex align-items-center justify-content-center rounded-circle">
+              <i class="bi bi-check-lg"></i>
+            </span>
+            <div>
+              <strong class="d-block">Solicitação enviada</strong>
+              <small>{{ mensagemSucesso }}</small>
+            </div>
+          </div>
+
+          <form class="row g-3" (ngSubmit)="criarSolicitacao()">
+            <div class="col-12 col-md-6">
+              <label for="tipoSolicitacao" class="form-label fw-semibold">Tipo de solicitação</label>
+              <select
+                id="tipoSolicitacao"
+                name="tipoSolicitacao"
+                class="form-select form-select-lg"
+                [(ngModel)]="formulario.tipo"
+              >
+                <option *ngFor="let tipo of tipos" [ngValue]="tipo.titulo">{{ tipo.titulo }}</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="dataRelacionada" class="form-label fw-semibold">Data relacionada</label>
+              <input
+                id="dataRelacionada"
+                name="dataRelacionada"
+                type="date"
+                class="form-control form-control-lg"
+                [(ngModel)]="formulario.dataRelacionada"
+              />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="horarioSugerido" class="form-label fw-semibold">Horário sugerido</label>
+              <input
+                id="horarioSugerido"
+                name="horarioSugerido"
+                type="time"
+                class="form-control form-control-lg"
+                [(ngModel)]="formulario.horarioSugerido"
+              />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="prioridade" class="form-label fw-semibold">Prioridade</label>
+              <select
+                id="prioridade"
+                name="prioridade"
+                class="form-select form-select-lg"
+                [(ngModel)]="formulario.prioridade"
+              >
+                <option value="Normal">Normal</option>
+                <option value="Alta">Alta</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label for="descricao" class="form-label fw-semibold">Descrição da solicitação</label>
+              <textarea
+                id="descricao"
+                name="descricao"
+                class="form-control"
+                rows="5"
+                required
+                [(ngModel)]="formulario.descricao"
+                placeholder="Exemplo: esqueci de registrar o retorno do almoço. Retornei às 13:05."
+              ></textarea>
+            </div>
+
+            <div class="col-12">
+              <label for="anexo" class="form-label fw-semibold">Anexo opcional</label>
+              <input id="anexo" name="anexo" type="file" class="form-control" />
+              <div class="form-text">Adicione comprovantes, atestados ou documentos que apoiem a análise.</div>
+            </div>
+
+            <div class="col-12 d-flex flex-column flex-sm-row justify-content-end gap-2 pt-2">
+              <button type="button" class="btn btn-outline-secondary btn-lg" (click)="limparFormulario()">
+                Limpar
+              </button>
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-send me-2"></i>
+                Enviar para o RH
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3" *ngFor="let tipo of tipos">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body">
-                    <div
-                        class="rounded-3 bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center solicitacao-icon mb-3">
-                        <i class="bi fs-4" [ngClass]="tipo.icone"></i>
-                    </div>
+    <div class="col-12 col-xl-4">
+      <div class="card solicitacao-card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="mb-4">
+            <h3 class="h5 fw-bold mb-1">Antes de enviar</h3>
+            <p class="text-secondary mb-0">Confira as regras usadas na avaliação.</p>
+          </div>
 
-                    <h2 class="h5 fw-bold">{{ tipo.titulo }}</h2>
-                    <p class="text-body-secondary mb-0">{{ tipo.descricao }}</p>
-                </div>
+          <div class="vstack gap-3 mb-4">
+            <div class="solicitacao-regra d-flex gap-3" *ngFor="let regra of regras">
+              <span class="solicitacao-regra-icon d-inline-flex align-items-center justify-content-center rounded-circle">
+                <i class="bi bi-check2"></i>
+              </span>
+              <span [innerHTML]="regra"></span>
             </div>
+          </div>
+
+          <div class="solicitacao-ajuda d-flex gap-3">
+            <span class="solicitacao-ajuda-icon d-inline-flex align-items-center justify-content-center rounded-4">
+              <i class="bi bi-chat-dots"></i>
+            </span>
+            <div>
+              <strong class="d-block mb-1">Facilite a análise</strong>
+              <small>Explique o ocorrido, informe horários e anexe um documento quando necessário.</small>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-xl-8">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-body border-0 pt-4 px-4">
-                    <h2 class="h4 fw-bold mb-1">Abrir solicitação</h2>
-                    <p class="text-body-secondary mb-0">Preencha as informações para o RH conseguir analisar com
-                        clareza.</p>
-                </div>
-
-                <div class="card-body p-4">
-                    <form class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <label for="tipoSolicitacao" class="form-label fw-semibold">Tipo de solicitação</label>
-                            <select id="tipoSolicitacao" class="form-select form-select-lg">
-                                <option>Correção de ponto</option>
-                                <option>Justificativa de falta</option>
-                                <option>Solicitação de férias</option>
-                                <option>Correção de cadastro</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="dataRelacionada" class="form-label fw-semibold">Data relacionada</label>
-                            <input id="dataRelacionada" type="date" class="form-control form-control-lg" />
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="horarioSugerido" class="form-label fw-semibold">Horário sugerido</label>
-                            <input id="horarioSugerido" type="time" class="form-control form-control-lg" />
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="prioridade" class="form-label fw-semibold">Prioridade</label>
-                            <select id="prioridade" class="form-select form-select-lg">
-                                <option>Normal</option>
-                                <option>Alta</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12">
-                            <label for="descricao" class="form-label fw-semibold">Descrição da solicitação</label>
-                            <textarea id="descricao" class="form-control" rows="5"
-                                placeholder="Exemplo: esqueci de registrar o retorno do almoço. Voltei às 13:05."></textarea>
-                        </div>
-
-                        <div class="col-12">
-                            <label for="anexo" class="form-label fw-semibold">Anexo opcional</label>
-                            <input id="anexo" type="file" class="form-control" />
-                            <div class="form-text">Use para comprovantes, atestados ou documentos de apoio.</div>
-                        </div>
-
-                        <div class="col-12 d-flex flex-column flex-sm-row justify-content-end gap-2 pt-2">
-                            <button type="reset" class="btn btn-outline-secondary btn-lg">Limpar</button>
-                            <button type="button" class="btn btn-primary btn-lg" (click)="criarSolicitacao()">
-                                Enviar para o RH
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+  <div id="historico-solicitacoes" class="card solicitacao-card border-0 shadow-sm scroll-anchor">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
+        <div>
+          <h3 class="h5 fw-bold mb-1">Minhas solicitações</h3>
+          <p class="text-secondary mb-0">Acompanhe os pedidos enviados recentemente.</p>
         </div>
 
-        <div class="col-12 col-xl-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-body border-0 pt-4 px-4">
-                    <h2 class="h4 fw-bold mb-1">Regras importantes</h2>
-                    <p class="text-body-secondary mb-0">Critérios usados na avaliação.</p>
-                </div>
-
-                <div class="card-body p-4">
-                    <ul class="list-group list-group-flush mb-4">
-                        <li class="list-group-item px-0 d-flex gap-3" *ngFor="let regra of regras">
-                            <i class="bi bi-check2-circle text-success fs-5"></i>
-                            <span [innerHTML]="regra"></span>
-                        </li>
-                    </ul>
-
-                    <div class="alert alert-primary d-flex gap-3 mb-0" role="alert">
-                        <i class="bi bi-chat-dots fs-4"></i>
-                        <div>
-                            <strong class="d-block">Falar com o RH</strong>
-                            <small>Use a descrição para explicar o caso com detalhes. Quanto mais claro, mais rápida
-                                será a análise.</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="badge text-bg-warning">{{ totalPendentes }} pendente(s)</span>
+          <span class="badge text-bg-success">{{ totalResolvidas }} resolvida(s)</span>
         </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table solicitacao-table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Tipo</th>
+              <th>Enviada em</th>
+              <th>Status</th>
+              <th class="text-end">Detalhes</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of historico">
+              <td class="fw-bold">{{ item.codigo }}</td>
+              <td>{{ item.tipo }}</td>
+              <td>{{ item.data }}</td>
+              <td>
+                <span class="badge rounded-pill" [ngClass]="classeStatus(item.status)">{{ item.status }}</span>
+              </td>
+              <td class="text-end">
+                <button type="button" class="btn btn-sm btn-outline-primary" [attr.aria-label]="'Ver detalhes de ' + item.codigo">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-body border-0 pt-4 px-4">
-            <h2 class="h4 fw-bold mb-1">Minhas solicitações</h2>
-            <p class="text-body-secondary mb-0">Acompanhe os pedidos enviados recentemente.</p>
-        </div>
-
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">Código</th>
-                            <th>Tipo</th>
-                            <th>Data</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr *ngFor="let item of historico">
-                            <td class="ps-4 fw-bold">{{ item.codigo }}</td>
-                            <td>{{ item.tipo }}</td>
-                            <td>{{ item.data }}</td>
-                            <td>
-                                <span class="badge rounded-pill" [ngClass]="item.classe">{{ item.status }}</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+  </div>
+</section>
