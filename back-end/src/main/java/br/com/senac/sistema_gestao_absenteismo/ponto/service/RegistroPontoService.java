@@ -33,32 +33,6 @@ public class RegistroPontoService {
     private final RegistroPontoRepository registroPontoRepository;
     private final FuncionarioRepository funcionarioRepository;
 
-    @Transactional
-    public RegistroPontoResponse marcar(Long funcionarioId, TipoMarcacao tipo) {
-        Funcionario funcionario = buscarFuncionarioAtivo(funcionarioId);
-
-        LocalDateTime agora = LocalDateTime.now().withNano(0);
-        LocalDate dataAtual = agora.toLocalDate();
-        LocalTime horaAtual = agora.toLocalTime();
-
-        Optional<RegistroPonto> registroDoDia = registroPontoRepository
-                .findByFuncionario_IdAndDataRegistro(funcionarioId, dataAtual);
-
-        RegistroPonto registro = switch (tipo) {
-            case ENTRADA -> registrarEntrada(funcionario, registroDoDia, dataAtual, horaAtual);
-
-            case INICIO_INTERVALO -> registrarInicioIntervalo(exigirRegistroDoDia(registroDoDia), horaAtual);
-
-            case FIM_INTERVALO -> registrarFimIntervalo(exigirRegistroDoDia(registroDoDia), horaAtual);
-
-            case SAIDA -> registrarSaida(exigirRegistroDoDia(registroDoDia), horaAtual);
-        };
-
-        RegistroPonto salvo = registroPontoRepository.save(registro);
-
-        return RegistroPontoResponse.from(salvo);
-    }
-
     private RegistroPonto registrarEntrada(Funcionario funcionario, Optional<RegistroPonto> registroDoDia,
             LocalDate dataAtual, LocalTime horaAtual) {
         if (registroDoDia.isPresent()) {
@@ -170,15 +144,48 @@ public class RegistroPontoService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Funcionário autenticado não encontrado"));
 
         if (funcionario.getStatus() != StatusFuncionario.ATIVO) {
-            throw new UsuarioInativoException(
-                    "Somente funcionários ativos podem registrar ponto");
+            throw new UsuarioInativoException("Somente funcionários ativos podem registrar ponto");
         }
 
         return funcionario;
     }
 
+    private void validarPeriodo(LocalDate inicio, LocalDate fim) {
+        if (inicio.isAfter(fim)) {
+            throw new IllegalArgumentException("A data inicial não pode ser posterior à data final");
+        }
+    }
+
+    @Transactional
+    public RegistroPontoResponse marcar(Long funcionarioId, TipoMarcacao tipo) {
+        
+        Funcionario funcionario = buscarFuncionarioAtivo(funcionarioId);
+
+        LocalDateTime agora = LocalDateTime.now().withNano(0);
+        LocalDate dataAtual = agora.toLocalDate();
+        LocalTime horaAtual = agora.toLocalTime();
+
+        Optional<RegistroPonto> registroDoDia = registroPontoRepository
+                .findByFuncionario_IdAndDataRegistro(funcionarioId, dataAtual);
+
+        RegistroPonto registro = switch (tipo) {
+            case ENTRADA -> registrarEntrada(funcionario, registroDoDia, dataAtual, horaAtual);
+
+            case INICIO_INTERVALO -> registrarInicioIntervalo(exigirRegistroDoDia(registroDoDia), horaAtual);
+
+            case FIM_INTERVALO -> registrarFimIntervalo(exigirRegistroDoDia(registroDoDia), horaAtual);
+
+            case SAIDA -> registrarSaida(exigirRegistroDoDia(registroDoDia), horaAtual);
+        };
+
+        RegistroPonto salvo = registroPontoRepository.save(registro);
+
+        return RegistroPontoResponse.from(salvo);
+    }
+ 
     @Transactional(readOnly = true)
     public Optional<RegistroPontoResponse> buscarHoje(Long funcionarioId) {
+
         buscarFuncionarioAtivo(funcionarioId);
 
         return registroPontoRepository.findByFuncionario_IdAndDataRegistro(funcionarioId, LocalDate.now())
@@ -192,4 +199,16 @@ public class RegistroPontoService {
         return registroPontoRepository.findByFuncionario_IdOrderByDataRegistroDesc(funcionarioId).stream()
                 .map(RegistroPontoResponse::from).toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<RegistroPontoResponse> buscarHistoricoFuncionario(Long funcionarioId, LocalDate inicio, LocalDate fim) {
+
+        validarPeriodo(inicio, fim);
+
+        funcionarioRepository.findById(funcionarioId).orElseThrow(() -> new RecursoNaoEncontradoException("Funcionário não encontrado com o id " + funcionarioId));
+
+        return registroPontoRepository.findByFuncionario_IdAndDataRegistroBetweenOrderByDataRegistroDesc(funcionarioId, inicio, fim).stream()
+            .map(RegistroPontoResponse::from).toList();
+    }
+
 }
