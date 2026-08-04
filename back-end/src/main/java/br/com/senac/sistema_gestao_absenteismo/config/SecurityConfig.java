@@ -22,32 +22,26 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()).cors(Customizer.withDefaults()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         // Requisições de preflight do Angular
-                        .requestMatchers(HttpMethod.OPTIONS, "/**")
-                        .permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Login público
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login")
-                        .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         // RH e gestor podem consultar funcionários
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/funcionarios",
-                                "/api/funcionarios/**")
-                        .hasAnyRole("RH", "GESTOR")
+                                "/api/funcionarios/**").hasAnyRole("RH", "GESTOR")
                         // Apenas RH pode cadastrar
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/funcionarios")
-                        .hasRole("RH")
+                                "/api/funcionarios").hasRole("RH")
                         // Apenas RH pode atualizar
                         .requestMatchers(
                                 HttpMethod.PUT,
-                                "/api/funcionarios/**")
-                        .hasRole("RH")
+                                "/api/funcionarios/**").hasRole("RH")
                         // Apenas RH pode alterar status
                         .requestMatchers(
                                 HttpMethod.PATCH,
-                                "/api/funcionarios/**")
-                        .hasRole("RH")
+                                "/api/funcionarios/**").hasRole("RH")
                         // Apenas RH pode desativar
                         .requestMatchers(
                                 HttpMethod.DELETE,
@@ -55,8 +49,9 @@ public class SecurityConfig {
                         // RH e gestor podem consultar pontos de funcionários
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/pontos/funcionarios/**")
-                        .hasAnyRole("RH", "GESTOR")
+                                "/api/pontos",
+                                "/api/pontos/resumo",
+                                "/api/pontos/funcionarios/**").hasAnyRole("RH", "GESTOR")
                         // Demais endpoints exigem login
                         .anyRequest()
                         .authenticated()

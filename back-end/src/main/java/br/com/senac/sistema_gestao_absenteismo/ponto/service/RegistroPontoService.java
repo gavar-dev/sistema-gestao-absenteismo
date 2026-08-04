@@ -4,6 +4,7 @@ import br.com.senac.sistema_gestao_absenteismo.funcionario.model.Funcionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.model.StatusFuncionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.repository.FuncionarioRepository;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.model.RegistroPonto;
 import br.com.senac.sistema_gestao_absenteismo.ponto.model.StatusJornada;
 import br.com.senac.sistema_gestao_absenteismo.ponto.model.TipoMarcacao;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -211,4 +213,54 @@ public class RegistroPontoService {
             .map(RegistroPontoResponse::from).toList();
     }
 
+
+    @Transactional(readOnly = true)
+    public List<RegistroPontoResponse> buscarRegistrosGerenciais(LocalDate inicio,LocalDate fim,StatusJornada status,Long funcionarioId) {
+
+        validarPeriodo(inicio, fim);
+
+        if (funcionarioId != null && !funcionarioRepository.existsById(funcionarioId)) {
+            throw new RecursoNaoEncontradoException("Funcionário não encontrado com o id "+ funcionarioId);
+        }
+
+        return registroPontoRepository.buscarRegistrosGerenciais(inicio,fim,status,funcionarioId).stream().map(RegistroPontoResponse::from).toList();
+    }
+
+
+    @Transactional(readOnly = true)
+    public ResumoPontoResponse buscarResumoGerencial(LocalDate inicio,LocalDate fim,Long funcionarioId) {
+
+        validarPeriodo(inicio, fim);
+
+        if (funcionarioId != null && !funcionarioRepository.existsById(funcionarioId)) {
+
+            throw new RecursoNaoEncontradoException("Funcionário não encontrado com o id "+ funcionarioId);
+        }
+
+        List<RegistroPonto> registros = registroPontoRepository.buscarRegistrosGerenciais(inicio,fim,null,funcionarioId);
+
+        long totalRegistros = registros.size();
+
+        long jornadasFinalizadas = registros.stream().filter(registro -> registro.getSaida() != null).count();
+
+        long jornadasEmAndamento = registros.stream().filter(registro -> registro.getSaida() == null).filter(registro ->
+        registro.getStatus() == StatusJornada.EM_ANDAMENTO || registro.getStatus() == StatusJornada.ATRASO).count();
+
+        long quantidadeAtrasos = registros.stream().filter(registro ->registro.getStatus() == StatusJornada.ATRASO).count();
+
+        long quantidadeFaltas = registros.stream().filter(registro ->registro.getStatus() == StatusJornada.FALTA).count();
+
+        long quantidadePendencias = registros.stream().filter(registro ->registro.getStatus() == StatusJornada.PENDENTE).count();
+
+        long totalMinutosAtraso = registros.stream().map(RegistroPonto::getAtrasoMinutos).filter(Objects::nonNull).mapToLong(Integer::longValue).sum();
+
+        double mediaMinutosAtraso = quantidadeAtrasos == 0 ? 0.0 : (double) totalMinutosAtraso / quantidadeAtrasos;
+
+        long totalMinutosTrabalhados = registros.stream().map(RegistroPonto::getTotalTrabalhadoMinutos).filter(Objects::nonNull).mapToLong(Integer::longValue).sum();
+
+        return new ResumoPontoResponse(totalRegistros,jornadasFinalizadas,jornadasEmAndamento,quantidadeAtrasos,quantidadeFaltas,quantidadePendencias,totalMinutosAtraso,
+        mediaMinutosAtraso,totalMinutosTrabalhados);
+    }
+
+    
 }

@@ -2,6 +2,8 @@ package br.com.senac.sistema_gestao_absenteismo.ponto.controller;
 
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.MarcacaoPontoRequest;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
+import br.com.senac.sistema_gestao_absenteismo.ponto.model.StatusJornada;
 import br.com.senac.sistema_gestao_absenteismo.ponto.service.RegistroPontoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -69,4 +71,40 @@ public class RegistroPontoController {
         return registroPontoService.buscarHistoricoFuncionario(funcionarioId,inicio,fim);
         
     }
+
+    @GetMapping
+    public List<RegistroPontoResponse> buscarRegistrosGerenciais(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate inicio,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fim,
+
+            @RequestParam(required = false)
+            StatusJornada status,
+
+            @RequestParam(required = false)
+            Long funcionarioId
+    ) {
+        return registroPontoService.buscarRegistrosGerenciais(inicio,fim,status,funcionarioId);
+    }
+
+    @GetMapping("/resumo")
+    public ResumoPontoResponse buscarResumoGerencial(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate inicio,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fim,
+
+            @RequestParam(required = false)
+            Long funcionarioId
+    ) {
+        return registroPontoService.buscarResumoGerencial(inicio,fim,funcionarioId);
+    }
+
 }
