@@ -5,12 +5,16 @@ import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.service.RegistroPontoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pontos")
@@ -20,16 +24,25 @@ public class RegistroPontoController {
     private final RegistroPontoService registroPontoService;
 
     @PostMapping("/marcar")
-    public RegistroPontoResponse marcar(
-            @AuthenticationPrincipal Jwt jwt,
-            @Valid @RequestBody MarcacaoPontoRequest request
-    ) {
+    public RegistroPontoResponse marcar(@AuthenticationPrincipal Jwt jwt,@Valid @RequestBody MarcacaoPontoRequest request) {
         Long funcionarioId = extrairFuncionarioId(jwt);
 
-        return registroPontoService.marcar(
-                funcionarioId,
-                request.tipo()
-        );
+        return registroPontoService.marcar(funcionarioId,request.tipo());
+    }
+
+    @GetMapping("/hoje")
+    public ResponseEntity<RegistroPontoResponse> buscarHoje(@AuthenticationPrincipal Jwt jwt) {
+        Long funcionarioId = extrairFuncionarioId(jwt);
+
+        return registroPontoService.buscarHoje(funcionarioId).map(ResponseEntity::ok).orElseGet(() ->
+            ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/meu-historico")
+    public List<RegistroPontoResponse> buscarMeuHistorico(@AuthenticationPrincipal Jwt jwt) {
+        Long funcionarioId = extrairFuncionarioId(jwt);
+
+        return registroPontoService.buscarMeuHistorico(funcionarioId);
     }
 
     private Long extrairFuncionarioId(Jwt jwt) {
@@ -39,8 +52,6 @@ public class RegistroPontoController {
             return numero.longValue();
         }
 
-        throw new IllegalArgumentException(
-                "O token não contém o identificador do funcionário"
-        );
+        throw new IllegalArgumentException("O token não contém o identificador do funcionário");
     }
 }

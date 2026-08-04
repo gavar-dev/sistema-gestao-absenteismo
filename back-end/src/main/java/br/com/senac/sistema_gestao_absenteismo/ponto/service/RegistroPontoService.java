@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,38 +28,30 @@ public class RegistroPontoService {
 
     private static final LocalTime HORARIO_ENTRADA = LocalTime.of(8, 0);
 
-    private static final LocalTime LIMITE_TOLERANCIA =LocalTime.of(8, 30);
+    private static final LocalTime LIMITE_TOLERANCIA = LocalTime.of(8, 30);
 
     private final RegistroPontoRepository registroPontoRepository;
     private final FuncionarioRepository funcionarioRepository;
 
     @Transactional
-    public RegistroPontoResponse marcar(Long funcionarioId,TipoMarcacao tipo) {
+    public RegistroPontoResponse marcar(Long funcionarioId, TipoMarcacao tipo) {
         Funcionario funcionario = buscarFuncionarioAtivo(funcionarioId);
 
         LocalDateTime agora = LocalDateTime.now().withNano(0);
         LocalDate dataAtual = agora.toLocalDate();
         LocalTime horaAtual = agora.toLocalTime();
 
-        Optional<RegistroPonto> registroDoDia = registroPontoRepository.findByFuncionario_IdAndDataRegistro(funcionarioId,dataAtual);
+        Optional<RegistroPonto> registroDoDia = registroPontoRepository
+                .findByFuncionario_IdAndDataRegistro(funcionarioId, dataAtual);
 
         RegistroPonto registro = switch (tipo) {
-            case ENTRADA -> registrarEntrada(funcionario,registroDoDia,dataAtual,horaAtual);
+            case ENTRADA -> registrarEntrada(funcionario, registroDoDia, dataAtual, horaAtual);
 
-            case INICIO_INTERVALO -> registrarInicioIntervalo(
-                    exigirRegistroDoDia(registroDoDia),
-                    horaAtual
-            );
+            case INICIO_INTERVALO -> registrarInicioIntervalo(exigirRegistroDoDia(registroDoDia), horaAtual);
 
-            case FIM_INTERVALO -> registrarFimIntervalo(
-                    exigirRegistroDoDia(registroDoDia),
-                    horaAtual
-            );
+            case FIM_INTERVALO -> registrarFimIntervalo(exigirRegistroDoDia(registroDoDia), horaAtual);
 
-            case SAIDA -> registrarSaida(
-                    exigirRegistroDoDia(registroDoDia),
-                    horaAtual
-            );
+            case SAIDA -> registrarSaida(exigirRegistroDoDia(registroDoDia), horaAtual);
         };
 
         RegistroPonto salvo = registroPontoRepository.save(registro);
@@ -66,29 +59,19 @@ public class RegistroPontoService {
         return RegistroPontoResponse.from(salvo);
     }
 
-    private RegistroPonto registrarEntrada(
-            Funcionario funcionario,
-            Optional<RegistroPonto> registroDoDia,
-            LocalDate dataAtual,
-            LocalTime horaAtual
-    ) {
+    private RegistroPonto registrarEntrada(Funcionario funcionario, Optional<RegistroPonto> registroDoDia,
+            LocalDate dataAtual, LocalTime horaAtual) {
         if (registroDoDia.isPresent()) {
-            throw new ConflitoDeDadosException(
-                    "A entrada de hoje já foi registrada"
-            );
+            throw new ConflitoDeDadosException("A entrada de hoje já foi registrada");
         }
 
         if (horaAtual.isBefore(HORARIO_ENTRADA)) {
-            throw new IllegalArgumentException(
-                    "O registro de entrada só é permitido a partir das 08:00"
-            );
+            throw new IllegalArgumentException("O registro de entrada só é permitido a partir das 08:00");
         }
 
         int atrasoMinutos = calcularAtraso(horaAtual);
 
-        StatusJornada status = atrasoMinutos > 0
-                ? StatusJornada.ATRASO
-                : StatusJornada.EM_ANDAMENTO;
+        StatusJornada status = atrasoMinutos > 0 ? StatusJornada.ATRASO : StatusJornada.EM_ANDAMENTO;
 
         return RegistroPonto.builder()
                 .funcionario(funcionario)
@@ -100,20 +83,13 @@ public class RegistroPontoService {
                 .build();
     }
 
-    private RegistroPonto registrarInicioIntervalo(
-            RegistroPonto registro,
-            LocalTime horaAtual
-    ) {
+    private RegistroPonto registrarInicioIntervalo(RegistroPonto registro, LocalTime horaAtual) {
         if (registro.getSaida() != null) {
-            throw new ConflitoDeDadosException(
-                    "A jornada de hoje já foi finalizada"
-            );
+            throw new ConflitoDeDadosException("A jornada de hoje já foi finalizada");
         }
 
         if (registro.getInicioIntervalo() != null) {
-            throw new ConflitoDeDadosException(
-                    "O início do intervalo já foi registrado"
-            );
+            throw new ConflitoDeDadosException("O início do intervalo já foi registrado");
         }
 
         registro.setInicioIntervalo(horaAtual);
@@ -121,26 +97,17 @@ public class RegistroPontoService {
         return registro;
     }
 
-    private RegistroPonto registrarFimIntervalo(
-            RegistroPonto registro,
-            LocalTime horaAtual
-    ) {
+    private RegistroPonto registrarFimIntervalo(RegistroPonto registro, LocalTime horaAtual) {
         if (registro.getInicioIntervalo() == null) {
-            throw new ConflitoDeDadosException(
-                    "Registre o início do intervalo primeiro"
-            );
+            throw new ConflitoDeDadosException("Registre o início do intervalo primeiro");
         }
 
         if (registro.getFimIntervalo() != null) {
-            throw new ConflitoDeDadosException(
-                    "O fim do intervalo já foi registrado"
-            );
+            throw new ConflitoDeDadosException("O fim do intervalo já foi registrado");
         }
 
         if (registro.getSaida() != null) {
-            throw new ConflitoDeDadosException(
-                    "A jornada de hoje já foi finalizada"
-            );
+            throw new ConflitoDeDadosException("A jornada de hoje já foi finalizada");
         }
 
         registro.setFimIntervalo(horaAtual);
@@ -148,20 +115,13 @@ public class RegistroPontoService {
         return registro;
     }
 
-    private RegistroPonto registrarSaida(
-            RegistroPonto registro,
-            LocalTime horaAtual
-    ) {
+    private RegistroPonto registrarSaida(RegistroPonto registro, LocalTime horaAtual) {
         if (registro.getSaida() != null) {
-            throw new ConflitoDeDadosException(
-                    "A saída de hoje já foi registrada"
-            );
+            throw new ConflitoDeDadosException("A saída de hoje já foi registrada");
         }
 
         if (registro.getInicioIntervalo() == null) {
-            throw new ConflitoDeDadosException(
-                    "Registre o início do intervalo antes da saída"
-            );
+            throw new ConflitoDeDadosException("Registre o início do intervalo antes da saída");
         }
 
         if (registro.getFimIntervalo() == null) {
@@ -171,7 +131,7 @@ public class RegistroPontoService {
         registro.setSaida(horaAtual);
         registro.setTotalTrabalhadoMinutos(calcularTotalTrabalhado(registro));
 
-        registro.setStatus(registro.getAtrasoMinutos() > 0? StatusJornada.ATRASO: StatusJornada.CONCLUIDA);
+        registro.setStatus(registro.getAtrasoMinutos() > 0 ? StatusJornada.ATRASO : StatusJornada.CONCLUIDA);
 
         return registro;
     }
@@ -181,15 +141,15 @@ public class RegistroPontoService {
             return 0;
         }
 
-        long minutos = Duration.between(HORARIO_ENTRADA,horaEntrada).toMinutes();
+        long minutos = Duration.between(HORARIO_ENTRADA, horaEntrada).toMinutes();
 
         return Math.toIntExact(minutos);
     }
 
     private int calcularTotalTrabalhado(RegistroPonto registro) {
-        long antesDoIntervalo = Duration.between(registro.getEntrada(),registro.getInicioIntervalo()).toMinutes();
+        long antesDoIntervalo = Duration.between(registro.getEntrada(), registro.getInicioIntervalo()).toMinutes();
 
-        long depoisDoIntervalo = Duration.between(registro.getFimIntervalo(),registro.getSaida()).toMinutes();
+        long depoisDoIntervalo = Duration.between(registro.getFimIntervalo(), registro.getSaida()).toMinutes();
 
         long total = antesDoIntervalo + depoisDoIntervalo;
 
@@ -201,18 +161,35 @@ public class RegistroPontoService {
     }
 
     private RegistroPonto exigirRegistroDoDia(Optional<RegistroPonto> registroDoDia) {
-        return registroDoDia.orElseThrow(() -> new ConflitoDeDadosException("Registre a entrada antes das demais marcações"));
+        return registroDoDia
+                .orElseThrow(() -> new ConflitoDeDadosException("Registre a entrada antes das demais marcações"));
     }
 
     private Funcionario buscarFuncionarioAtivo(Long funcionarioId) {
-        Funcionario funcionario = funcionarioRepository.findById(funcionarioId).orElseThrow(() -> new RecursoNaoEncontradoException(                            "Funcionário autenticado não encontrado"));
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Funcionário autenticado não encontrado"));
 
         if (funcionario.getStatus() != StatusFuncionario.ATIVO) {
             throw new UsuarioInativoException(
-                    "Somente funcionários ativos podem registrar ponto"
-            );
+                    "Somente funcionários ativos podem registrar ponto");
         }
 
         return funcionario;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<RegistroPontoResponse> buscarHoje(Long funcionarioId) {
+        buscarFuncionarioAtivo(funcionarioId);
+
+        return registroPontoRepository.findByFuncionario_IdAndDataRegistro(funcionarioId, LocalDate.now())
+                .map(RegistroPontoResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RegistroPontoResponse> buscarMeuHistorico(Long funcionarioId) {
+        buscarFuncionarioAtivo(funcionarioId);
+
+        return registroPontoRepository.findByFuncionario_IdOrderByDataRegistroDesc(funcionarioId).stream()
+                .map(RegistroPontoResponse::from).toList();
     }
 }
