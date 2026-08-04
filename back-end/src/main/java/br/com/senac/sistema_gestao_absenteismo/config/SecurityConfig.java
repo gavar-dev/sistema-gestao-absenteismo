@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/api/pontos",
                                 "/api/pontos/resumo",
+                                "/api/pontos/indicadores/**",
                                 "/api/pontos/funcionarios/**").hasAnyRole("RH", "GESTOR")
                         // Demais endpoints exigem login
                         .anyRequest()

@@ -3,6 +3,7 @@ package br.com.senac.sistema_gestao_absenteismo.ponto.service;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.model.Funcionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.model.StatusFuncionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.repository.FuncionarioRepository;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.model.RegistroPonto;
@@ -20,9 +21,12 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -262,5 +266,21 @@ public class RegistroPontoService {
         mediaMinutosAtraso,totalMinutosTrabalhados);
     }
 
-    
+    @Transactional(readOnly = true)
+    public List<IndicadorStatusResponse> buscarIndicadoresPorStatus(LocalDate inicio,LocalDate fim,Long funcionarioId) {
+
+        validarPeriodo(inicio, fim);
+
+        if (funcionarioId != null && !funcionarioRepository.existsById(funcionarioId)) {
+
+            throw new RecursoNaoEncontradoException("Funcionário não encontrado com o id "+ funcionarioId);
+        }
+
+        List<RegistroPonto> registros = registroPontoRepository.buscarRegistrosGerenciais(inicio,fim,null,funcionarioId);
+
+        Map<StatusJornada, Long> quantidades = registros.stream().collect(Collectors.groupingBy(RegistroPonto::getStatus,Collectors.counting()));
+
+        return Arrays.stream(StatusJornada.values()).map(status -> new IndicadorStatusResponse(status,quantidades.getOrDefault(status, 0L))).toList();
+    }
+
 }

@@ -1,5 +1,6 @@
 package br.com.senac.sistema_gestao_absenteismo.ponto.controller;
 
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.MarcacaoPontoRequest;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
@@ -105,6 +106,23 @@ public class RegistroPontoController {
             Long funcionarioId
     ) {
         return registroPontoService.buscarResumoGerencial(inicio,fim,funcionarioId);
+    }
+
+
+    @GetMapping("/indicadores/status")
+    public List<IndicadorStatusResponse> buscarIndicadoresPorStatus(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate inicio,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fim,
+
+            @RequestParam(required = false)
+            Long funcionarioId
+    ) {
+        return registroPontoService.buscarIndicadoresPorStatus(inicio,fim,funcionarioId);
     }
 
 }
