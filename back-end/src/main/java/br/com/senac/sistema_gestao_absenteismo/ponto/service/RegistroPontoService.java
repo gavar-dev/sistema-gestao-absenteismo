@@ -4,6 +4,7 @@ import br.com.senac.sistema_gestao_absenteismo.funcionario.model.Funcionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.model.StatusFuncionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.repository.FuncionarioRepository;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorDiaResponse;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorSetorResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -314,5 +316,27 @@ public class RegistroPontoService {
         }).toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<IndicadorSetorResponse> buscarIndicadoresPorSetor(LocalDate inicio,LocalDate fim) {
+
+        validarPeriodo(inicio, fim);
+
+        List<RegistroPonto> registros = registroPontoRepository.buscarRegistrosGerenciais(inicio,fim,null,null);
+
+        Map<String, List<RegistroPonto>> registrosPorSetor = registros.stream().collect(Collectors.groupingBy(registro ->registro.getFuncionario().getSetor()));
+
+        return registrosPorSetor.entrySet().stream().map(entry -> {
+            String setor = entry.getKey();
+            List<RegistroPonto> registrosDoSetor = entry.getValue();
+
+            long atrasos = registrosDoSetor.stream().filter(registro ->registro.getStatus()== StatusJornada.ATRASO).count();
+
+            long faltas = registrosDoSetor.stream().filter(registro ->registro.getStatus()== StatusJornada.FALTA).count();
+
+            long pendencias = registrosDoSetor.stream().filter(registro ->registro.getStatus()== StatusJornada.PENDENTE).count();
+
+            return new IndicadorSetorResponse(setor,registrosDoSetor.size(),atrasos,faltas,pendencias);
+        }).sorted(Comparator.comparing(IndicadorSetorResponse::setor,String.CASE_INSENSITIVE_ORDER)).toList();
+    }
 
 }

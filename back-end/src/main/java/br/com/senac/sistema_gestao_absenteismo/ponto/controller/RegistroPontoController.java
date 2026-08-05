@@ -1,6 +1,7 @@
 package br.com.senac.sistema_gestao_absenteismo.ponto.controller;
 
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorDiaResponse;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorSetorResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.MarcacaoPontoRequest;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
@@ -145,5 +146,17 @@ public class RegistroPontoController {
                 funcionarioId
         );
     }
-    
+
+    @GetMapping("/indicadores/por-setor")
+    public List<IndicadorSetorResponse> buscarIndicadoresPorSetor(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate inicio,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fim
+    ) {
+        return registroPontoService.buscarIndicadoresPorSetor(inicio,fim);
+    }
 }
