@@ -75,7 +75,27 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/api/solicitacoes",
                                 "/api/solicitacoes/**").hasAnyRole("RH", "GESTOR")
-
+                                // Qualquer usuário autenticado consulta seus avisos
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/avisos/meus").authenticated()
+                        // RH e gestor consultam todos os avisos
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/avisos",
+                                "/api/avisos/**").hasAnyRole("RH", "GESTOR")
+                        // Apenas RH cria avisos
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/avisos").hasRole("RH")
+                        // Apenas RH atualiza avisos
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/avisos/**").hasRole("RH")
+                        // Apenas RH remove avisos
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/avisos/**").hasRole("RH")
                         // Demais endpoints exigem login
                         .anyRequest()
                         .authenticated()
