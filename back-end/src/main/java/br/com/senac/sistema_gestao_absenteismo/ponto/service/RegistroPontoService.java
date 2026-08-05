@@ -3,6 +3,7 @@ package br.com.senac.sistema_gestao_absenteismo.ponto.service;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.model.Funcionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.model.StatusFuncionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.repository.FuncionarioRepository;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorDiaResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
@@ -282,5 +283,36 @@ public class RegistroPontoService {
 
         return Arrays.stream(StatusJornada.values()).map(status -> new IndicadorStatusResponse(status,quantidades.getOrDefault(status, 0L))).toList();
     }
+
+
+    @Transactional(readOnly = true)
+    public List<IndicadorDiaResponse> buscarIndicadoresPorDia(LocalDate inicio,LocalDate fim,Long funcionarioId) {
+
+        validarPeriodo(inicio, fim);
+
+        if (funcionarioId != null && !funcionarioRepository.existsById(funcionarioId)) {
+
+            throw new RecursoNaoEncontradoException("Funcionário não encontrado com o id "+ funcionarioId);
+        }
+
+        List<RegistroPonto> registros = registroPontoRepository.buscarRegistrosGerenciais(inicio,fim,null,funcionarioId);
+
+        Map<LocalDate, List<RegistroPonto>> registrosPorData = registros.stream().collect(Collectors.groupingBy(RegistroPonto::getDataRegistro));
+
+        return inicio.datesUntil(fim.plusDays(1)).map(data -> {
+            
+            List<RegistroPonto> registrosDoDia = registrosPorData.getOrDefault(data,List.of());
+            
+            long atrasos = registrosDoDia.stream().filter(registro ->registro.getStatus()== StatusJornada.ATRASO).count();
+            
+            long faltas = registrosDoDia.stream().filter(registro ->registro.getStatus()== StatusJornada.FALTA).count();
+            
+            long pendencias = registrosDoDia.stream().filter(registro ->registro.getStatus()== StatusJornada.PENDENTE).count();
+            
+            return new IndicadorDiaResponse(data,registrosDoDia.size(),atrasos,faltas,pendencias);
+            
+        }).toList();
+    }
+
 
 }
