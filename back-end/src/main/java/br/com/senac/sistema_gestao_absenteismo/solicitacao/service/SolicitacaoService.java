@@ -5,7 +5,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,16 +129,88 @@ public class SolicitacaoService {
             throw new IllegalArgumentException("O novo valor do campo é obrigatório");
         }
 
-        String campoNormalizado = normalizarTexto(request.campoCadastro());
+        String campo = normalizarTexto(request.campoCadastro());
 
-        if (campoNormalizado.equals("matricula")) {
+        if (campo.equals("matricula")) {
             throw new IllegalArgumentException("A matrícula não pode ser alterada");
+        }
+
+        if (!campoCadastroPermitido(campo)) {
+            throw new IllegalArgumentException("O campo informado não pode ser alterado por solicitação cadastral");
+        }
+
+        validarNovoValorCadastro(campo,request.novoValor());
+    }
+
+    private boolean campoCadastroPermitido(String campo) {
+        return switch (campo) {
+
+            case "nome","nome completo","email","email corporativo","cpf","telefone","data nascimento","data de nascimento",
+                "estado civil","nacionalidade","naturalidade","local trabalho","local de trabalho" -> true;
+
+            default -> false;
+        };
+    }
+
+    private void validarNovoValorCadastro(String campo,String novoValor) {
+
+        String valor = novoValor.trim();
+
+        switch (campo) {
+            case "nome","nome completo" -> validarTamanho(valor,3,150,"O nome completo");
+
+            case "email","email corporativo" -> {validarTamanho(valor,5,150,"O e-mail corporativo");
+
+                if (!valor.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                    throw new IllegalArgumentException("O novo e-mail corporativo é inválido");
+                }
+            }
+
+            case "cpf" -> { String cpf = valor.replaceAll("\\D", "");
+
+                if (cpf.length() != 11) {
+                    throw new IllegalArgumentException("O CPF deve possuir 11 dígitos");
+                }
+            }
+
+            case "telefone" -> validarTamanho(valor,8,20,"O telefone");
+
+            case "data nascimento","data de nascimento" -> validarDataNascimento(valor);
+
+            case "estado civil" -> validarTamanho(valor,2,40,"O estado civil");
+
+            case "nacionalidade" -> validarTamanho(valor,2,60,"A nacionalidade");
+
+            case "naturalidade" -> validarTamanho(valor,2,80,"A naturalidade");
+
+            case "local trabalho","local de trabalho" -> validarTamanho(valor,2,120,"O local de trabalho");
+
+            default -> throw new IllegalArgumentException("Campo cadastral inválido");
         }
     }
 
-    private void validarDataReferenciaEObrigatoria(
-            LocalDate dataReferencia
-    ) {
+    private void validarTamanho(String valor,int minimo,int maximo,String nomeCampo) {
+
+        if (valor.length() < minimo || valor.length() > maximo) {
+            throw new IllegalArgumentException(nomeCampo + " deve possuir entre " + minimo + " e " + maximo + " caracteres");
+        }
+    }
+
+    private void validarDataNascimento(String valor) {
+        try {
+
+            LocalDate data = LocalDate.parse(valor);
+
+            if (!data.isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("A data de nascimento deve ser anterior à data atual");
+            }
+        } catch (DateTimeParseException exception) {
+            throw new IllegalArgumentException("A data de nascimento deve estar no formato AAAA-MM-DD");
+        }
+    }
+
+    private void validarDataReferenciaEObrigatoria(LocalDate dataReferencia) {
+
         if (dataReferencia == null) {
             throw new IllegalArgumentException("A data de referência é obrigatória");
         }
@@ -219,7 +293,8 @@ public class SolicitacaoService {
 
     private String normalizarTexto(String valor) {
 
-        return Normalizer.normalize(valor, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase().trim();
+        return Normalizer.normalize(valor, Normalizer.Form.NFD).replaceAll("\\p{M}", "").replace("_", " ").replace("-", " ").trim()
+        .toLowerCase(Locale.ROOT).replaceAll("\\s+", " ");
     }
 
     private Solicitacao buscarSolicitacao(Long solicitacaoId) {
@@ -368,6 +443,68 @@ public class SolicitacaoService {
         solicitacao.setRegistroPonto(salvo);
     }
 
+    private void aplicarCorrecaoCadastro(Solicitacao solicitacao) {
+
+        Funcionario funcionario = solicitacao.getFuncionario();
+
+        String campo = normalizarTexto(solicitacao.getCampoCadastro());
+
+        String novoValor = solicitacao.getNovoValor().trim();
+
+        validarNovoValorCadastro(campo,novoValor);
+
+        switch (campo) {
+
+            case "nome","nome completo" -> funcionario.setNomeCompleto(novoValor);
+
+            case "email","email corporativo" -> alterarEmailCorporativo(funcionario,novoValor);
+
+            case "cpf" -> alterarCpf(funcionario,novoValor);
+
+            case "telefone" -> funcionario.setTelefone(novoValor);
+
+            case "data nascimento","data de nascimento" -> funcionario.setDataNascimento(LocalDate.parse(novoValor));
+
+            case "estado civil" -> funcionario.setEstadoCivil(novoValor);
+
+            case "nacionalidade" -> funcionario.setNacionalidade(novoValor);
+
+            case "naturalidade" -> funcionario.setNaturalidade(novoValor);
+
+            case "local trabalho","local de trabalho" -> funcionario.setLocalTrabalho(novoValor);
+
+            default -> throw new IllegalArgumentException("O campo cadastral não pode ser alterado");
+        }
+
+        funcionarioRepository.saveAndFlush(funcionario);
+    }
+
+    private void alterarEmailCorporativo(Funcionario funcionario,String novoEmail) {
+
+        String emailNormalizado = novoEmail.trim().toLowerCase(Locale.ROOT);
+
+        boolean emailEmUso = funcionarioRepository.existsByEmailCorporativoIgnoreCaseAndIdNot(emailNormalizado,funcionario.getId());
+
+        if (emailEmUso) {
+            throw new ConflitoDeDadosException("Já existe outro funcionário com este e-mail");
+        }
+
+        funcionario.setEmailCorporativo(emailNormalizado);
+    }
+
+    private void alterarCpf(Funcionario funcionario,String novoCpf) {
+
+        String cpfNormalizado = novoCpf.replaceAll("\\D", "");
+
+        boolean cpfEmUso = funcionarioRepository.existsByCpfAndIdNot(cpfNormalizado,funcionario.getId());
+
+        if (cpfEmUso) {
+            throw new ConflitoDeDadosException("Já existe outro funcionário com este CPF");
+        }
+        
+        funcionario.setCpf(cpfNormalizado);
+    }
+
     @Transactional
     public SolicitacaoResponse criar(Long funcionarioId,SolicitacaoCreateRequest request) {
 
@@ -448,6 +585,9 @@ public class SolicitacaoService {
             case CORRECAO_PONTO -> aplicarCorrecaoPonto(solicitacao);
 
              case JUSTIFICATIVA_FALTA -> aplicarJustificativaFalta(solicitacao);
+
+             case CORRECAO_CADASTRO -> aplicarCorrecaoCadastro(solicitacao);
+
 
             default -> throw new IllegalArgumentException("A aprovação do tipo "+ solicitacao.getTipo()+ " ainda não foi implementada");
         }
