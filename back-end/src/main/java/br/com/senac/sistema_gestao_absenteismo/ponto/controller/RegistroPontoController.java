@@ -4,6 +4,7 @@ import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorDiaResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorSetorResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.MarcacaoPontoRequest;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RankingAtrasoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.model.StatusJornada;
@@ -159,4 +160,21 @@ public class RegistroPontoController {
     ) {
         return registroPontoService.buscarIndicadoresPorSetor(inicio,fim);
     }
+
+    @GetMapping("/indicadores/ranking-atrasos")
+    public List<RankingAtrasoResponse> buscarRankingAtrasos(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate inicio,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fim,
+
+            @RequestParam(defaultValue = "5")
+            int limite
+    ) {
+        return registroPontoService.buscarRankingAtrasos(inicio,fim,limite);
+    }
+
 }

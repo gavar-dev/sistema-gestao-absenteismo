@@ -6,6 +6,7 @@ import br.com.senac.sistema_gestao_absenteismo.funcionario.repository.Funcionari
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorDiaResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorSetorResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RankingAtrasoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.model.RegistroPonto;
@@ -338,5 +339,33 @@ public class RegistroPontoService {
             return new IndicadorSetorResponse(setor,registrosDoSetor.size(),atrasos,faltas,pendencias);
         }).sorted(Comparator.comparing(IndicadorSetorResponse::setor,String.CASE_INSENSITIVE_ORDER)).toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<RankingAtrasoResponse> buscarRankingAtrasos(LocalDate inicio,LocalDate fim,int limite) {
+
+        validarPeriodo(inicio, fim);
+
+        if (limite < 1 || limite > 100) {
+            throw new IllegalArgumentException("O limite deve estar entre 1 e 100");
+        }
+
+        List<RegistroPonto> atrasos = registroPontoRepository.buscarRegistrosGerenciais(inicio,fim,StatusJornada.ATRASO,null);
+
+        Map<Long, List<RegistroPonto>> atrasosPorFuncionario = atrasos.stream().collect(Collectors.groupingBy(registro ->registro.getFuncionario().getId()));
+
+        return atrasosPorFuncionario.values().stream().map(registrosFuncionario -> {
+            Funcionario funcionario = registrosFuncionario.getFirst().getFuncionario();
+
+            long quantidadeAtrasos = registrosFuncionario.size();
+
+            long totalMinutosAtraso = registrosFuncionario.stream().map(RegistroPonto::getAtrasoMinutos).filter(Objects::nonNull).mapToLong(Integer::longValue).sum();
+
+            double mediaMinutosAtraso = quantidadeAtrasos == 0 ? 0.0 : (double) totalMinutosAtraso/ quantidadeAtrasos;
+
+            return new RankingAtrasoResponse(funcionario.getId(),funcionario.getNomeCompleto(),funcionario.getSetor(),quantidadeAtrasos,totalMinutosAtraso,mediaMinutosAtraso);
+        }).sorted(Comparator.comparingLong(RankingAtrasoResponse::totalMinutosAtraso).reversed()
+            .thenComparing(RankingAtrasoResponse::nomeFuncionario,String.CASE_INSENSITIVE_ORDER)).limit(limite).toList();
+    }
+
 
 }
