@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,6 +33,16 @@ import java.util.List;
 public class FuncionarioController {
 
     private final FuncionarioService funcionarioService;
+
+    private Long extrairFuncionarioId(Jwt jwt) {
+        Object valor = jwt.getClaim("funcionarioId");
+
+        if (valor instanceof Number numero) {
+            return numero.longValue();
+        }
+
+        throw new IllegalArgumentException("O token não contém o identificador do funcionário");
+    }
 
     @PostMapping
     ResponseEntity<FuncionarioResponse> criar(@Valid @RequestBody FuncionarioCreateRequest request) {
@@ -75,5 +87,13 @@ public class FuncionarioController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void desativar(@PathVariable Long id) {
         funcionarioService.desativar(id);
+    }
+
+    @GetMapping("/me")
+    FuncionarioResponse buscarUsuarioLogado(@AuthenticationPrincipal Jwt jwt) {
+
+        Long funcionarioId = extrairFuncionarioId(jwt);
+
+        return funcionarioService.buscarPorId(funcionarioId);
     }
 }
