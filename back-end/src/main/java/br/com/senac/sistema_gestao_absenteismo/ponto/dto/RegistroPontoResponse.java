@@ -39,7 +39,7 @@ public record RegistroPontoResponse(
 
     private static TipoMarcacao descobrirProximaMarcacao(RegistroPonto registro) {
         
-        if (registro.getStatus() == StatusJornada.PENDENTE || registro.getStatus() == StatusJornada.FALTA || registro.getStatus() == StatusJornada.CONCLUIDA) {
+        if (registro.getStatus() == StatusJornada.PENDENTE || registro.getStatus() == StatusJornada.FALTA || registro.getStatus() == StatusJornada.CONCLUIDA || registro.getStatus() == StatusJornada.JUSTIFICADA) {
             return null;
         }
 

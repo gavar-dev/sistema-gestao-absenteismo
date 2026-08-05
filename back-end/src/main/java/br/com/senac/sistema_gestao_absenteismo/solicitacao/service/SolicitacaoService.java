@@ -91,6 +91,15 @@ public class SolicitacaoService {
 
         validarPrazo48Horas(request.dataReferencia());
 
+        RegistroPonto registro = registroPontoRepository.findByFuncionario_IdAndDataRegistro(funcionarioId,request.dataReferencia()).orElseThrow(() ->
+        new ConflitoDeDadosException("Não existe falta ou pendência para a data informada"));
+
+        boolean statusPermitido = registro.getStatus() == StatusJornada.FALTA || registro.getStatus() == StatusJornada.PENDENTE;
+
+        if (!statusPermitido) {
+            throw new ConflitoDeDadosException("A justificativa só pode ser criada para um registro com status FALTA ou PENDENTE");
+        }
+
         validarDuplicidade(funcionarioId,request);
     }
 
@@ -334,6 +343,31 @@ public class SolicitacaoService {
 
     }
 
+    private void aplicarJustificativaFalta(Solicitacao solicitacao) {
+
+        Long funcionarioId = solicitacao.getFuncionario().getId();
+
+        LocalDate dataReferencia = solicitacao.getDataReferencia();
+
+        RegistroPonto registro = registroPontoRepository.findByFuncionario_IdAndDataRegistro(funcionarioId,dataReferencia).orElseThrow(() ->
+        new ConflitoDeDadosException("O registro de falta ou pendência não foi encontrado"));
+
+        boolean statusPermitido = registro.getStatus() == StatusJornada.FALTA || registro.getStatus() == StatusJornada.PENDENTE;
+
+        if (!statusPermitido) {
+            throw new ConflitoDeDadosException("Somente registros com status FALTA ou PENDENTE podem ser justificados");
+        }
+
+        registro.setStatus(StatusJornada.JUSTIFICADA);
+
+        registro.setAtrasoMinutos(0);
+        registro.setTotalTrabalhadoMinutos(0);
+
+        RegistroPonto salvo = registroPontoRepository.saveAndFlush(registro);
+
+        solicitacao.setRegistroPonto(salvo);
+    }
+
     @Transactional
     public SolicitacaoResponse criar(Long funcionarioId,SolicitacaoCreateRequest request) {
 
@@ -412,6 +446,8 @@ public class SolicitacaoService {
 
         switch (solicitacao.getTipo()) {
             case CORRECAO_PONTO -> aplicarCorrecaoPonto(solicitacao);
+
+             case JUSTIFICATIVA_FALTA -> aplicarJustificativaFalta(solicitacao);
 
             default -> throw new IllegalArgumentException("A aprovação do tipo "+ solicitacao.getTipo()+ " ainda não foi implementada");
         }

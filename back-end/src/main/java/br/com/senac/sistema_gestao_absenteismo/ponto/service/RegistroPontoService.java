@@ -413,7 +413,7 @@ public class RegistroPontoService {
 
             RegistroPonto registro = registroExistente.get();
 
-            if (registro.getStatus() == StatusJornada.PENDENTE || registro.getStatus() == StatusJornada.FALTA) {
+            if (registro.getStatus() == StatusJornada.PENDENTE || registro.getStatus() == StatusJornada.FALTA || registro.getStatus() == StatusJornada.JUSTIFICADA) {
 
                 registrosMantidos++;
                 continue;
