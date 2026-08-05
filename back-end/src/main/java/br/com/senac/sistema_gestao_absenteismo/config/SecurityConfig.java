@@ -57,6 +57,10 @@ public class SecurityConfig {
                                 "/api/pontos/resumo",
                                 "/api/pontos/indicadores/**",
                                 "/api/pontos/funcionarios/**").hasAnyRole("RH", "GESTOR")
+                        // Apenas RH pode analisar solicitações
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/solicitacoes/**").hasRole("RH")
                                 // Usuário autenticado consulta as próprias solicitações
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -67,6 +71,7 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/api/solicitacoes",
                                 "/api/solicitacoes/**").hasAnyRole("RH", "GESTOR")
+
                         // Demais endpoints exigem login
                         .anyRequest()
                         .authenticated()

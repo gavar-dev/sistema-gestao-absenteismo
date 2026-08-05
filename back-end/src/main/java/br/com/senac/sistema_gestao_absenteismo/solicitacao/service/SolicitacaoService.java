@@ -18,6 +18,7 @@ import br.com.senac.sistema_gestao_absenteismo.shared.exception.ConflitoDeDadosE
 import br.com.senac.sistema_gestao_absenteismo.shared.exception.RecursoNaoEncontradoException;
 import br.com.senac.sistema_gestao_absenteismo.shared.exception.UsuarioInativoException;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoCreateRequest;
+import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoRejeicaoRequest;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoResponse;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.model.PrioridadeSolicitacao;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.model.Solicitacao;
@@ -35,24 +36,6 @@ public class SolicitacaoService {
     private final FuncionarioRepository funcionarioRepository;
     private final RegistroPontoRepository registroPontoRepository;
 
-    @Transactional
-    public SolicitacaoResponse criar(Long funcionarioId,SolicitacaoCreateRequest request) {
-
-        Funcionario funcionario = buscarFuncionarioAtivo(funcionarioId);
-
-        validarRequest(funcionarioId, request);
-
-        Solicitacao solicitacao = Solicitacao.builder().funcionario(funcionario)
-        .tipo(request.tipo()).status(StatusSolicitacao.PENDENTE).prioridade(
-            request.prioridade() == null ? PrioridadeSolicitacao.NORMAL : request.prioridade())
-            .justificativa(request.justificativa().trim()).build();
-
-        preencherDadosEspecificos(solicitacao,funcionarioId,request);
-
-        Solicitacao salva = solicitacaoRepository.save(solicitacao);
-
-        return SolicitacaoResponse.from(salva);
-    }
 
     private Funcionario buscarFuncionarioAtivo(Long funcionarioId) {
 
@@ -290,20 +273,45 @@ public class SolicitacaoService {
                 .trim();
     }
 
-    @Transactional(readOnly = true)
-public List<SolicitacaoResponse> listarMinhas(
-        Long funcionarioId
-) {
-    buscarFuncionarioAtivo(funcionarioId);
+    private Solicitacao buscarSolicitacao(Long solicitacaoId) {
 
-    return solicitacaoRepository
-            .findByFuncionario_IdOrderByCriadoEmDesc(
-                    funcionarioId
-            )
-            .stream()
-            .map(SolicitacaoResponse::from)
-            .toList();
-}
+        return solicitacaoRepository.findById(solicitacaoId).orElseThrow(() ->
+        new RecursoNaoEncontradoException("Solicitação não encontrada com o id "+ solicitacaoId));
+    }
+
+    private void validarSolicitacaoPendente(Solicitacao solicitacao) {
+
+        if (solicitacao.getStatus()!= StatusSolicitacao.PENDENTE) {
+            throw new ConflitoDeDadosException("Esta solicitação já foi analisada");
+        }
+    }
+
+    @Transactional
+    public SolicitacaoResponse criar(Long funcionarioId,SolicitacaoCreateRequest request) {
+
+        Funcionario funcionario = buscarFuncionarioAtivo(funcionarioId);
+
+        validarRequest(funcionarioId, request);
+
+        Solicitacao solicitacao = Solicitacao.builder().funcionario(funcionario)
+        .tipo(request.tipo()).status(StatusSolicitacao.PENDENTE).prioridade(
+            request.prioridade() == null ? PrioridadeSolicitacao.NORMAL : request.prioridade())
+            .justificativa(request.justificativa().trim()).build();
+
+        preencherDadosEspecificos(solicitacao,funcionarioId,request);
+
+        Solicitacao salva = solicitacaoRepository.save(solicitacao);
+
+        return SolicitacaoResponse.from(salva);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponse> listarMinhas(Long funcionarioId) {
+        buscarFuncionarioAtivo(funcionarioId);
+
+        return solicitacaoRepository.findByFuncionario_IdOrderByCriadoEmDesc(funcionarioId)
+        .stream().map(SolicitacaoResponse::from).toList();
+    }
 
     @Transactional(readOnly = true)
     public List<SolicitacaoResponse> listarGerencial(StatusSolicitacao status) {
@@ -312,6 +320,37 @@ public List<SolicitacaoResponse> listarMinhas(
         .findAllByOrderByCriadoEmDesc() : solicitacaoRepository.findByStatusOrderByCriadoEmDesc(status);
 
         return solicitacoes.stream().map(SolicitacaoResponse::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public SolicitacaoResponse buscarPorIdGerencial(Long solicitacaoId) {
+
+        Solicitacao solicitacao = buscarSolicitacao(solicitacaoId);
+
+        return SolicitacaoResponse.from(solicitacao);
+    }
+
+    @Transactional
+    public SolicitacaoResponse rejeitar(Long solicitacaoId,Long analisadorId,
+        SolicitacaoRejeicaoRequest request) {
+
+        Solicitacao solicitacao = buscarSolicitacao(solicitacaoId);
+
+        validarSolicitacaoPendente(solicitacao);
+
+        Funcionario analisador = buscarFuncionarioAtivo(analisadorId);
+
+        solicitacao.setStatus(StatusSolicitacao.REJEITADA);
+
+        solicitacao.setObservacaoAnalise(request.observacao().trim());
+
+        solicitacao.setAnalisadoPor(analisador);
+
+        solicitacao.setAnalisadoEm(LocalDateTime.now().withNano(0));
+
+        Solicitacao salva = solicitacaoRepository.save(solicitacao);
+
+        return SolicitacaoResponse.from(salva);
     }
 
 }
