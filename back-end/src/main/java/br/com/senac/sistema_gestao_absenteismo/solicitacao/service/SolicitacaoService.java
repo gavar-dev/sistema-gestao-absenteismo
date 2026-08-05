@@ -501,8 +501,28 @@ public class SolicitacaoService {
         if (cpfEmUso) {
             throw new ConflitoDeDadosException("Já existe outro funcionário com este CPF");
         }
-        
+
         funcionario.setCpf(cpfNormalizado);
+    }
+
+    private void aplicarSolicitacaoFerias(Solicitacao solicitacao) {
+
+        Long funcionarioId = solicitacao.getFuncionario().getId();
+
+        LocalDate dataInicio = solicitacao.getDataInicio();
+
+        LocalDate dataFim = solicitacao.getDataFim();
+
+        if (dataInicio == null || dataFim == null) {
+            throw new IllegalArgumentException("O período de férias está incompleto");
+        }
+
+        boolean existeSobreposicao = solicitacaoRepository.existsByFuncionario_IdAndTipoAndStatusAndDataInicioLessThanEqualAndDataFimGreaterThanEqual(
+            funcionarioId,solicitacao.getTipo(),StatusSolicitacao.APROVADA,dataFim,dataInicio);
+
+        if (existeSobreposicao) {
+            throw new ConflitoDeDadosException("O funcionário já possui férias aprovadas que coincidem com o período informado");
+        }
     }
 
     @Transactional
@@ -584,10 +604,11 @@ public class SolicitacaoService {
         switch (solicitacao.getTipo()) {
             case CORRECAO_PONTO -> aplicarCorrecaoPonto(solicitacao);
 
-             case JUSTIFICATIVA_FALTA -> aplicarJustificativaFalta(solicitacao);
+            case JUSTIFICATIVA_FALTA -> aplicarJustificativaFalta(solicitacao);
 
-             case CORRECAO_CADASTRO -> aplicarCorrecaoCadastro(solicitacao);
+            case CORRECAO_CADASTRO -> aplicarCorrecaoCadastro(solicitacao);
 
+            case SOLICITACAO_FERIAS -> aplicarSolicitacaoFerias(solicitacao);
 
             default -> throw new IllegalArgumentException("A aprovação do tipo "+ solicitacao.getTipo()+ " ainda não foi implementada");
         }

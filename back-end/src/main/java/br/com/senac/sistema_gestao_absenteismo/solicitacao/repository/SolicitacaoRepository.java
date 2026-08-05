@@ -20,6 +20,9 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     boolean existsByFuncionario_IdAndTipoAndDataReferenciaAndStatus(Long funcionarioId,TipoSolicitacao tipo,
     LocalDate dataReferencia,StatusSolicitacao status);
 
+    boolean existsByFuncionario_IdAndTipoAndStatusAndDataInicioLessThanEqualAndDataFimGreaterThanEqual(Long funcionarioId,TipoSolicitacao tipo,
+        StatusSolicitacao status,LocalDate dataFim,LocalDate dataInicio);
+
     
 
 }

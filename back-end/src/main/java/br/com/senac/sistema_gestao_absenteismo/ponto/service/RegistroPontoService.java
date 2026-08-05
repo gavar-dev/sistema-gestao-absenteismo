@@ -18,6 +18,9 @@ import br.com.senac.sistema_gestao_absenteismo.ponto.repository.RegistroPontoRep
 import br.com.senac.sistema_gestao_absenteismo.shared.exception.ConflitoDeDadosException;
 import br.com.senac.sistema_gestao_absenteismo.shared.exception.RecursoNaoEncontradoException;
 import br.com.senac.sistema_gestao_absenteismo.shared.exception.UsuarioInativoException;
+import br.com.senac.sistema_gestao_absenteismo.solicitacao.model.StatusSolicitacao;
+import br.com.senac.sistema_gestao_absenteismo.solicitacao.model.TipoSolicitacao;
+import br.com.senac.sistema_gestao_absenteismo.solicitacao.repository.SolicitacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +48,7 @@ public class RegistroPontoService {
 
     private final RegistroPontoRepository registroPontoRepository;
     private final FuncionarioRepository funcionarioRepository;
+    private final SolicitacaoRepository solicitacaoRepository;
 
     private RegistroPonto registrarEntrada(Funcionario funcionario, Optional<RegistroPonto> registroDoDia,
             LocalDate dataAtual, LocalTime horaAtual) {
@@ -395,8 +399,17 @@ public class RegistroPontoService {
         int pendenciasCriadas = 0;
         int jornadasIncompletasMarcadas = 0;
         int registrosMantidos = 0;
+        int feriasIgnoradas = 0;
 
         for (Funcionario funcionario : funcionariosAtivos) {
+
+            boolean funcionarioEstaDeFerias = solicitacaoRepository.existsByFuncionario_IdAndTipoAndStatusAndDataInicioLessThanEqualAndDataFimGreaterThanEqual(
+                funcionario.getId(),TipoSolicitacao.SOLICITACAO_FERIAS,StatusSolicitacao.APROVADA,data,data);
+
+            if (funcionarioEstaDeFerias) {
+                feriasIgnoradas++;
+                continue;
+            }
 
             Optional<RegistroPonto> registroExistente = registroPontoRepository.findByFuncionario_IdAndDataRegistro(funcionario.getId(),data);
 
@@ -431,8 +444,7 @@ public class RegistroPontoService {
             registrosMantidos++;
         }
 
-        return new ProcessamentoPendenciasResponse(data,funcionariosAtivos.size(),pendenciasCriadas,
-        jornadasIncompletasMarcadas,registrosMantidos);
+        return new ProcessamentoPendenciasResponse(data,funcionariosAtivos.size(),pendenciasCriadas,jornadasIncompletasMarcadas,registrosMantidos,feriasIgnoradas);
     }
 
     @Transactional
