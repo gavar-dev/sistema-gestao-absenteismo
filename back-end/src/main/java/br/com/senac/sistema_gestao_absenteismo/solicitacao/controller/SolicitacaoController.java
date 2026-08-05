@@ -1,5 +1,6 @@
 package br.com.senac.sistema_gestao_absenteismo.solicitacao.controller;
 
+import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoAprovacaoRequest;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoCreateRequest;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoRejeicaoRequest;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoResponse;
@@ -79,5 +80,18 @@ public class SolicitacaoController {
 
         return solicitacaoService.rejeitar(id,analisadorId,request);
     }
+
+    @PatchMapping("/{id}/aprovar")
+    public SolicitacaoResponse aprovar(
+        @PathVariable Long id,
+        @AuthenticationPrincipal Jwt jwt,
+        @Valid @RequestBody
+        SolicitacaoAprovacaoRequest request) {
+
+        Long analisadorId = extrairFuncionarioId(jwt);
+
+        return solicitacaoService.aprovar(id,analisadorId,request);
+    }
+
 
 }
