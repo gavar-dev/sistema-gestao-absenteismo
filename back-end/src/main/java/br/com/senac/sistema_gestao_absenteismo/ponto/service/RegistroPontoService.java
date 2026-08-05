@@ -6,6 +6,7 @@ import br.com.senac.sistema_gestao_absenteismo.funcionario.repository.Funcionari
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorDiaResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorSetorResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ProcessamentoFaltasResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ProcessamentoPendenciasResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RankingAtrasoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
@@ -434,4 +435,26 @@ public class RegistroPontoService {
         jornadasIncompletasMarcadas,registrosMantidos);
     }
 
+    @Transactional
+    public ProcessamentoFaltasResponse processarFaltas() {
+        LocalDateTime agora = LocalDateTime.now().withNano(0);
+
+        List<RegistroPonto> pendencias = registroPontoRepository.findByStatusOrderByDataRegistroAsc(StatusJornada.PENDENTE);
+
+        List<RegistroPonto> pendenciasVencidas = pendencias.stream().filter(registro -> {
+            LocalDateTime prazoCorrecao = registro.getDataRegistro().atTime(HORARIO_ENTRADA)
+            .plusHours(48);
+
+            return !agora.isBefore(prazoCorrecao);
+        }).toList();
+
+        pendenciasVencidas.forEach(registro ->registro.setStatus(StatusJornada.FALTA));
+
+        registroPontoRepository.saveAll(pendenciasVencidas);
+
+        int pendenciasDentroDoPrazo = pendencias.size() - pendenciasVencidas.size();
+
+        return new ProcessamentoFaltasResponse(agora,pendencias.size(),pendenciasVencidas.size(),
+        pendenciasDentroDoPrazo);
+    }
 }

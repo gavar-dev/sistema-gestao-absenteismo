@@ -38,6 +38,11 @@ public record RegistroPontoResponse(
     }
 
     private static TipoMarcacao descobrirProximaMarcacao(RegistroPonto registro) {
+        
+        if (registro.getStatus() == StatusJornada.PENDENTE || registro.getStatus() == StatusJornada.FALTA || registro.getStatus() == StatusJornada.CONCLUIDA) {
+            return null;
+        }
+
         if (registro.getEntrada() == null) {
             return TipoMarcacao.ENTRADA;
         }

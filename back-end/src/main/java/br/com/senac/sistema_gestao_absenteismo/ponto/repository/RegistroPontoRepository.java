@@ -28,5 +28,7 @@ public interface RegistroPontoRepository extends JpaRepository<RegistroPonto, Lo
         ORDER BY registro.dataRegistro DESC, registro.entrada DESC
         """)
     List<RegistroPonto> buscarRegistrosGerenciais(@Param("inicio") LocalDate inicio,@Param("fim") LocalDate fim,@Param("status") StatusJornada status,@Param("funcionarioId") Long funcionarioId);
+
+    List<RegistroPonto> findByStatusOrderByDataRegistroAsc(StatusJornada status);
     
 }
