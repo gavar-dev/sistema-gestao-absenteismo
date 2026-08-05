@@ -4,6 +4,7 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -288,4 +289,29 @@ public class SolicitacaoService {
                 .toLowerCase()
                 .trim();
     }
+
+    @Transactional(readOnly = true)
+public List<SolicitacaoResponse> listarMinhas(
+        Long funcionarioId
+) {
+    buscarFuncionarioAtivo(funcionarioId);
+
+    return solicitacaoRepository
+            .findByFuncionario_IdOrderByCriadoEmDesc(
+                    funcionarioId
+            )
+            .stream()
+            .map(SolicitacaoResponse::from)
+            .toList();
+}
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponse> listarGerencial(StatusSolicitacao status) {
+
+        List<Solicitacao> solicitacoes = status == null ? solicitacaoRepository
+        .findAllByOrderByCriadoEmDesc() : solicitacaoRepository.findByStatusOrderByCriadoEmDesc(status);
+
+        return solicitacoes.stream().map(SolicitacaoResponse::from).toList();
+    }
+
 }

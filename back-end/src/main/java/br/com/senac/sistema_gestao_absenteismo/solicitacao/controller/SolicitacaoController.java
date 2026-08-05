@@ -2,18 +2,22 @@ package br.com.senac.sistema_gestao_absenteismo.solicitacao.controller;
 
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoCreateRequest;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.dto.SolicitacaoResponse;
+import br.com.senac.sistema_gestao_absenteismo.solicitacao.model.StatusSolicitacao;
 import br.com.senac.sistema_gestao_absenteismo.solicitacao.service.SolicitacaoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -42,5 +46,19 @@ public class SolicitacaoController {
         }
 
         throw new IllegalArgumentException("O token não contém o identificador do funcionário");
+    }
+
+    @GetMapping("/minhas")
+    public List<SolicitacaoResponse> listarMinhas(
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        Long funcionarioId = extrairFuncionarioId(jwt);
+
+        return solicitacaoService.listarMinhas(funcionarioId);
+    }
+
+    @GetMapping
+    public List<SolicitacaoResponse> listarGerencial(@RequestParam(required = false)StatusSolicitacao status) {
+        return solicitacaoService.listarGerencial(status);
     }
 }

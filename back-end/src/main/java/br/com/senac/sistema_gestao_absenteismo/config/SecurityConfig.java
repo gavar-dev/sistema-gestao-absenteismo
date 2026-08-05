@@ -49,9 +49,7 @@ public class SecurityConfig {
                         // Apenas RH pode processar pendências de ponto
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/pontos/processamento/**"
-                        )
-                        .hasRole("RH")
+                                "/api/pontos/processamento/**").hasRole("RH")
                         // RH e gestor podem consultar pontos de funcionários
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -59,6 +57,16 @@ public class SecurityConfig {
                                 "/api/pontos/resumo",
                                 "/api/pontos/indicadores/**",
                                 "/api/pontos/funcionarios/**").hasAnyRole("RH", "GESTOR")
+                                // Usuário autenticado consulta as próprias solicitações
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/solicitacoes/minhas",
+                                "/api/solicitacoes/minhas/**").authenticated()
+                        // RH e gestor consultam todas as solicitações
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/solicitacoes",
+                                "/api/solicitacoes/**").hasAnyRole("RH", "GESTOR")
                         // Demais endpoints exigem login
                         .anyRequest()
                         .authenticated()
