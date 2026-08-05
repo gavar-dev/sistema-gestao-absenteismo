@@ -6,6 +6,7 @@ import br.com.senac.sistema_gestao_absenteismo.funcionario.repository.Funcionari
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorDiaResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorSetorResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.IndicadorStatusResponse;
+import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ProcessamentoPendenciasResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RankingAtrasoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.RegistroPontoResponse;
 import br.com.senac.sistema_gestao_absenteismo.ponto.dto.ResumoPontoResponse;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -163,6 +165,20 @@ public class RegistroPontoService {
     private void validarPeriodo(LocalDate inicio, LocalDate fim) {
         if (inicio.isAfter(fim)) {
             throw new IllegalArgumentException("A data inicial não pode ser posterior à data final");
+        }
+    }
+
+    private void validarDataProcessamento(LocalDate data) {
+        LocalDate hoje = LocalDate.now();
+
+        if (!data.isBefore(hoje)) {
+            throw new IllegalArgumentException("Somente datas anteriores ao dia atual podem ser processadas");
+        }
+
+        DayOfWeek diaDaSemana = data.getDayOfWeek();
+
+        if (diaDaSemana == DayOfWeek.SATURDAY || diaDaSemana == DayOfWeek.SUNDAY) {
+            throw new IllegalArgumentException("Sábados e domingos não podem ser processados como dias úteis");
         }
     }
 
@@ -367,5 +383,55 @@ public class RegistroPontoService {
             .thenComparing(RankingAtrasoResponse::nomeFuncionario,String.CASE_INSENSITIVE_ORDER)).limit(limite).toList();
     }
 
+    @Transactional
+    public ProcessamentoPendenciasResponse processarPendencias(LocalDate data) {
+
+        validarDataProcessamento(data);
+
+        List<Funcionario> funcionariosAtivos = funcionarioRepository.findByStatusOrderByNomeCompletoAsc(StatusFuncionario.ATIVO)
+        .stream().filter(funcionario -> !funcionario.getDataAdmissao().isAfter(data)).toList();
+
+        int pendenciasCriadas = 0;
+        int jornadasIncompletasMarcadas = 0;
+        int registrosMantidos = 0;
+
+        for (Funcionario funcionario : funcionariosAtivos) {
+
+            Optional<RegistroPonto> registroExistente = registroPontoRepository.findByFuncionario_IdAndDataRegistro(funcionario.getId(),data);
+
+            if (registroExistente.isEmpty()) {
+
+                RegistroPonto pendencia = RegistroPonto.builder()
+                .funcionario(funcionario).dataRegistro(data).status(StatusJornada.PENDENTE)
+                .atrasoMinutos(0).totalTrabalhadoMinutos(0).build();
+
+                registroPontoRepository.save(pendencia);
+                pendenciasCriadas++;
+                continue;
+            }
+
+            RegistroPonto registro = registroExistente.get();
+
+            if (registro.getStatus() == StatusJornada.PENDENTE || registro.getStatus() == StatusJornada.FALTA) {
+
+                registrosMantidos++;
+                continue;
+            }
+
+            if (registro.getSaida() == null) {
+
+                registro.setStatus(StatusJornada.PENDENTE);
+                registroPontoRepository.save(registro);
+
+                jornadasIncompletasMarcadas++;
+                continue;
+            }
+
+            registrosMantidos++;
+        }
+
+        return new ProcessamentoPendenciasResponse(data,funcionariosAtivos.size(),pendenciasCriadas,
+        jornadasIncompletasMarcadas,registrosMantidos);
+    }
 
 }

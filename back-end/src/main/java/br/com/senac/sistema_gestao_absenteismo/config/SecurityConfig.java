@@ -46,6 +46,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/funcionarios/**").hasRole("RH")
+                        // Apenas RH pode processar pendências de ponto
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/pontos/processamento/**"
+                        )
+                        .hasRole("RH")
                         // RH e gestor podem consultar pontos de funcionários
                         .requestMatchers(
                                 HttpMethod.GET,
