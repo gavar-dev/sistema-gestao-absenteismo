@@ -1,6 +1,7 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { UsuarioLogadoService } from '../../core/services/usuario-logado.service';
 
 type Tema = 'light' | 'dark';
 
@@ -30,7 +31,13 @@ export class Sidebar implements OnInit {
     { nome: 'Avisos', rota: '/avisos', icone: 'bi-megaphone', exata: false }
   ];
 
-  constructor(@Inject(DOCUMENT) private document: Document) {}
+  constructor(
+    @Inject(DOCUMENT)
+    private readonly document: Document,
+
+    private readonly usuarioLogadoService:
+      UsuarioLogadoService
+  ) { }
 
   ngOnInit(): void {
     const temaSalvo = localStorage.getItem('tema') as Tema | null;
@@ -46,5 +53,9 @@ export class Sidebar implements OnInit {
     this.temaAtual = tema;
     this.document.documentElement.setAttribute('data-bs-theme', tema);
     localStorage.setItem('tema', tema);
+  }
+
+  sair(): void {
+    this.usuarioLogadoService.logout();
   }
 }

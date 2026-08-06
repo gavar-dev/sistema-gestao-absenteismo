@@ -1,23 +1,13 @@
-<button
-  type="button"
-  class="btn sidebar-menu-btn d-lg-none position-fixed z-3"
-  data-bs-toggle="offcanvas"
-  data-bs-target="#menuLateral"
-  aria-controls="menuLateral"
-  aria-label="Abrir menu"
->
+<button type="button" class="btn sidebar-menu-btn d-lg-none position-fixed z-3" data-bs-toggle="offcanvas"
+  data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menu">
   <span class="sidebar-menu-btn-icon" aria-hidden="true">
     <i class="bi bi-list"></i>
   </span>
   <span class="sidebar-menu-btn-label">Menu</span>
 </button>
 
-<aside
-  id="menuLateral"
-  class="offcanvas-lg offcanvas-start sidebar-bootstrap"
-  tabindex="-1"
-  aria-labelledby="menuLateralTitulo"
->
+<aside id="menuLateral" class="offcanvas-lg offcanvas-start sidebar-bootstrap" tabindex="-1"
+  aria-labelledby="menuLateralTitulo">
   <span class="sidebar-decoration sidebar-decoration--one" aria-hidden="true"></span>
   <span class="sidebar-decoration sidebar-decoration--two" aria-hidden="true"></span>
 
@@ -33,13 +23,8 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      class="btn-close btn-close-white d-lg-none"
-      data-bs-dismiss="offcanvas"
-      data-bs-target="#menuLateral"
-      aria-label="Fechar menu"
-    ></button>
+    <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas"
+      data-bs-target="#menuLateral" aria-label="Fechar menu"></button>
   </div>
 
   <div class="offcanvas-body sidebar-body">
@@ -65,16 +50,9 @@
       </div>
 
       <nav class="nav nav-pills flex-column sidebar-nav" aria-label="Menu principal">
-        <a
-          *ngFor="let item of menu"
-          class="nav-link sidebar-link"
-          [routerLink]="item.rota"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: item.exata }"
-          ariaCurrentWhenActive="page"
-          data-bs-dismiss="offcanvas"
-          data-bs-target="#menuLateral"
-        >
+        <a *ngFor="let item of menu" class="nav-link sidebar-link" [routerLink]="item.rota" routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.exata }" ariaCurrentWhenActive="page" data-bs-dismiss="offcanvas"
+          data-bs-target="#menuLateral">
           <span class="sidebar-link-icon" aria-hidden="true">
             <i class="bi" [ngClass]="item.icone"></i>
           </span>
@@ -96,24 +74,21 @@
       </section>
 
       <div class="sidebar-actions">
-        <button
-          type="button"
-          class="btn app-theme-toggle app-theme-toggle--sidebar sidebar-action-btn"
+        <button type="button" class="btn app-theme-toggle app-theme-toggle--sidebar sidebar-action-btn"
           (click)="alternarTema()"
-          [attr.aria-label]="temaAtual === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
-        >
+          [attr.aria-label]="temaAtual === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'">
           <span class="sidebar-action-icon" aria-hidden="true">
             <i class="bi" [ngClass]="temaAtual === 'dark' ? 'bi-sun' : 'bi-moon-stars'"></i>
           </span>
           <span>{{ temaAtual === 'dark' ? 'Tema claro' : 'Tema escuro' }}</span>
         </button>
 
-        <a class="btn sidebar-logout-btn sidebar-action-btn" routerLink="/login">
+        <button type="button" class="btn sidebar-logout-btn sidebar-action-btn" (click)="sair()">
           <span class="sidebar-action-icon" aria-hidden="true">
             <i class="bi bi-box-arrow-right"></i>
           </span>
           <span>Sair</span>
-        </a>
+        </button>
       </div>
     </div>
   </div>
