@@ -1,49 +1,44 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { UsuarioLogado } from '../../models/usuarioLogado';
 import { TipoUsuario } from '../../models/tipoUsuario';
+import { TokenStorageService } from './token-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsuarioLogadoService {
-  private readonly chaveTipoUsuario = 'tipoUsuario';
   private readonly chaveUsuarioLogado = 'usuarioLogado';
 
-  constructor(private router: Router) {}
-
-  definirTipoUsuario(tipo: TipoUsuario): void {
-    const usuarioAtual = this.obterUsuarioLogado();
-
-    this.definirUsuarioLogado({
-      ...(usuarioAtual ?? this.criarUsuarioMock(tipo)),
-      tipo,
-    });
-  }
+  constructor(private readonly router: Router, private readonly tokenStorage: TokenStorageService) {}
 
   definirUsuarioLogado(usuario: UsuarioLogado): void {
-    localStorage.setItem(this.chaveTipoUsuario, usuario.tipo);
     localStorage.setItem(this.chaveUsuarioLogado, JSON.stringify(usuario));
   }
 
   obterUsuarioLogado(): UsuarioLogado | null {
+
     const usuarioSalvo = localStorage.getItem(this.chaveUsuarioLogado);
 
-    if (usuarioSalvo) {
+    if (!usuarioSalvo) {
+      return null;
+    }
+
+    try {
+
       return JSON.parse(usuarioSalvo) as UsuarioLogado;
+
+    } catch {
+
+      this.limparSessao();
+
+      return null;
     }
-
-    const tipoSalvo = localStorage.getItem(this.chaveTipoUsuario) as TipoUsuario | null;
-
-    if (tipoSalvo) {
-      return this.criarUsuarioMock(tipoSalvo);
-    }
-
-    return null;
   }
 
-  obterTipoUsuario(): TipoUsuario {
-    return this.obterUsuarioLogado()?.tipo ?? 'funcionario';
+  obterTipoUsuario(): TipoUsuario | null {
+    return this.obterUsuarioLogado()?.tipo ?? null;
   }
 
   obterRotaInicial(): string {
@@ -56,45 +51,25 @@ export class UsuarioLogadoService {
 
   ehGestorOuRh(): boolean {
     const tipo = this.obterTipoUsuario();
+
     return tipo === 'gestor' || tipo === 'rh';
   }
 
-  logout(): void {
-    localStorage.removeItem(this.chaveTipoUsuario);
+  limparSessao(): void {
+    /*
+    * Remove também a chave usada
+    * anteriormente pelo login mockado.
+    */
+    localStorage.removeItem('tipoUsuario');
+
     localStorage.removeItem(this.chaveUsuarioLogado);
-    this.router.navigate(['/login']);
+
+    this.tokenStorage.limpar();
   }
 
-  private criarUsuarioMock(tipo: TipoUsuario): UsuarioLogado {
-    if (tipo === 'rh') {
-      return {
-        nome: 'Renata Souza',
-        email: 'rh.corporativo@gmail.com',
-        cargo: 'Analista de RH',
-        setor: 'Recursos Humanos',
-        iniciais: 'RS',
-        tipo: 'rh',
-      };
-    }
-
-    if (tipo === 'gestor') {
-      return {
-        nome: 'Carla Mendes',
-        email: 'fed.silva.corporativo@gmail.com',
-        cargo: 'Gestora de RH',
-        setor: 'Gestão de Pessoas',
-        iniciais: 'CM',
-        tipo: 'gestor',
-      };
-    }
-
-    return {
-      nome: 'Maria Silva',
-      email: 'funcionario@gmail.com',
-      cargo: 'Analista de Vendas',
-      setor: 'Comercial',
-      iniciais: 'MS',
-      tipo: 'funcionario',
-    };
+  logout(): void {
+    this.limparSessao();
+    // this.router.navigate(['/login']);
+    this.router.navigateByUrl('/login');
   }
 }
