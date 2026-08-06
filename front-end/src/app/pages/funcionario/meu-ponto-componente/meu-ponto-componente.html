@@ -1,4 +1,18 @@
 <section class="ponto-page">
+  <div *ngIf="modoGestao" class="card ponto-card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 d-flex align-items-start gap-3">
+      <span class="ponto-registro-icon rounded-3 d-inline-flex align-items-center justify-content-center flex-shrink-0">
+        <i class="bi bi-person-check"></i>
+      </span>
+
+      <div>
+        <h2 class="h6 fw-bold mb-1">Seu registro pessoal</h2>
+        <p class="text-secondary mb-0">
+          Esta página registra a jornada do usuário Gestor ou RH conectado. A gestão dos pontos dos funcionários continua separada.
+        </p>
+      </div>
+    </div>
+  </div>
   <!-- <div class="card ponto-hero border-0 shadow-sm mb-4">
     <div class="card-body p-4 p-lg-5">
       <div class="row g-4 align-items-center">
@@ -128,9 +142,17 @@
               <p class="text-secondary mb-0">Registros feitos hoje.</p>
             </div>
 
-            <a routerLink="/solicitacao" class="btn btn-sm btn-outline-primary fw-semibold">
+            <a *ngIf="!modoGestao; else identificacaoRegistroPessoal" routerLink="/solicitacao"
+              class="btn btn-sm btn-outline-primary fw-semibold">
               Corrigir
             </a>
+
+            <ng-template #identificacaoRegistroPessoal>
+              <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">
+                <i class="bi bi-person-check me-1"></i>
+                Registro pessoal
+              </span>
+            </ng-template>
           </div>
 
           <div class="ponto-timeline vstack gap-3" *ngIf="registros.length > 0; else semRegistros">
@@ -171,7 +193,7 @@
           <p class="text-secondary mb-0">Conferência dos horários registrados hoje.</p>
         </div>
 
-        <a routerLink="/solicitacao" class="btn btn-outline-primary fw-semibold">
+        <a *ngIf="!modoGestao" routerLink="/solicitacao" class="btn btn-outline-primary fw-semibold">
           <i class="bi bi-pencil-square me-2"></i>
           Solicitar correção
         </a>

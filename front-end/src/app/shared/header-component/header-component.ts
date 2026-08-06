@@ -102,6 +102,13 @@ export class HeaderComponent {
         icone: 'bi-graph-up-arrow',
         area: 'gestao',
       },
+      '/gestao/meu-ponto': {
+        titulo: 'Meu ponto',
+        subtitulo: 'Painel de Gestão e RH',
+        descricao: 'Registre sua própria jornada de trabalho e acompanhe os horários do dia.',
+        icone: 'bi-fingerprint',
+        area: 'gestao',
+      },
       '/gestao/funcionarios': {
         titulo: 'Gestão de funcionários',
         subtitulo: 'Painel de Gestão e RH',

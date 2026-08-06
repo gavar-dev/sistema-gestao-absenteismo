@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 interface AcaoPonto {
   nome: string;
@@ -32,6 +32,12 @@ interface ResumoPonto {
   styleUrl: './meu-ponto-componente.css',
 })
 export class MeuPontoComponente {
+  readonly modoGestao: boolean;
+
+  constructor(private route: ActivatedRoute) {
+    this.modoGestao = this.route.snapshot.data['area'] === 'gestao';
+  }
+
   dataHoje = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
     day: '2-digit',
@@ -148,7 +154,7 @@ export class MeuPontoComponente {
         horario,
         status: 'Registrado agora',
         icone: acao.icone,
-        observacao: 'Registro feito pelo funcionário.',
+        observacao: 'Registro feito pelo usuário logado.',
       },
     ];
   }

@@ -24,6 +24,7 @@ export class SidebarAdmin implements OnInit {
 
   menu = [
     { nome: 'Painel inicial', rota: '/gestao/inicio', icone: 'bi-speedometer2', exata: true },
+    { nome: 'Meu ponto', rota: '/gestao/meu-ponto', icone: 'bi-fingerprint', exata: true },
     { nome: 'Gestão', rota: '/gestao/funcionarios', icone: 'bi-people-fill', exata: false },
     { nome: 'Solicitações', rota: '/gestao/solicitacoes', icone: 'bi-inbox-fill', exata: false },
     { nome: 'Cadastro', rota: '/gestao/cadastro', icone: 'bi-person-plus-fill', exata: false }
