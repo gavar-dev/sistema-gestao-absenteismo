@@ -9,11 +9,55 @@ import { FuncionarioResponse } from '../../models/funcionario';
   providedIn: 'root',
 })
 export class FuncionarioService {
-  private readonly url = `${environment.apiUrl}/funcionarios`;
+  private readonly url =
+    `${environment.apiUrl}/funcionarios`;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient
+  ) {}
 
-  buscarMeuPerfil(): Observable<FuncionarioResponse> {
-    return this.http.get<FuncionarioResponse>(`${this.url}/me`);
+  buscarMeuPerfil():
+    Observable<FuncionarioResponse> {
+
+    return this.http.get<
+      FuncionarioResponse
+    >(
+      `${this.url}/me`
+    );
+  }
+
+  listar(
+    status?: string
+  ): Observable<FuncionarioResponse[]> {
+
+    if (status) {
+      return this.http.get<
+        FuncionarioResponse[]
+      >(
+        this.url,
+        {
+          params: {
+            status,
+          },
+        }
+      );
+    }
+
+    return this.http.get<
+      FuncionarioResponse[]
+    >(
+      this.url
+    );
+  }
+
+  buscarPorId(
+    id: number
+  ): Observable<FuncionarioResponse> {
+
+    return this.http.get<
+      FuncionarioResponse
+    >(
+      `${this.url}/${id}`
+    );
   }
 }

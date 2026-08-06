@@ -30,3 +30,32 @@ export interface RegistroPontoResponse {
   totalTrabalhadoMinutos: number;
   proximaMarcacao: TipoMarcacao | null;
 }
+
+export interface ResumoPontoResponse {
+  totalRegistros: number;
+  jornadasFinalizadas: number;
+  jornadasEmAndamento: number;
+  quantidadeAtrasos: number;
+  quantidadeFaltas: number;
+  quantidadePendencias: number;
+  totalMinutosAtraso: number;
+  mediaMinutosAtraso: number;
+  totalMinutosTrabalhados: number;
+}
+
+export interface IndicadorSetorResponse {
+  setor: string;
+  totalRegistros: number;
+  atrasos: number;
+  faltas: number;
+  pendencias: number;
+}
+
+export interface RankingAtrasoResponse {
+  funcionarioId: number;
+  nomeFuncionario: string;
+  setor: string;
+  quantidadeAtrasos: number;
+  totalMinutosAtraso: number;
+  mediaMinutosAtraso: number;
+}
