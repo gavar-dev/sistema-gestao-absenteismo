@@ -1,206 +1,475 @@
 <section class="funcionario-inicio">
-    <!-- <div class="inicio-hero card border-0 shadow-sm mb-4">
-        <div class="card-body p-4 p-lg-5">
-            <div class="row g-4 align-items-center">
-                <div class="col-12 col-xl-7">
-                    <span class="inicio-kicker d-inline-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-house-heart"></i>
-                        Portal do funcionário
+  <!-- Erro -->
+  <div
+    *ngIf="erro"
+    class="alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-0 shadow-sm mb-4"
+    role="alert"
+  >
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ erro }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-danger flex-shrink-0"
+      (click)="carregarInicio()"
+    >
+      <i class="bi bi-arrow-clockwise me-2"></i>
+      Tentar novamente
+    </button>
+  </div>
+
+  <!-- Carregamento -->
+  <div
+    *ngIf="carregando"
+    class="card inicio-card border-0 shadow-sm mb-4"
+    aria-busy="true"
+  >
+    <div class="card-body text-center py-5">
+      <div
+        class="spinner-border text-primary"
+        role="status"
+        aria-label="Carregando página inicial"
+      ></div>
+
+      <p class="text-secondary mt-3 mb-0">
+        Carregando seus dados...
+      </p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!carregando">
+    <!-- Identificação e jornada -->
+    <div
+      class="card inicio-card border-0 shadow-sm mb-4"
+    >
+      <div class="card-body p-4">
+        <div
+          class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4"
+        >
+          <div class="d-flex align-items-center gap-3">
+            <span
+              class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary fw-bold flex-shrink-0"
+              style="width: 3.5rem; height: 3.5rem; font-size: 1.15rem;"
+            >
+              {{
+                primeiroNome.substring(0, 1)
+              }}{{
+                nomeFuncionario
+                  .trim()
+                  .split(' ')
+                  .slice(-1)[0]
+                  .substring(0, 1)
+              }}
+            </span>
+
+            <div>
+              <span
+                class="text-secondary small fw-semibold"
+              >
+                Portal do funcionário
+              </span>
+
+              <h2 class="h4 fw-bold mb-1">
+                Olá, {{ primeiroNome }}
+              </h2>
+
+              <p class="text-secondary mb-0">
+                {{ cargoFuncionario }}
+                <span class="mx-1">•</span>
+                {{ setorFuncionario }}
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="d-flex flex-column flex-sm-row gap-3 align-items-sm-center"
+          >
+            <div class="text-sm-end">
+              <small
+                class="text-secondary d-block"
+              >
+                Status de hoje
+              </small>
+
+              <strong class="d-block">
+                {{ statusHoje }}
+              </strong>
+
+              <small class="text-secondary">
+                {{ proximaAcao }}
+              </small>
+            </div>
+
+            <a
+              routerLink="/meus-pontos"
+              class="btn btn-primary fw-semibold"
+            >
+              <i class="bi bi-fingerprint me-2"></i>
+              {{ horarioProximaAcao === 'Agora'
+                ? 'Bater ponto'
+                : 'Ver meu ponto' }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicadores -->
+    <div class="row g-3 mb-4">
+      <div
+        class="col-12 col-sm-6 col-xl-3"
+        *ngFor="
+          let item of resumo;
+          trackBy: trackByResumo
+        "
+      >
+        <article
+          class="card inicio-indicador-card border-0 shadow-sm h-100"
+          [ngClass]="
+            'inicio-indicador-' + item.tipo
+          "
+        >
+          <div class="card-body p-4">
+            <div
+              class="d-flex align-items-start justify-content-between gap-3 mb-3"
+            >
+              <div
+                class="inicio-indicador-icon d-inline-flex align-items-center justify-content-center rounded-4"
+              >
+                <i
+                  class="bi"
+                  [ngClass]="item.icone"
+                ></i>
+              </div>
+            </div>
+
+            <p
+              class="text-secondary fw-semibold mb-1"
+            >
+              {{ item.titulo }}
+            </p>
+
+            <strong
+              class="inicio-indicador-valor d-block mb-1"
+            >
+              {{ item.valor }}
+            </strong>
+
+            <small class="text-secondary">
+              {{ item.detalhe }}
+            </small>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Atalhos e ponto -->
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-xl-8">
+        <div
+          class="card inicio-card border-0 shadow-sm h-100"
+        >
+          <div class="card-body p-4">
+            <div
+              class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4"
+            >
+              <div>
+                <h3 class="h5 fw-bold mb-1">
+                  Atalhos rápidos
+                </h3>
+
+                <p class="text-secondary mb-0">
+                  Acesse as principais ações do
+                  funcionário.
+                </p>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div
+                class="col-12 col-md-6"
+                *ngFor="
+                  let acao of acoesRapidas;
+                  trackBy: trackByAcao
+                "
+              >
+                <a
+                  [routerLink]="acao.rota"
+                  class="inicio-acao-card d-flex gap-3 h-100 text-decoration-none"
+                  [class.inicio-acao-destaque]="
+                    acao.destaque
+                  "
+                >
+                  <span
+                    class="inicio-acao-icon d-inline-flex align-items-center justify-content-center rounded-4"
+                  >
+                    <i
+                      class="bi"
+                      [ngClass]="acao.icone"
+                    ></i>
+                  </span>
+
+                  <span>
+                    <strong class="d-block mb-1">
+                      {{ acao.titulo }}
+                    </strong>
+
+                    <small>
+                      {{ acao.descricao }}
+                    </small>
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-4">
+        <div
+          class="card inicio-card border-0 shadow-sm h-100"
+        >
+          <div class="card-body p-4">
+            <div
+              class="d-flex align-items-start justify-content-between gap-3 mb-4"
+            >
+              <div>
+                <h3 class="h5 fw-bold mb-1">
+                  Registros de hoje
+                </h3>
+
+                <p class="text-secondary mb-0">
+                  Resumo da sua jornada atual.
+                </p>
+              </div>
+
+              <a
+                routerLink="/meus-pontos"
+                class="btn btn-sm btn-outline-primary fw-semibold"
+              >
+                Abrir
+              </a>
+            </div>
+
+            <div class="inicio-timeline vstack gap-3">
+              <div
+                class="inicio-timeline-item d-flex gap-3"
+                *ngFor="
+                  let registro of registrosHoje;
+                  trackBy: trackByRegistro
+                "
+              >
+                <div
+                  class="inicio-timeline-icon d-inline-flex align-items-center justify-content-center rounded-circle"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="registro.icone"
+                  ></i>
+                </div>
+
+                <div class="flex-grow-1">
+                  <div
+                    class="d-flex align-items-center justify-content-between gap-2"
+                  >
+                    <strong>
+                      {{ registro.tipo }}
+                    </strong>
+
+                    <span
+                      class="badge rounded-pill"
+                      [ngClass]="
+                        classeStatus(
+                          registro.status
+                        )
+                      "
+                    >
+                      {{ registro.status }}
+                    </span>
+                  </div>
+
+                  <small class="text-secondary">
+                    Horário:
+                    {{ registro.horario }}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Semana e pendências -->
+    <div class="row g-4">
+      <div class="col-12 col-xl-5">
+        <div
+          class="card inicio-card border-0 shadow-sm h-100"
+        >
+          <div class="card-body p-4">
+            <div
+              class="d-flex align-items-start justify-content-between gap-3 mb-4"
+            >
+              <div>
+                <h3 class="h5 fw-bold mb-1">
+                  Horas da semana
+                </h3>
+
+                <p class="text-secondary mb-0">
+                  Registros reais comparados à sua
+                  carga horária.
+                </p>
+              </div>
+
+              <span
+                class="badge text-bg-light border"
+              >
+                Semana atual
+              </span>
+            </div>
+
+            <div class="inicio-semana vstack gap-3">
+              <div
+                class="inicio-semana-item"
+                *ngFor="
+                  let item of metasSemana;
+                  trackBy: trackByMeta
+                "
+              >
+                <div
+                  class="d-flex justify-content-between small mb-1"
+                >
+                  <strong>{{ item.dia }}</strong>
+
+                  <span class="text-secondary">
+                    {{
+                      horasFormatadas(
+                        item.horas
+                      )
+                    }}
+                    /
+                    {{
+                      horasFormatadas(
+                        item.meta
+                      )
+                    }}
+                  </span>
+                </div>
+
+                <div
+                  class="inicio-tooltip-area"
+                  tabindex="0"
+                  [attr.aria-label]="
+                    detalheMeta(item)
+                  "
+                >
+                  <div
+                    class="inicio-barra-track"
+                  >
+                    <div
+                      class="inicio-barra-fill"
+                      [style.width.%]="
+                        porcentagemSemana(item)
+                      "
+                    ></div>
+                  </div>
+
+                  <span class="inicio-tooltip">
+                    <strong>{{ item.dia }}</strong>
+
+                    <span>
+                      {{
+                        horasFormatadas(
+                          item.horas
+                        )
+                      }}
+                      registradas
                     </span>
 
-                    <h2 class="display-6 fw-bold mb-2">Olá, {{ nomeFuncionario }}</h2>
-                    <p class="lead mb-4">
-                        Acompanhe sua jornada, registros de ponto, pendências e atalhos principais da intranet.
-                    </p>
-
-                    <div class="d-flex flex-column flex-sm-row gap-2">
-                        <a routerLink="/meus-pontos" class="btn btn-light fw-semibold">
-                            <i class="bi bi-fingerprint me-2"></i>
-                            Bater ponto
-                        </a>
-
-                        <a routerLink="/historico" class="btn btn-outline-light fw-semibold">
-                            <i class="bi bi-clock-history me-2"></i>
-                            Ver histórico
-                        </a>
-                    </div>
+                    <span>
+                      {{
+                        horasFormatadas(
+                          item.meta
+                        )
+                      }}
+                      previstas
+                    </span>
+                  </span>
                 </div>
-
-                <div class="col-12 col-xl-5">
-                    <div class="inicio-hero-card">
-                        <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-                            <div>
-                                <span class="text-white-50 small text-uppercase fw-bold">Status de hoje</span>
-                                <h3 class="h5 fw-bold mb-1">{{ statusHoje }}</h3>
-                                <small class="text-white-50">{{ cargoFuncionario }} • {{ setorFuncionario }}</small>
-                            </div>
-
-                            <div class="inicio-hero-icon">
-                                <i class="bi bi-activity"></i>
-                            </div>
-                        </div>
-
-                        <div class="inicio-proxima-acao">
-                            <small class="text-white-50 d-block mb-1">Próxima ação recomendada</small>
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                <strong>{{ proximaAcao }}</strong>
-                                <span class="badge rounded-pill text-bg-light">{{ horarioProximaAcao }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div> -->
+      </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3" *ngFor="let item of resumo">
-            <article class="card inicio-indicador-card border-0 shadow-sm h-100"
-                [ngClass]="'inicio-indicador-' + item.tipo">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-                        <div
-                            class="inicio-indicador-icon d-inline-flex align-items-center justify-content-center rounded-4">
-                            <i class="bi" [ngClass]="item.icone"></i>
-                        </div>
-                    </div>
+      <div class="col-12 col-xl-7">
+        <div
+          class="card inicio-card border-0 shadow-sm h-100"
+        >
+          <div class="card-body p-4">
+            <div
+              class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4"
+            >
+              <div>
+                <h3 class="h5 fw-bold mb-1">
+                  Pendências e avisos
+                </h3>
 
-                    <p class="text-secondary fw-semibold mb-1">{{ item.titulo }}</p>
-                    <strong class="inicio-indicador-valor d-block mb-1">{{ item.valor }}</strong>
-                    <small class="text-secondary">{{ item.detalhe }}</small>
-                </div>
-            </article>
+                <p class="text-secondary mb-0">
+                  Ponto, solicitações e comunicados que
+                  precisam da sua atenção.
+                </p>
+              </div>
+
+              <a
+                routerLink="/avisos"
+                class="btn btn-sm btn-outline-primary fw-semibold"
+              >
+                Ver avisos
+              </a>
+            </div>
+
+            <div class="vstack gap-3">
+              <a
+                class="inicio-alerta d-flex gap-3 text-decoration-none text-body"
+                *ngFor="
+                  let item of pendencias;
+                  trackBy: trackByPendencia
+                "
+                [routerLink]="item.rota"
+                [ngClass]="
+                  classeAlerta(item.tipo)
+                "
+              >
+                <span
+                  class="inicio-alerta-icon"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="item.icone"
+                  ></i>
+                </span>
+
+                <span>
+                  <strong class="d-block">
+                    {{ item.titulo }}
+                  </strong>
+
+                  <small class="d-block">
+                    {{ item.descricao }}
+                  </small>
+
+                  <small class="text-secondary">
+                    {{ item.data }}
+                  </small>
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-xl-8">
-            <div class="card inicio-card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
-                        <div>
-                            <h3 class="h5 fw-bold mb-1">Atalhos rápidos</h3>
-                            <p class="text-secondary mb-0">Acesse as principais ações do funcionário.</p>
-                        </div>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6" *ngFor="let acao of acoesRapidas">
-                            <a [routerLink]="acao.rota" class="inicio-acao-card d-flex gap-3 h-100 text-decoration-none"
-                                [class.inicio-acao-destaque]="acao.destaque">
-                                <span
-                                    class="inicio-acao-icon d-inline-flex align-items-center justify-content-center rounded-4">
-                                    <i class="bi" [ngClass]="acao.icone"></i>
-                                </span>
-
-                                <span>
-                                    <strong class="d-block mb-1">{{ acao.titulo }}</strong>
-                                    <small>{{ acao.descricao }}</small>
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-xl-4">
-            <div class="card inicio-card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-                        <div>
-                            <h3 class="h5 fw-bold mb-1">Registros de hoje</h3>
-                            <p class="text-secondary mb-0">Resumo da sua jornada atual.</p>
-                        </div>
-                        <a routerLink="/meus-pontos" class="btn btn-sm btn-outline-primary fw-semibold">Abrir</a>
-                    </div>
-
-                    <div class="inicio-timeline vstack gap-3">
-                        <div class="inicio-timeline-item d-flex gap-3" *ngFor="let registro of registrosHoje">
-                            <div
-                                class="inicio-timeline-icon d-inline-flex align-items-center justify-content-center rounded-circle">
-                                <i class="bi" [ngClass]="registro.icone"></i>
-                            </div>
-
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center justify-content-between gap-2">
-                                    <strong>{{ registro.tipo }}</strong>
-                                    <span class="badge rounded-pill" [ngClass]="classeStatus(registro.status)">
-                                        {{ registro.status }}
-                                    </span>
-                                </div>
-                                <small class="text-secondary">Horário: {{ registro.horario }}</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-12 col-xl-5">
-            <div class="card inicio-card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-                        <div>
-                            <h3 class="h5 fw-bold mb-1">Horas da semana</h3>
-                            <p class="text-secondary mb-0">Comparativo entre horas registradas e previstas.</p>
-                        </div>
-                        <span class="badge text-bg-light border">Semana atual</span>
-                    </div>
-
-                    <div class="inicio-semana vstack gap-3">
-                        <div class="inicio-semana-item" *ngFor="let item of metasSemana">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <strong>{{ item.dia }}</strong>
-                                <span class="text-secondary">{{ horasFormatadas(item.horas) }} / {{ item.meta }}h</span>
-                            </div>
-
-                            <div class="inicio-tooltip-area" tabindex="0" [attr.aria-label]="detalheMeta(item)">
-                                <div class="inicio-barra-track">
-                                    <div class="inicio-barra-fill" [style.width.%]="porcentagemSemana(item)"></div>
-                                </div>
-
-                                <span class="inicio-tooltip">
-                                    <strong>{{ item.dia }}</strong>
-                                    <span>{{ horasFormatadas(item.horas) }} registradas</span>
-                                    <span>{{ item.meta }}h previstas</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-xl-7">
-            <div class="card inicio-card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
-                        <div>
-                            <h3 class="h5 fw-bold mb-1">Pendências e avisos</h3>
-                            <p class="text-secondary mb-0">Itens que precisam da sua atenção.</p>
-                        </div>
-                        <a routerLink="/avisos" class="btn btn-sm btn-outline-primary fw-semibold">Ver avisos</a>
-                    </div>
-
-                    <div class="vstack gap-3">
-                        <article class="inicio-alerta d-flex gap-3" *ngFor="let item of pendencias"
-                            [ngClass]="classeAlerta(item.tipo)">
-                            <span class="inicio-alerta-icon">
-                                <i class="bi" [ngClass]="item.icone"></i>
-                            </span>
-
-                            <div>
-                                <strong class="d-block">{{ item.titulo }}</strong>
-                                <small class="d-block">{{ item.descricao }}</small>
-                                <small class="text-secondary">{{ item.data }}</small>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  </ng-container>
 </section>
