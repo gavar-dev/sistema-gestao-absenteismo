@@ -1,59 +1,28 @@
 <section class="meus-dados-page">
-  <!-- <div class="card dados-hero border-0 shadow-sm mb-4">
-    <div class="card-body p-4 p-lg-5">
-      <div class="row g-4 align-items-center">
-        <div class="col-12 col-xl-8">
-          <span class="dados-kicker d-inline-flex align-items-center gap-2 mb-3">
-            <i class="bi bi-person-badge"></i>
-            Área do funcionário
-          </span>
+  <div *ngIf="modoGestao" class="card dados-contexto-card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 d-flex align-items-start gap-3">
+      <span class="dados-contexto-icon rounded-3 d-inline-flex align-items-center justify-content-center flex-shrink-0">
+        <i class="bi bi-person-check"></i>
+      </span>
 
-          <h2 class="display-6 fw-bold mb-3">Meus dados</h2>
-          <p class="lead mb-4">
-            Consulte suas informações cadastrais e solicite ao RH a alteração dos dados permitidos.
-          </p>
-
-          <button type="button" class="btn btn-light fw-semibold" data-bs-toggle="modal"
-            data-bs-target="#modalSolicitacaoDados">
-            <i class="bi bi-pencil-square me-2"></i>
-            Solicitar alteração
-          </button>
-        </div>
-
-        <div class="col-12 col-xl-4">
-          <div class="dados-hero-card">
-            <div class="d-flex align-items-center gap-3 mb-4">
-              <div class="dados-avatar d-inline-flex align-items-center justify-content-center rounded-circle">
-                MS
-              </div>
-
-              <div class="min-w-0">
-                <small class="text-white-50 text-uppercase fw-bold">Funcionária</small>
-                <h3 class="h5 fw-bold mb-0 text-truncate">{{ dados.nome }}</h3>
-                <span class="text-white-50 d-block text-truncate">{{ dados.cargo }}</span>
-              </div>
-            </div>
-
-            <div class="dados-hero-row d-flex justify-content-between gap-3">
-              <span>Matrícula</span>
-              <strong>{{ dados.matricula }}</strong>
-            </div>
-
-            <div class="dados-hero-row d-flex justify-content-between gap-3">
-              <span>Status</span>
-              <strong>{{ dados.status }}</strong>
-            </div>
-
-            <div class="dados-hero-row d-flex justify-content-between gap-3">
-              <span>Jornada</span>
-              <strong>{{ dados.horarioPadrao }}</strong>
-            </div>
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+          <div>
+            <h2 class="h6 fw-bold mb-1">Seu cadastro pessoal</h2>
+            <p class="text-body-secondary mb-0">
+              Você está visualizando os dados do usuário {{ perfilAtual }} conectado. Os cadastros dos demais
+              funcionários continuam na área de Gestão.
+            </p>
           </div>
+
+          <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">
+            <i class="bi bi-person-badge me-1"></i>
+            {{ iniciaisUsuario }} · {{ perfilAtual }}
+          </span>
         </div>
       </div>
     </div>
-  </div> -->
-
+  </div>
   <div class="alert alert-success d-flex align-items-start gap-3 shadow-sm border-0 mb-4" *ngIf="solicitacaoEnviada"
     role="alert">
     <i class="bi bi-check-circle-fill fs-4"></i>
@@ -61,7 +30,7 @@
       <strong class="d-block">Solicitação enviada com sucesso!</strong>
       <span>
         Seu pedido para alterar <strong>{{ solicitacaoEnviada.campo }}</strong> foi registrado como
-        <strong>{{ solicitacaoEnviada.codigo }}</strong> e ficará pendente para análise do RH.
+        <strong>{{ solicitacaoEnviada.codigo }}</strong> e ficará pendente para análise da área responsável.
       </span>
     </div>
   </div>
@@ -69,11 +38,19 @@
   <div class="row g-4">
     <div class="col-12 col-xl-8">
       <div class="card border-0 shadow-sm app-card h-100">
-        <div class="card-header bg-body border-0 pt-4 px-4">
-          <h3 class="h4 fw-bold mb-1">Dados pessoais e profissionais</h3>
-          <p class="text-body-secondary mb-0">
-            Informações exibidas conforme cadastro atual do funcionário.
-          </p>
+        <div class="card-header bg-body border-0 pt-4 px-4 d-flex align-items-start justify-content-between gap-3 flex-wrap">
+          <div>
+            <h3 class="h4 fw-bold mb-1">Dados pessoais e profissionais</h3>
+            <p class="text-body-secondary mb-0">
+              Informações exibidas conforme o cadastro atual do usuário conectado.
+            </p>
+          </div>
+
+          <button type="button" class="btn btn-primary fw-semibold" data-bs-toggle="modal"
+            data-bs-target="#modalSolicitacaoDados">
+            <i class="bi bi-pencil-square me-2"></i>
+            Solicitar alteração
+          </button>
         </div>
 
         <div class="card-body p-4">
@@ -108,7 +85,7 @@
       <div class="card border-0 shadow-sm app-card mb-4">
         <div class="card-header bg-body border-0 pt-4 px-4">
           <h3 class="h5 fw-bold mb-1">Campos permitidos</h3>
-          <p class="text-body-secondary mb-0">O RH pode analisar estes pedidos.</p>
+          <p class="text-body-secondary mb-0">Os pedidos seguem para a área responsável.</p>
         </div>
 
         <div class="card-body p-4">
@@ -129,8 +106,8 @@
             <i class="bi bi-shield-lock fs-4"></i>
             <div>
               <strong class="d-block">Matrícula bloqueada</strong>
-              <small>A matrícula é identificador interno e não pode ser alterada nem solicitada pelo
-                funcionário.</small>
+              <small>A matrícula é um identificador interno e não pode ser alterada nem solicitada pelo
+                usuário.</small>
             </div>
           </div>
         </div>
@@ -183,7 +160,7 @@
               Solicitar alteração de dados
             </h2>
             <p class="text-body-secondary mb-0">
-              Escolha o campo, informe o novo dado e explique o motivo para o RH avaliar.
+              Escolha o campo, informe o novo dado e explique o motivo para avaliação.
             </p>
           </div>
 
@@ -233,8 +210,8 @@
                 <div>
                   <strong class="d-block">Importante</strong>
                   <small>
-                    Essa ação não altera o cadastro automaticamente. Ela apenas envia uma solicitação para análise do
-                    RH.
+                    Essa ação não altera o cadastro automaticamente. Ela apenas envia uma solicitação para análise da
+                    área responsável.
                   </small>
                 </div>
               </div>

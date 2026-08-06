@@ -148,3 +148,27 @@
     text-align: left;
   }
 }
+
+.dados-contexto-card {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--app-primary) 16%, transparent), transparent 18rem),
+    var(--app-surface);
+  border: 1px solid var(--app-border) !important;
+  border-radius: 1rem;
+}
+
+.dados-contexto-icon {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  color: var(--app-primary);
+  background-color: var(--app-primary-soft);
+  font-size: 1.2rem;
+}
+
+@media (max-width: 575.98px) {
+  .card-header .btn[data-bs-target="#modalSolicitacaoDados"] {
+    width: 100%;
+  }
+}

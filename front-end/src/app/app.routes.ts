@@ -113,6 +113,11 @@ export const routes: Routes = [
         component: MeuPontoComponente, 
         data: { area: 'gestao' } 
       },
+      { 
+        path: 'meus-dados', 
+        component: MeusDadosComponente, 
+        data: { area: 'gestao' } 
+      },
     ],
   },
 

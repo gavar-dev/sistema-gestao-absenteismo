@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { UsuarioLogadoService } from '../../../core/services/usuario-logado.service';
+import { TipoUsuario } from '../../../models/tipoUsuario';
 
 interface DadosPessoais {
   nome: string;
@@ -54,6 +57,10 @@ interface SolicitacaoDados {
   styleUrl: './meus-dados-componente.css'
 })
 export class MeusDadosComponente {
+  readonly modoGestao: boolean;
+  perfilAtual = 'Funcionário';
+  iniciaisUsuario = 'MS';
+
   dados: DadosPessoais = {
     nome: 'Maria Silva',
     matricula: '1024',
@@ -129,6 +136,14 @@ export class MeusDadosComponente {
     }
   ];
 
+  constructor(
+    private route: ActivatedRoute,
+    private usuarioLogadoService: UsuarioLogadoService
+  ) {
+    this.modoGestao = this.route.snapshot.data['area'] === 'gestao';
+    this.carregarDadosUsuarioLogado();
+  }
+
   get dadosVisiveis(): CampoVisivel[] {
     return [
       { label: 'Nome', valor: this.dados.nome, icone: 'bi-person' },
@@ -185,6 +200,64 @@ export class MeusDadosComponente {
   limparFormulario(form?: NgForm): void {
     this.solicitacaoAtual = this.criarFormularioVazio();
     form?.resetForm(this.solicitacaoAtual);
+  }
+
+  private carregarDadosUsuarioLogado(): void {
+    const usuarioLogado = this.usuarioLogadoService.obterUsuarioLogado();
+
+    if (!usuarioLogado) {
+      return;
+    }
+
+    this.perfilAtual = this.obterNomePerfil(usuarioLogado.tipo);
+    this.iniciaisUsuario = usuarioLogado.iniciais;
+
+    this.dados = {
+      ...this.dados,
+      ...this.obterDadosComplementares(usuarioLogado.tipo),
+      nome: usuarioLogado.nome,
+      setor: usuarioLogado.setor,
+      cargo: usuarioLogado.cargo,
+      emailCorporativo: usuarioLogado.email
+    };
+
+    if (this.modoGestao) {
+      this.historicoSolicitacoes = [];
+    }
+  }
+
+  private obterNomePerfil(tipo: TipoUsuario): string {
+    const nomes: Record<TipoUsuario, string> = {
+      funcionario: 'Funcionário',
+      gestor: 'Gestor',
+      rh: 'RH'
+    };
+
+    return nomes[tipo];
+  }
+
+  private obterDadosComplementares(tipo: TipoUsuario): Partial<DadosPessoais> {
+    if (tipo === 'rh') {
+      return {
+        matricula: '3072',
+        horarioPadrao: '09:00 às 18:00',
+        telefone: '(21) 9 9333-3072',
+        endereco: 'Rua do Catete, 210 - Catete, Rio de Janeiro/RJ',
+        dataAdmissao: '07/02/2022'
+      };
+    }
+
+    if (tipo === 'gestor') {
+      return {
+        matricula: '2048',
+        horarioPadrao: '08:00 às 17:00',
+        telefone: '(21) 9 9555-2048',
+        endereco: 'Rua Voluntários da Pátria, 340 - Botafogo, Rio de Janeiro/RJ',
+        dataAdmissao: '05/08/2021'
+      };
+    }
+
+    return {};
   }
 
   private criarFormularioVazio(): FormSolicitacaoDados {
