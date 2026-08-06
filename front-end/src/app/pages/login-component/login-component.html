@@ -3,12 +3,8 @@
   <div class="login-bg-shape shape-two"></div>
   <div class="login-bg-shape shape-three"></div>
 
-  <button
-    type="button"
-    class="btn app-theme-toggle app-theme-toggle--login login-theme-toggle"
-    (click)="alternarTema()"
-    [attr.aria-label]="temaAtual === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
-  >
+  <button type="button" class="btn app-theme-toggle app-theme-toggle--login login-theme-toggle" (click)="alternarTema()"
+    [attr.aria-label]="temaAtual === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'">
     <i class="bi" [ngClass]="temaAtual === 'dark' ? 'bi-sun' : 'bi-moon-stars'"></i>
     <span>{{ temaAtual === 'dark' ? 'claro' : 'escuro' }}</span>
   </button>
@@ -92,6 +88,12 @@
                 </p>
               </div>
 
+              <div *ngIf="mensagemErro" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                <span>{{ mensagemErro }}</span>
+              </div>
+
               <form (submit)="entrar($event, email.value, senha.value)">
                 <div class="mb-3">
                   <label for="email" class="form-label fw-semibold">E-mail corporativo</label>
@@ -99,15 +101,8 @@
                     <span class="input-group-text">
                       <i class="bi bi-envelope"></i>
                     </span>
-                    <input
-                      type="email"
-                      #email
-                      id="email"
-                      class="form-control"
-                      placeholder="nome@empresa.com"
-                      autocomplete="email"
-                      required
-                    />
+                    <input type="email" #email id="email" class="form-control" placeholder="nome@empresa.com"
+                      autocomplete="email" required />
                   </div>
                 </div>
 
@@ -121,21 +116,10 @@
                     <span class="input-group-text">
                       <i class="bi bi-key"></i>
                     </span>
-                    <input
-                      [type]="senhaVisivel ? 'text' : 'password'"
-                      #senha
-                      id="senha"
-                      class="form-control"
-                      placeholder="Digite sua senha"
-                      autocomplete="current-password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      class="btn btn-outline-secondary"
-                      (click)="alternarVisibilidade()"
-                      [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
-                    >
+                    <input [type]="senhaVisivel ? 'text' : 'password'" #senha id="senha" class="form-control"
+                      placeholder="Digite sua senha" autocomplete="current-password" required />
+                    <button type="button" class="btn btn-outline-secondary" (click)="alternarVisibilidade()"
+                      [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'">
                       <i class="bi" [ngClass]="senhaVisivel ? 'bi-eye-slash' : 'bi-eye'"></i>
                     </button>
                   </div>
@@ -148,9 +132,11 @@
                   </span>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 login-submit fw-semibold">
-                  Acessar sistema
-                  <i class="bi bi-arrow-right ms-2"></i>
+                <button type="submit" class="btn btn-primary btn-lg w-100 login-submit fw-semibold"
+                  [disabled]="carregando">
+                  <span *ngIf="carregando" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                  {{carregando ? 'Entrando...' : 'Acessar sistema'}}
+                  <i *ngIf="!carregando" class="bi bi-arrow-right ms-2"></i>
                 </button>
               </form>
 
