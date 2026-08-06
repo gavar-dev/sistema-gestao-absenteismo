@@ -1,21 +1,36 @@
 <section class="meus-dados-page">
-  <div *ngIf="modoGestao" class="card dados-contexto-card border-0 shadow-sm mb-4">
+
+  <!-- Contexto do usuário na área de gestão -->
+  <div
+    *ngIf="modoGestao"
+    class="card dados-contexto-card border-0 shadow-sm mb-4"
+  >
     <div class="card-body p-4 d-flex align-items-start gap-3">
-      <span class="dados-contexto-icon rounded-3 d-inline-flex align-items-center justify-content-center flex-shrink-0">
+      <span
+        class="dados-contexto-icon rounded-3 d-inline-flex align-items-center justify-content-center flex-shrink-0"
+      >
         <i class="bi bi-person-check"></i>
       </span>
 
       <div class="flex-grow-1">
-        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+        <div
+          class="d-flex align-items-center justify-content-between gap-3 flex-wrap"
+        >
           <div>
-            <h2 class="h6 fw-bold mb-1">Seu cadastro pessoal</h2>
+            <h2 class="h6 fw-bold mb-1">
+              Seu cadastro pessoal
+            </h2>
+
             <p class="text-body-secondary mb-0">
-              Você está visualizando os dados do usuário {{ perfilAtual }} conectado. Os cadastros dos demais
-              funcionários continuam na área de Gestão.
+              Você está visualizando os dados do usuário
+              {{ perfilAtual }} conectado. Os cadastros dos
+              demais funcionários continuam na área de Gestão.
             </p>
           </div>
 
-          <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">
+          <span
+            class="badge rounded-pill bg-primary-subtle text-primary-emphasis"
+          >
             <i class="bi bi-person-badge me-1"></i>
             {{ iniciaisUsuario }} · {{ perfilAtual }}
           </span>
@@ -23,45 +38,105 @@
       </div>
     </div>
   </div>
-  <div class="alert alert-success d-flex align-items-start gap-3 shadow-sm border-0 mb-4" *ngIf="solicitacaoEnviada"
-    role="alert">
+
+  <!-- Solicitação enviada com sucesso -->
+  <div
+    *ngIf="solicitacaoEnviada"
+    class="alert alert-success d-flex align-items-start gap-3 shadow-sm border-0 mb-4"
+    role="alert"
+  >
     <i class="bi bi-check-circle-fill fs-4"></i>
+
     <div>
-      <strong class="d-block">Solicitação enviada com sucesso!</strong>
+      <strong class="d-block">
+        Solicitação enviada com sucesso!
+      </strong>
+
       <span>
-        Seu pedido para alterar <strong>{{ solicitacaoEnviada.campo }}</strong> foi registrado como
-        <strong>{{ solicitacaoEnviada.codigo }}</strong> e ficará pendente para análise da área responsável.
+        Seu pedido para alterar
+        <strong>{{ solicitacaoEnviada.campo }}</strong>
+        foi registrado como
+        <strong>{{ solicitacaoEnviada.codigo }}</strong>
+        e ficará pendente para análise da área responsável.
       </span>
     </div>
   </div>
 
-  <div *ngIf="carregandoDados" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"></div>
+  <!-- Erro ao enviar ou carregar solicitações -->
+  <div
+    *ngIf="erroSolicitacao"
+    class="alert alert-danger d-flex align-items-start gap-3 shadow-sm border-0 mb-4"
+    role="alert"
+  >
+    <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+
+    <div>
+      <strong class="d-block">
+        Não foi possível concluir a operação
+      </strong>
+
+      <span>
+        {{ erroSolicitacao }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Carregamento dos dados pessoais -->
+  <div
+    *ngIf="carregandoDados"
+    class="text-center py-5"
+  >
+    <div
+      class="spinner-border text-primary"
+      role="status"
+      aria-label="Carregando dados"
+    ></div>
 
     <p class="text-body-secondary mt-3 mb-0">
       Carregando seus dados...
     </p>
   </div>
 
-  <div *ngIf="erroDados" class="alert alert-danger" role="alert">
+  <!-- Erro ao carregar dados pessoais -->
+  <div
+    *ngIf="erroDados"
+    class="alert alert-danger"
+    role="alert"
+  >
     <i class="bi bi-exclamation-triangle me-2"></i>
     {{ erroDados }}
   </div>
 
-  <div class="row g-4" *ngIf="!carregandoDados && !erroDados">
+  <!-- Conteúdo principal -->
+  <div
+    *ngIf="!carregandoDados && !erroDados"
+    class="row g-4"
+  >
+
+    <!-- Dados pessoais -->
     <div class="col-12 col-xl-8">
       <div class="card border-0 shadow-sm app-card h-100">
+
         <div
-          class="card-header bg-body border-0 pt-4 px-4 d-flex align-items-start justify-content-between gap-3 flex-wrap">
+          class="card-header bg-body border-0 pt-4 px-4 d-flex align-items-start justify-content-between gap-3 flex-wrap"
+        >
           <div>
-            <h3 class="h4 fw-bold mb-1">Dados pessoais e profissionais</h3>
+            <h3 class="h4 fw-bold mb-1">
+              Dados pessoais e profissionais
+            </h3>
+
             <p class="text-body-secondary mb-0">
-              Informações exibidas conforme o cadastro atual do usuário conectado.
+              Informações exibidas conforme o cadastro atual
+              do usuário conectado.
             </p>
           </div>
 
-          <button type="button" class="btn btn-primary fw-semibold" data-bs-toggle="modal"
-            data-bs-target="#modalSolicitacaoDados">
+          <button
+            type="button"
+            class="btn btn-primary fw-semibold"
+            data-bs-toggle="modal"
+            data-bs-target="#modalSolicitacaoDados"
+          >
             <i class="bi bi-pencil-square me-2"></i>
             Solicitar alteração
           </button>
@@ -69,181 +144,444 @@
 
         <div class="card-body p-4">
           <div class="row g-3">
-            <div class="col-12 col-md-6" *ngFor="let item of dadosVisiveis">
-              <article class="dados-info-item h-100" [class.dados-info-item--bloqueado]="item.bloqueado">
+
+            <div
+              *ngFor="let item of dadosVisiveis"
+              class="col-12 col-md-6"
+            >
+              <article
+                class="dados-info-item h-100"
+                [class.dados-info-item--bloqueado]="item.bloqueado"
+              >
                 <div class="d-flex align-items-start gap-3">
-                  <div class="dados-info-icon d-inline-flex align-items-center justify-content-center rounded-3">
-                    <i class="bi" [ngClass]="item.icone"></i>
+
+                  <div
+                    class="dados-info-icon d-inline-flex align-items-center justify-content-center rounded-3"
+                  >
+                    <i
+                      class="bi"
+                      [ngClass]="item.icone"
+                    ></i>
                   </div>
 
                   <div class="min-w-0 flex-grow-1">
-                    <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
-                      <span class="dados-info-label">{{ item.label }}</span>
+                    <div
+                      class="d-flex align-items-center justify-content-between gap-2 mb-1"
+                    >
+                      <span class="dados-info-label">
+                        {{ item.label }}
+                      </span>
 
-                      <span class="badge rounded-pill text-bg-secondary" *ngIf="item.bloqueado">
+                      <span
+                        *ngIf="item.bloqueado"
+                        class="badge rounded-pill text-bg-secondary"
+                      >
                         Bloqueado
                       </span>
                     </div>
 
-                    <strong class="dados-info-value d-block text-truncate">{{ item.valor }}</strong>
+                    <strong
+                      class="dados-info-value d-block text-truncate"
+                      [title]="item.valor"
+                    >
+                      {{ item.valor }}
+                    </strong>
                   </div>
+
                 </div>
               </article>
             </div>
+
           </div>
         </div>
+
       </div>
     </div>
 
+    <!-- Coluna lateral -->
     <div class="col-12 col-xl-4">
+
+      <!-- Campos permitidos -->
       <div class="card border-0 shadow-sm app-card mb-4">
+
         <div class="card-header bg-body border-0 pt-4 px-4">
-          <h3 class="h5 fw-bold mb-1">Campos permitidos</h3>
-          <p class="text-body-secondary mb-0">Os pedidos seguem para a área responsável.</p>
+          <h3 class="h5 fw-bold mb-1">
+            Campos permitidos
+          </h3>
+
+          <p class="text-body-secondary mb-0">
+            Os pedidos seguem para a área responsável.
+          </p>
         </div>
 
         <div class="card-body p-4">
+
           <div class="vstack gap-3">
-            <div class="campo-permitido d-flex gap-3" *ngFor="let campo of camposAlteraveis">
-              <div class="campo-permitido-icon d-inline-flex align-items-center justify-content-center rounded-3">
-                <i class="bi" [ngClass]="campo.icone"></i>
+            <div
+              *ngFor="let campo of camposAlteraveis"
+              class="campo-permitido d-flex gap-3"
+            >
+              <div
+                class="campo-permitido-icon d-inline-flex align-items-center justify-content-center rounded-3"
+              >
+                <i
+                  class="bi"
+                  [ngClass]="campo.icone"
+                ></i>
               </div>
 
               <div>
-                <strong class="d-block">{{ campo.label }}</strong>
-                <small class="text-body-secondary">{{ campo.descricao }}</small>
+                <strong class="d-block">
+                  {{ campo.label }}
+                </strong>
+
+                <small class="text-body-secondary">
+                  {{ campo.descricao }}
+                </small>
               </div>
             </div>
           </div>
 
-          <div class="alert alert-warning d-flex gap-3 mt-4 mb-0" role="alert">
+          <div
+            class="alert alert-warning d-flex gap-3 mt-4 mb-0"
+            role="alert"
+          >
             <i class="bi bi-shield-lock fs-4"></i>
+
             <div>
-              <strong class="d-block">Matrícula bloqueada</strong>
-              <small>A matrícula é um identificador interno e não pode ser alterada nem solicitada pelo
-                usuário.</small>
+              <strong class="d-block">
+                Matrícula bloqueada
+              </strong>
+
+              <small>
+                A matrícula é um identificador interno e não
+                pode ser alterada nem solicitada pelo usuário.
+              </small>
             </div>
           </div>
+
         </div>
       </div>
 
+      <!-- Histórico de solicitações -->
       <div class="card border-0 shadow-sm app-card">
+
         <div class="card-header bg-body border-0 pt-4 px-4">
-          <h3 class="h5 fw-bold mb-1">Últimas solicitações</h3>
-          <p class="text-body-secondary mb-0">Pedidos recentes de atualização cadastral.</p>
+          <h3 class="h5 fw-bold mb-1">
+            Últimas solicitações
+          </h3>
+
+          <p class="text-body-secondary mb-0">
+            Pedidos recentes de atualização cadastral.
+          </p>
         </div>
 
         <div class="card-body p-4">
-          <div class="vstack gap-3" *ngIf="historicoSolicitacoes.length > 0; else semSolicitacoes">
-            <div class="solicitacao-card" *ngFor="let item of historicoSolicitacoes">
-              <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+
+          <!-- Carregamento do histórico -->
+          <div
+            *ngIf="carregandoSolicitacoes"
+            class="text-center py-4"
+          >
+            <div
+              class="spinner-border spinner-border-sm text-primary"
+              role="status"
+              aria-label="Carregando solicitações"
+            ></div>
+
+            <p class="text-body-secondary mt-2 mb-0">
+              Carregando solicitações...
+            </p>
+          </div>
+
+          <!-- Lista de solicitações -->
+          <div
+            *ngIf="
+              !carregandoSolicitacoes &&
+              historicoSolicitacoes.length > 0;
+              else semSolicitacoes
+            "
+            class="vstack gap-3"
+          >
+            <div
+              *ngFor="let item of historicoSolicitacoes"
+              class="solicitacao-card"
+            >
+              <div
+                class="d-flex justify-content-between align-items-start gap-3 mb-2"
+              >
                 <div>
-                  <strong class="d-block">{{ item.codigo }}</strong>
-                  <small class="text-body-secondary">{{ item.data }}</small>
+                  <strong class="d-block">
+                    {{ item.codigo }}
+                  </strong>
+
+                  <small class="text-body-secondary">
+                    {{ item.data }}
+                  </small>
                 </div>
 
-                <span class="badge rounded-pill" [ngClass]="item.classe">{{ item.status }}</span>
+                <span
+                  class="badge rounded-pill"
+                  [ngClass]="item.classe"
+                >
+                  {{ item.status }}
+                </span>
               </div>
 
-              <span class="d-block fw-semibold">{{ item.campo }}</span>
-              <small class="text-body-secondary d-block text-truncate">Novo dado: {{ item.novoValor }}</small>
+              <span class="d-block fw-semibold">
+                {{ item.campo }}
+              </span>
+
+              <small
+                class="text-body-secondary d-block text-truncate"
+                [title]="item.novoValor"
+              >
+                Novo dado: {{ item.novoValor }}
+              </small>
             </div>
           </div>
 
+          <!-- Histórico vazio -->
           <ng-template #semSolicitacoes>
-            <div class="text-center text-body-secondary py-4">
+            <div
+              *ngIf="!carregandoSolicitacoes"
+              class="text-center text-body-secondary py-4"
+            >
               <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+
               Nenhuma solicitação enviada ainda.
             </div>
           </ng-template>
+
         </div>
       </div>
+
     </div>
   </div>
 </section>
 
-<div class="modal fade" id="modalSolicitacaoDados" tabindex="-1" aria-labelledby="modalSolicitacaoDadosLabel"
-  aria-hidden="true">
+<!-- Modal de solicitação -->
+<div
+  class="modal fade"
+  id="modalSolicitacaoDados"
+  tabindex="-1"
+  aria-labelledby="modalSolicitacaoDadosLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 shadow-lg">
-      <form #formAlteracao="ngForm" (ngSubmit)="enviarSolicitacaoDados(formAlteracao)">
+
+      <form
+        #formAlteracao="ngForm"
+        (ngSubmit)="enviarSolicitacaoDados(formAlteracao)"
+      >
+
         <div class="modal-header border-0 pb-0">
           <div>
-            <span class="badge text-bg-primary-subtle text-primary-emphasis mb-2">Atualização cadastral</span>
-            <h2 class="modal-title h4 fw-bold" id="modalSolicitacaoDadosLabel">
+            <span
+              class="badge text-bg-primary-subtle text-primary-emphasis mb-2"
+            >
+              Atualização cadastral
+            </span>
+
+            <h2
+              class="modal-title h4 fw-bold"
+              id="modalSolicitacaoDadosLabel"
+            >
               Solicitar alteração de dados
             </h2>
+
             <p class="text-body-secondary mb-0">
-              Escolha o campo, informe o novo dado e explique o motivo para avaliação.
+              Escolha o campo, informe o novo dado e explique
+              o motivo para avaliação.
             </p>
           </div>
 
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Fechar"
+            [disabled]="enviandoSolicitacao"
+          ></button>
         </div>
 
         <div class="modal-body p-4">
           <div class="row g-3">
+
+            <!-- Campo para alteração -->
             <div class="col-12 col-md-6">
-              <label for="campoAlteracao" class="form-label fw-semibold">Campo de alteração</label>
-              <select id="campoAlteracao" name="campo" class="form-select form-select-lg"
-                [(ngModel)]="solicitacaoAtual.campo" required #campo="ngModel">
-                <option value="" disabled>Selecione o campo</option>
-                <option *ngFor="let campo of camposAlteraveis" [value]="campo.valor">
-                  {{ campo.label }}
+              <label
+                for="campoAlteracao"
+                class="form-label fw-semibold"
+              >
+                Campo de alteração
+              </label>
+
+              <select
+                id="campoAlteracao"
+                name="campo"
+                class="form-select form-select-lg"
+                [(ngModel)]="solicitacaoAtual.campo"
+                [disabled]="enviandoSolicitacao"
+                required
+                #campo="ngModel"
+              >
+                <option
+                  value=""
+                  disabled
+                >
+                  Selecione o campo
+                </option>
+
+                <option
+                  *ngFor="let campoItem of camposAlteraveis"
+                  [value]="campoItem.valor"
+                >
+                  {{ campoItem.label }}
                 </option>
               </select>
-              <small class="text-danger" *ngIf="campo.invalid && campo.touched">
+
+              <small
+                *ngIf="campo.invalid && campo.touched"
+                class="text-danger"
+              >
                 Selecione um campo para alteração.
               </small>
             </div>
 
+            <!-- Novo valor -->
             <div class="col-12 col-md-6">
-              <label for="novoValor" class="form-label fw-semibold">Novo dado</label>
-              <input id="novoValor" name="novoValor" type="text" class="form-control form-control-lg"
-                [placeholder]="placeholderNovoDado" [(ngModel)]="solicitacaoAtual.novoValor" required minlength="3"
-                #novoValor="ngModel" />
-              <small class="text-danger" *ngIf="novoValor.invalid && novoValor.touched">
+              <label
+                for="novoValor"
+                class="form-label fw-semibold"
+              >
+                Novo dado
+              </label>
+
+              <input
+                id="novoValor"
+                name="novoValor"
+                type="text"
+                class="form-control form-control-lg"
+                [placeholder]="placeholderNovoDado"
+                [(ngModel)]="solicitacaoAtual.novoValor"
+                [disabled]="enviandoSolicitacao"
+                required
+                minlength="3"
+                maxlength="255"
+                #novoValor="ngModel"
+              />
+
+              <small
+                *ngIf="novoValor.invalid && novoValor.touched"
+                class="text-danger"
+              >
                 Informe o novo dado com pelo menos 3 caracteres.
               </small>
             </div>
 
+            <!-- Justificativa -->
             <div class="col-12">
-              <label for="justificativa" class="form-label fw-semibold">Justificativa</label>
-              <textarea id="justificativa" name="justificativa" class="form-control" rows="5"
+              <label
+                for="justificativa"
+                class="form-label fw-semibold"
+              >
+                Justificativa
+              </label>
+
+              <textarea
+                id="justificativa"
+                name="justificativa"
+                class="form-control"
+                rows="5"
                 placeholder="Explique por que esse dado precisa ser atualizado. Exemplo: troquei de telefone e preciso manter o cadastro atualizado."
-                [(ngModel)]="solicitacaoAtual.justificativa" required minlength="10"
-                #justificativa="ngModel"></textarea>
-              <small class="text-danger" *ngIf="justificativa.invalid && justificativa.touched">
-                Escreva uma justificativa com pelo menos 10 caracteres.
+                [(ngModel)]="solicitacaoAtual.justificativa"
+                [disabled]="enviandoSolicitacao"
+                required
+                minlength="10"
+                maxlength="2000"
+                #justificativa="ngModel"
+              ></textarea>
+
+              <small
+                *ngIf="
+                  justificativa.invalid &&
+                  justificativa.touched
+                "
+                class="text-danger"
+              >
+                Escreva uma justificativa com pelo menos
+                10 caracteres.
               </small>
             </div>
 
+            <!-- Informação -->
             <div class="col-12">
-              <div class="alert alert-primary d-flex gap-3 mb-0" role="alert">
+              <div
+                class="alert alert-primary d-flex gap-3 mb-0"
+                role="alert"
+              >
                 <i class="bi bi-info-circle fs-4"></i>
+
                 <div>
-                  <strong class="d-block">Importante</strong>
+                  <strong class="d-block">
+                    Importante
+                  </strong>
+
                   <small>
-                    Essa ação não altera o cadastro automaticamente. Ela apenas envia uma solicitação para análise da
-                    área responsável.
+                    Essa ação não altera o cadastro
+                    automaticamente. Ela apenas envia uma
+                    solicitação para análise da área responsável.
                   </small>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
 
         <div class="modal-footer border-0 pt-0">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
-            (click)="limparFormulario(formAlteracao)">
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-bs-dismiss="modal"
+            [disabled]="enviandoSolicitacao"
+            (click)="limparFormulario(formAlteracao)"
+          >
             Cancelar
           </button>
-          <button type="submit" class="btn btn-primary" [disabled]="formAlteracao.invalid" data-bs-dismiss="modal">
-            <i class="bi bi-send me-2"></i>
-            Enviar solicitação
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="
+              formAlteracao.invalid ||
+              enviandoSolicitacao
+            "
+          >
+            <span
+              *ngIf="enviandoSolicitacao"
+              class="spinner-border spinner-border-sm me-2"
+              aria-hidden="true"
+            ></span>
+
+            <i
+              *ngIf="!enviandoSolicitacao"
+              class="bi bi-send me-2"
+            ></i>
+
+            {{
+              enviandoSolicitacao
+                ? 'Enviando...'
+                : 'Enviar solicitação'
+            }}
           </button>
+
         </div>
       </form>
+
     </div>
   </div>
 </div>

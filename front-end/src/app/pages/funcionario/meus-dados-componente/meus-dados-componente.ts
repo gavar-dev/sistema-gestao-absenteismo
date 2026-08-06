@@ -5,6 +5,9 @@ import { timeout } from 'rxjs';
 import { FormsModule, NgForm, } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
+import { SolicitacaoService } from '../../../core/services/solicitacao';
+import { SolicitacaoResponse, StatusSolicitacao, } from '../../../models/solicitacao';
+
 import { FuncionarioService } from '../../../core/services/funcionario';
 import { UsuarioLogadoService } from '../../../core/services/usuario-logado.service';
 import { TipoUsuario } from '../../../models/tipoUsuario';
@@ -174,27 +177,12 @@ export class MeusDadosComponente implements OnInit {
    * Este histórico ainda está simulado.
    * Vamos integrá-lo ao backend na próxima etapa.
    */
-  historicoSolicitacoes: SolicitacaoDados[] = [
-    {
-      codigo: '#ALT-002',
-      campo: 'Telefone',
-      novoValor: '(21) 97777-1234',
-      justificativa: 'Atualização de telefone pessoal.',
-      data: '03/07/2026',
-      status: 'Pendente',
-      classe: 'text-bg-warning',
-    },
-    {
-      codigo: '#ALT-001',
-      campo: 'Naturalidade',
-      novoValor: 'Rio de Janeiro',
-      justificativa: 'Correção do cadastro.',
-      data: '18/06/2026',
-      status: 'Concluída',
-      classe: 'text-bg-success',
-    },
-  ];
+  historicoSolicitacoes: SolicitacaoDados[] = [];
 
+  carregandoSolicitacoes = false;
+  enviandoSolicitacao = false;
+
+  erroSolicitacao = '';
   constructor(
     private readonly route: ActivatedRoute,
 
@@ -205,7 +193,10 @@ export class MeusDadosComponente implements OnInit {
       FuncionarioService,
 
     private readonly cdr:
-      ChangeDetectorRef
+      ChangeDetectorRef,
+
+    private readonly solicitacaoService:
+      SolicitacaoService
   ) {
     this.modoGestao =
       this.route.snapshot.data['area']
@@ -217,6 +208,7 @@ export class MeusDadosComponente implements OnInit {
   ngOnInit(): void {
     this.carregarUsuarioDaSessao();
     this.carregarPerfilBackend();
+    this.carregarHistoricoSolicitacoes();
   }
 
   get dadosVisiveis(): CampoVisivel[] {
@@ -327,46 +319,91 @@ export class MeusDadosComponente implements OnInit {
     return this.camposAlteraveis.find((campo) => campo.valor === this.solicitacaoAtual.campo);
   }
 
-  enviarSolicitacaoDados(form: NgForm): void {
-    if (form.invalid) {
+  enviarSolicitacaoDados(
+    form: NgForm
+  ): void {
+    if (
+      form.invalid
+      || this.enviandoSolicitacao
+    ) {
       form.control.markAllAsTouched();
       return;
     }
 
-    const campo = this.campoSelecionado;
+    const campo =
+      this.campoSelecionado;
 
     if (!campo) {
       return;
     }
 
-    const novaSolicitacao:
-      SolicitacaoDados = {
+    this.enviandoSolicitacao = true;
+    this.erroSolicitacao = '';
+    this.solicitacaoEnviada = null;
 
-      codigo: this.gerarCodigoSolicitacao(),
+    this.solicitacaoService
+      .criar({
+        tipo:
+          'CORRECAO_CADASTRO',
 
-      campo: campo.label,
+        prioridade:
+          'NORMAL',
 
-      novoValor: this.solicitacaoAtual.novoValor.trim(),
+        campoCadastro:
+          campo.valor,
 
-      justificativa: this.solicitacaoAtual.justificativa.trim(),
+        novoValor:
+          this.solicitacaoAtual
+            .novoValor
+            .trim(),
 
-      data: new Date().toLocaleDateString('pt-BR'),
+        justificativa:
+          this.solicitacaoAtual
+            .justificativa
+            .trim(),
+      })
+      .subscribe({
+        next: (solicitacao) => {
+          const item =
+            this.converterSolicitacao(
+              solicitacao
+            );
 
-      status: 'Pendente',
+          this.historicoSolicitacoes = [
+            item,
+            ...this.historicoSolicitacoes,
+          ];
 
-      classe: 'text-bg-warning',
-    };
+          this.solicitacaoEnviada =
+            item;
 
-    this.historicoSolicitacoes = [novaSolicitacao, ...this.historicoSolicitacoes,];
+          this.enviandoSolicitacao =
+            false;
 
-    this.solicitacaoEnviada = novaSolicitacao;
+          this.limparFormulario(form);
 
-    this.limparFormulario(form);
+          this.cdr.detectChanges();
+        },
 
-    /*
-     * A chamada real do módulo de solicitações
-     * será implementada na próxima etapa.
-     */
+        error: (
+          erro: HttpErrorResponse
+        ) => {
+          console.error(
+            'Erro ao enviar solicitação:',
+            erro
+          );
+
+          this.erroSolicitacao =
+            this.obterMensagemErroSolicitacao(
+              erro
+            );
+
+          this.enviandoSolicitacao =
+            false;
+
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   limparFormulario(form?: NgForm): void {
@@ -514,6 +551,50 @@ export class MeusDadosComponente implements OnInit {
       });
   }
 
+  private carregarHistoricoSolicitacoes(): void {
+    this.carregandoSolicitacoes = true;
+    this.erroSolicitacao = '';
+
+    this.solicitacaoService
+      .listarMinhas()
+      .subscribe({
+        next: (solicitacoes) => {
+          this.historicoSolicitacoes =
+            solicitacoes
+              .filter(
+                (solicitacao) =>
+                  solicitacao.tipo === 'CORRECAO_CADASTRO'
+              )
+              .map(
+                (solicitacao) =>
+                  this.converterSolicitacao(
+                    solicitacao
+                  )
+              );
+
+          this.carregandoSolicitacoes = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: (
+          erro: HttpErrorResponse
+        ) => {
+          console.error(
+            'Erro ao carregar solicitações:',
+            erro
+          );
+
+          this.erroSolicitacao =
+            'Não foi possível carregar suas solicitações.';
+
+          this.carregandoSolicitacoes = false;
+
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
   private obterNomePerfil(tipo: TipoUsuario): string {
 
     const nomes: Record<TipoUsuario, string> = {
@@ -555,13 +636,125 @@ export class MeusDadosComponente implements OnInit {
     };
   }
 
-  private gerarCodigoSolicitacao():
-    string {
+  // private gerarCodigoSolicitacao():
+  //   string {
 
-    const proximoNumero = this.historicoSolicitacoes.length + 1;
+  //   const proximoNumero = this.historicoSolicitacoes.length + 1;
 
-    return `#ALT-${String(proximoNumero).padStart(3, '0')}`;
+  //   return `#ALT-${String(proximoNumero).padStart(3, '0')}`;
 
+  // }
+
+  private converterSolicitacao(
+    solicitacao: SolicitacaoResponse
+  ): SolicitacaoDados {
+    const apresentacaoStatus =
+      this.obterApresentacaoStatus(
+        solicitacao.status
+      );
+
+    return {
+      codigo: solicitacao.protocolo,
+
+      campo: this.obterLabelCampo(
+        solicitacao.campoCadastro
+      ),
+
+      novoValor:
+        solicitacao.novoValor
+        || 'Não informado',
+
+      justificativa:
+        solicitacao.justificativa,
+
+      data: this.formatarDataHora(
+        solicitacao.criadoEm
+      ),
+
+      status:
+        apresentacaoStatus.texto,
+
+      classe:
+        apresentacaoStatus.classe,
+    };
+  }
+
+  private obterLabelCampo(
+    campoCadastro: string | null
+  ): string {
+    if (!campoCadastro) {
+      return 'Campo cadastral';
+    }
+
+    const campo =
+      this.camposAlteraveis.find(
+        (item) =>
+          item.valor.toLowerCase()
+          === campoCadastro.toLowerCase()
+      );
+
+    return campo?.label
+      ?? campoCadastro;
+  }
+
+  private obterApresentacaoStatus(
+    status: StatusSolicitacao
+  ): {
+    texto: string;
+    classe: string;
+  } {
+    switch (status) {
+      case 'APROVADA':
+        return {
+          texto: 'Aprovada',
+          classe: 'text-bg-success',
+        };
+
+      case 'REJEITADA':
+        return {
+          texto: 'Rejeitada',
+          classe: 'text-bg-danger',
+        };
+
+      case 'PENDENTE':
+      default:
+        return {
+          texto: 'Pendente',
+          classe: 'text-bg-warning',
+        };
+    }
+  }
+
+  private formatarDataHora(
+    dataHora: string
+  ): string {
+    const data = dataHora.split('T')[0];
+
+    return this.formatarData(data);
+  }
+
+  private obterMensagemErroSolicitacao(
+    erro: HttpErrorResponse
+  ): string {
+    if (erro.status === 0) {
+      return 'Não foi possível conectar ao servidor.';
+    }
+
+    if (
+      typeof erro.error?.mensagem
+      === 'string'
+    ) {
+      return erro.error.mensagem;
+    }
+
+    if (
+      typeof erro.error?.message
+      === 'string'
+    ) {
+      return erro.error.message;
+    }
+
+    return 'Não foi possível enviar a solicitação.';
   }
 
 }
