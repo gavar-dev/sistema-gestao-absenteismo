@@ -35,10 +35,24 @@
     </div>
   </div>
 
-  <div class="row g-4">
+  <div *ngIf="carregandoDados" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+
+    <p class="text-body-secondary mt-3 mb-0">
+      Carregando seus dados...
+    </p>
+  </div>
+
+  <div *ngIf="erroDados" class="alert alert-danger" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ erroDados }}
+  </div>
+
+  <div class="row g-4" *ngIf="!carregandoDados && !erroDados">
     <div class="col-12 col-xl-8">
       <div class="card border-0 shadow-sm app-card h-100">
-        <div class="card-header bg-body border-0 pt-4 px-4 d-flex align-items-start justify-content-between gap-3 flex-wrap">
+        <div
+          class="card-header bg-body border-0 pt-4 px-4 d-flex align-items-start justify-content-between gap-3 flex-wrap">
           <div>
             <h3 class="h4 fw-bold mb-1">Dados pessoais e profissionais</h3>
             <p class="text-body-secondary mb-0">
