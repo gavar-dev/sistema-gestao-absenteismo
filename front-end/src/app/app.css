@@ -4,6 +4,15 @@
   background-color: var(--app-bg);
 }
 
+.app-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content > main {
+  flex: 1 0 auto;
+}
+
 .login-content,
 .login-main {
   margin: 0;

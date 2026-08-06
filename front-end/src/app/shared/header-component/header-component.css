@@ -1,16 +1,241 @@
+:host {
+  display: block;
+}
+
 .app-header {
+  --header-accent: #0d6efd;
+  --header-accent-strong: #084298;
   background-color: var(--app-bg);
 }
 
-.header-date-card {
-  margin-left: auto;
-  padding-right: 1rem;
+.app-header--gestao {
+  --header-accent: #38bdf8;
+  --header-accent-strong: #1d4ed8;
 }
 
-@media (max-width: 767.98px) {
+.header-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 1.25rem;
+  color: var(--app-text);
+  background:
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--header-accent) 18%, transparent),
+      transparent 25rem
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--app-surface) 96%, var(--header-accent) 4%),
+      var(--app-surface)
+    );
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.header-title-group {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-page-icon {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--header-accent), var(--header-accent-strong));
+  box-shadow: 0 0.75rem 1.75rem color-mix(in srgb, var(--header-accent) 24%, transparent);
+  font-size: 1.4rem;
+}
+
+.header-copy {
+  min-width: 0;
+}
+
+.header-kicker {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.45rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--header-accent) 24%, transparent);
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--header-accent) 88%, var(--app-text));
+  background-color: color-mix(in srgb, var(--header-accent) 10%, transparent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.055em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.header-kicker-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background-color: var(--header-accent);
+  box-shadow: 0 0 0 0.22rem color-mix(in srgb, var(--header-accent) 15%, transparent);
+}
+
+.header-title {
+  margin: 0 0 0.3rem;
+  color: var(--app-text);
+  font-size: clamp(1.65rem, 2.3vw, 2.15rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.header-description {
+  max-width: 760px;
+  margin: 0;
+  color: var(--app-text-muted);
+  line-height: 1.55;
+}
+
+.header-date-card {
+  min-width: 230px;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--app-surface) 90%, var(--app-bg));
+  box-shadow: 0 0.45rem 1.25rem rgba(15, 23, 42, 0.06);
+}
+
+.header-date-icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.85rem;
+  color: var(--header-accent);
+  background-color: color-mix(in srgb, var(--header-accent) 12%, transparent);
+  font-size: 1.15rem;
+}
+
+.header-date-copy {
+  min-width: 0;
+}
+
+.header-date-label,
+.header-weekday {
+  display: block;
+  color: var(--app-text-muted);
+}
+
+.header-date-label {
+  margin-bottom: 0.1rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.header-date-value {
+  display: block;
+  color: var(--app-text);
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.header-weekday {
+  margin-top: 0.1rem;
+  font-size: 0.78rem;
+  text-transform: capitalize;
+}
+
+.header-decoration {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  border: 1px solid color-mix(in srgb, var(--header-accent) 20%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.header-decoration--one {
+  width: 10rem;
+  height: 10rem;
+  top: -6.5rem;
+  right: 15rem;
+}
+
+.header-decoration--two {
+  width: 5rem;
+  height: 5rem;
+  right: 12.5rem;
+  bottom: -3.5rem;
+  background-color: color-mix(in srgb, var(--header-accent) 7%, transparent);
+}
+
+@media (max-width: 991.98px) {
+  .header-content {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .header-date-card {
     width: 100%;
-    margin-left: 0;
-    padding-right: 0;
+    min-width: 0;
+  }
+
+  .header-decoration--one {
+    right: -3rem;
+  }
+
+  .header-decoration--two {
+    display: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .header-content {
+    gap: 1.15rem;
+    padding: 1.2rem;
+  }
+
+  .header-title-group {
+    gap: 0.85rem;
+  }
+
+  .header-page-icon {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+    border-radius: 0.9rem;
+    font-size: 1.2rem;
+  }
+
+  .header-kicker {
+    font-size: 0.66rem;
+  }
+
+  .header-description {
+    font-size: 0.9rem;
+  }
+
+  .header-date-card {
+    padding: 0.75rem 0.85rem;
   }
 }

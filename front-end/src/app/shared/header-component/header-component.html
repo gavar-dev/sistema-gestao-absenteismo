@@ -1,30 +1,46 @@
-<header class="app-header border-bottom">
-  <div class="container-fluid py-3">
-    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
-      <div>
-        <span class="text-primary text-uppercase fw-bold small">
-          {{ subtitulo }}
-        </span>
+<header
+  class="app-header"
+  [class.app-header--gestao]="areaAtual === 'gestao'"
+>
+  <div class="container-fluid pt-4">
+    <section class="header-shell shadow-sm" aria-labelledby="tituloPagina">
+      <span class="header-decoration header-decoration--one" aria-hidden="true"></span>
+      <span class="header-decoration header-decoration--two" aria-hidden="true"></span>
 
-        <h1 class="h2 fw-bold mb-1">
-          {{ titulo }}
-        </h1>
+      <div class="header-content">
+        <div class="header-title-group">
+          <span class="header-page-icon" aria-hidden="true">
+            <i class="bi" [ngClass]="icone"></i>
+          </span>
 
-        <p class="mb-0 text-secondary">
-          {{ descricao }}
-        </p>
-      </div>
+          <div class="header-copy">
+            <span class="header-kicker">
+              <span class="header-kicker-dot" aria-hidden="true"></span>
+              {{ subtitulo }}
+            </span>
 
-      <div class="header-date-card d-flex align-items-center gap-3">
-        <div class="rounded-3 bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center p-3">
-          <i class="bi bi-calendar2-week fs-4"></i>
+            <h1 id="tituloPagina" class="header-title">
+              {{ titulo }}
+            </h1>
+
+            <p class="header-description">
+              {{ descricao }}
+            </p>
+          </div>
         </div>
 
-        <div>
-          <strong class="d-block">Hoje</strong>
-          <small class="text-body-secondary text-capitalize">{{ dataHoje }}</small>
+        <div class="header-date-card" aria-label="Data atual">
+          <span class="header-date-icon" aria-hidden="true">
+            <i class="bi bi-calendar2-week"></i>
+          </span>
+
+          <div class="header-date-copy">
+            <span class="header-date-label">Hoje</span>
+            <strong class="header-date-value">{{ dataHoje }}</strong>
+            <small class="header-weekday">{{ diaSemana }}</small>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </header>
