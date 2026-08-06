@@ -1,4 +1,6 @@
 <section class="solicitacoes-gestao-page">
+
+  <!-- Feedback de análise concluída -->
   <div
     *ngIf="mensagemFeedback"
     class="alert solicitacoes-feedback d-flex align-items-center justify-content-between gap-3 shadow-sm"
@@ -8,9 +10,15 @@
       <span class="feedback-icon">
         <i class="bi bi-check-lg"></i>
       </span>
+
       <div>
-        <strong class="d-block">Análise concluída</strong>
-        <span>{{ mensagemFeedback }}</span>
+        <strong class="d-block">
+          Análise concluída
+        </strong>
+
+        <span>
+          {{ mensagemFeedback }}
+        </span>
       </div>
     </div>
 
@@ -22,70 +30,201 @@
     ></button>
   </div>
 
-  <div class="row g-3 mb-4">
+  <!-- Carregamento -->
+  <div
+    *ngIf="carregando"
+    class="card solicitacoes-card border-0 shadow-sm mb-4"
+    aria-busy="true"
+  >
+    <div class="card-body text-center py-5">
+      <div
+        class="spinner-border text-primary"
+        role="status"
+        aria-label="Carregando solicitações"
+      ></div>
+
+      <p class="text-secondary mt-3 mb-0">
+        Carregando solicitações...
+      </p>
+    </div>
+  </div>
+
+  <!-- Erro ao carregar -->
+  <div
+    *ngIf="erroCarregamento"
+    class="alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 shadow-sm"
+    role="alert"
+  >
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+
+      <span>
+        {{ erroCarregamento }}
+      </span>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-danger flex-shrink-0"
+      (click)="carregarSolicitacoes()"
+    >
+      <i class="bi bi-arrow-clockwise me-2"></i>
+      Tentar novamente
+    </button>
+  </div>
+
+  <!-- Indicadores -->
+  <div
+    *ngIf="!carregando && !erroCarregamento"
+    class="row g-3 mb-4"
+  >
     <div class="col-12 col-sm-6 col-xl-3">
-      <article class="card indicador-solicitacao indicador-pendente border-0 shadow-sm h-100">
+      <article
+        class="card indicador-solicitacao indicador-pendente border-0 shadow-sm h-100"
+      >
         <div class="card-body p-4">
-          <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-            <span class="indicador-icon"><i class="bi bi-hourglass-split"></i></span>
-            <span class="badge indicador-badge">Fila atual</span>
+          <div
+            class="d-flex align-items-start justify-content-between gap-3 mb-3"
+          >
+            <span class="indicador-icon">
+              <i class="bi bi-hourglass-split"></i>
+            </span>
+
+            <span class="badge indicador-badge">
+              Fila atual
+            </span>
           </div>
-          <span class="text-secondary fw-semibold d-block mb-1">Pendentes</span>
-          <strong class="indicador-numero d-block">{{ totalPendentes }}</strong>
-          <small class="text-secondary">Aguardando análise da gestão ou do RH.</small>
+
+          <span class="text-secondary fw-semibold d-block mb-1">
+            Pendentes
+          </span>
+
+          <strong class="indicador-numero d-block">
+            {{ totalPendentes }}
+          </strong>
+
+          <small class="text-secondary">
+            Aguardando análise da gestão ou do RH.
+          </small>
         </div>
       </article>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <article class="card indicador-solicitacao indicador-prioridade border-0 shadow-sm h-100">
+      <article
+        class="card indicador-solicitacao indicador-prioridade border-0 shadow-sm h-100"
+      >
         <div class="card-body p-4">
-          <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-            <span class="indicador-icon"><i class="bi bi-exclamation-triangle"></i></span>
-            <span class="badge indicador-badge">Atenção</span>
+          <div
+            class="d-flex align-items-start justify-content-between gap-3 mb-3"
+          >
+            <span class="indicador-icon">
+              <i class="bi bi-exclamation-triangle"></i>
+            </span>
+
+            <span class="badge indicador-badge">
+              Atenção
+            </span>
           </div>
-          <span class="text-secondary fw-semibold d-block mb-1">Alta prioridade</span>
-          <strong class="indicador-numero d-block">{{ totalAltaPrioridade }}</strong>
-          <small class="text-secondary">Pedidos pendentes que precisam de resposta rápida.</small>
+
+          <span class="text-secondary fw-semibold d-block mb-1">
+            Alta prioridade
+          </span>
+
+          <strong class="indicador-numero d-block">
+            {{ totalAltaPrioridade }}
+          </strong>
+
+          <small class="text-secondary">
+            Pedidos pendentes que precisam de resposta rápida.
+          </small>
         </div>
       </article>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <article class="card indicador-solicitacao indicador-aprovada border-0 shadow-sm h-100">
+      <article
+        class="card indicador-solicitacao indicador-aprovada border-0 shadow-sm h-100"
+      >
         <div class="card-body p-4">
-          <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-            <span class="indicador-icon"><i class="bi bi-check-circle"></i></span>
-            <span class="badge indicador-badge">Concluídas</span>
+          <div
+            class="d-flex align-items-start justify-content-between gap-3 mb-3"
+          >
+            <span class="indicador-icon">
+              <i class="bi bi-check-circle"></i>
+            </span>
+
+            <span class="badge indicador-badge">
+              Concluídas
+            </span>
           </div>
-          <span class="text-secondary fw-semibold d-block mb-1">Aprovadas</span>
-          <strong class="indicador-numero d-block">{{ totalAprovadas }}</strong>
-          <small class="text-secondary">Solicitações validadas pela equipe responsável.</small>
+
+          <span class="text-secondary fw-semibold d-block mb-1">
+            Aprovadas
+          </span>
+
+          <strong class="indicador-numero d-block">
+            {{ totalAprovadas }}
+          </strong>
+
+          <small class="text-secondary">
+            Solicitações validadas pela equipe responsável.
+          </small>
         </div>
       </article>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <article class="card indicador-solicitacao indicador-rejeitada border-0 shadow-sm h-100">
+      <article
+        class="card indicador-solicitacao indicador-rejeitada border-0 shadow-sm h-100"
+      >
         <div class="card-body p-4">
-          <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-            <span class="indicador-icon"><i class="bi bi-x-circle"></i></span>
-            <span class="badge indicador-badge">Concluídas</span>
+          <div
+            class="d-flex align-items-start justify-content-between gap-3 mb-3"
+          >
+            <span class="indicador-icon">
+              <i class="bi bi-x-circle"></i>
+            </span>
+
+            <span class="badge indicador-badge">
+              Concluídas
+            </span>
           </div>
-          <span class="text-secondary fw-semibold d-block mb-1">Rejeitadas</span>
-          <strong class="indicador-numero d-block">{{ totalRejeitadas }}</strong>
-          <small class="text-secondary">Pedidos recusados com justificativa registrada.</small>
+
+          <span class="text-secondary fw-semibold d-block mb-1">
+            Rejeitadas
+          </span>
+
+          <strong class="indicador-numero d-block">
+            {{ totalRejeitadas }}
+          </strong>
+
+          <small class="text-secondary">
+            Pedidos recusados com justificativa registrada.
+          </small>
         </div>
       </article>
     </div>
   </div>
 
-  <div class="card solicitacoes-card border-0 shadow-sm mb-4">
+  <!-- Filtros -->
+  <div
+    *ngIf="!carregando && !erroCarregamento"
+    class="card solicitacoes-card border-0 shadow-sm mb-4"
+  >
     <div class="card-body p-4">
-      <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4">
+      <div
+        class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4"
+      >
         <div>
-          <h2 class="h5 fw-bold mb-1">Localizar solicitações</h2>
-          <p class="text-secondary mb-0">Pesquise pelo funcionário ou refine a fila usando os filtros.</p>
+          <h2 class="h5 fw-bold mb-1">
+            Localizar solicitações
+          </h2>
+
+          <p class="text-secondary mb-0">
+            Pesquise pelo funcionário ou refine a fila usando
+            os filtros.
+          </p>
         </div>
 
         <button
@@ -96,7 +235,11 @@
         >
           <i class="bi bi-arrow-counterclockwise me-2"></i>
           Limpar filtros
-          <span *ngIf="quantidadeFiltrosAtivos" class="badge text-bg-secondary ms-1">
+
+          <span
+            *ngIf="quantidadeFiltrosAtivos"
+            class="badge text-bg-secondary ms-1"
+          >
             {{ quantidadeFiltrosAtivos }}
           </span>
         </button>
@@ -104,9 +247,18 @@
 
       <div class="row g-3">
         <div class="col-12 col-xl-5">
-          <label for="buscaSolicitacao" class="form-label fw-semibold">Buscar</label>
+          <label
+            for="buscaSolicitacao"
+            class="form-label fw-semibold"
+          >
+            Buscar
+          </label>
+
           <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+
             <input
               id="buscaSolicitacao"
               type="search"
@@ -118,36 +270,91 @@
         </div>
 
         <div class="col-12 col-md-4 col-xl-2">
-          <label for="filtroStatus" class="form-label fw-semibold">Status</label>
-          <select id="filtroStatus" class="form-select" [(ngModel)]="filtroStatus">
-            <option *ngFor="let status of statusDisponiveis" [value]="status">{{ status }}</option>
+          <label
+            for="filtroStatus"
+            class="form-label fw-semibold"
+          >
+            Status
+          </label>
+
+          <select
+            id="filtroStatus"
+            class="form-select"
+            [(ngModel)]="filtroStatus"
+          >
+            <option
+              *ngFor="let status of statusDisponiveis"
+              [value]="status"
+            >
+              {{ status }}
+            </option>
           </select>
         </div>
 
         <div class="col-12 col-md-4 col-xl-3">
-          <label for="filtroTipo" class="form-label fw-semibold">Tipo</label>
-          <select id="filtroTipo" class="form-select" [(ngModel)]="filtroTipo">
-            <option *ngFor="let tipo of tiposDisponiveis" [value]="tipo">{{ tipo }}</option>
+          <label
+            for="filtroTipo"
+            class="form-label fw-semibold"
+          >
+            Tipo
+          </label>
+
+          <select
+            id="filtroTipo"
+            class="form-select"
+            [(ngModel)]="filtroTipo"
+          >
+            <option
+              *ngFor="let tipo of tiposDisponiveis"
+              [value]="tipo"
+            >
+              {{ tipo }}
+            </option>
           </select>
         </div>
 
         <div class="col-12 col-md-4 col-xl-2">
-          <label for="filtroSetor" class="form-label fw-semibold">Setor</label>
-          <select id="filtroSetor" class="form-select" [(ngModel)]="filtroSetor">
-            <option *ngFor="let setor of setoresDisponiveis" [value]="setor">{{ setor }}</option>
+          <label
+            for="filtroSetor"
+            class="form-label fw-semibold"
+          >
+            Setor
+          </label>
+
+          <select
+            id="filtroSetor"
+            class="form-select"
+            [(ngModel)]="filtroSetor"
+          >
+            <option
+              *ngFor="let setor of setoresDisponiveis"
+              [value]="setor"
+            >
+              {{ setor }}
+            </option>
           </select>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="card solicitacoes-card border-0 shadow-sm">
+  <!-- Fila -->
+  <div
+    *ngIf="!carregando && !erroCarregamento"
+    class="card solicitacoes-card border-0 shadow-sm"
+  >
     <div class="card-body p-0">
-      <div class="solicitacoes-lista-header d-flex justify-content-between align-items-center gap-3 flex-wrap p-4">
+      <div
+        class="solicitacoes-lista-header d-flex justify-content-between align-items-center gap-3 flex-wrap p-4"
+      >
         <div>
-          <h2 class="h5 fw-bold mb-1">Fila de solicitações</h2>
+          <h2 class="h5 fw-bold mb-1">
+            Fila de solicitações
+          </h2>
+
           <p class="text-secondary mb-0">
-            {{ solicitacoesFiltradas.length }} de {{ solicitacoes.length }} solicitação(ões) exibida(s).
+            {{ solicitacoesFiltradas.length }} de
+            {{ solicitacoes.length }} solicitação(ões) exibida(s).
           </p>
         </div>
 
@@ -157,9 +364,14 @@
         </span>
       </div>
 
-      <div *ngIf="solicitacoesFiltradas.length; else estadoVazio">
+      <div
+        *ngIf="solicitacoesFiltradas.length > 0; else estadoVazio"
+      >
+        <!-- Tabela desktop -->
         <div class="table-responsive d-none d-lg-block">
-          <table class="table solicitacoes-table table-hover align-middle mb-0">
+          <table
+            class="table solicitacoes-table table-hover align-middle mb-0"
+          >
             <thead>
               <tr>
                 <th>Funcionário</th>
@@ -172,51 +384,116 @@
             </thead>
 
             <tbody>
-              <tr *ngFor="let item of solicitacoesFiltradas; trackBy: trackById">
+              <tr
+                *ngFor="
+                  let item of solicitacoesFiltradas;
+                  trackBy: trackById
+                "
+              >
                 <td>
                   <div class="d-flex align-items-center gap-3">
-                    <span class="funcionario-avatar">{{ iniciais(item.funcionario) }}</span>
+                    <span class="funcionario-avatar">
+                      {{ iniciais(item.funcionario) }}
+                    </span>
+
                     <div>
-                      <strong class="d-block">{{ item.funcionario }}</strong>
-                      <small class="text-secondary">{{ item.matricula }} · {{ item.setor }}</small>
+                      <strong class="d-block">
+                        {{ item.funcionario }}
+                      </strong>
+
+                      <small class="text-secondary">
+                        {{ item.matricula }} · {{ item.setor }}
+                      </small>
                     </div>
                   </div>
                 </td>
 
                 <td>
                   <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="tipo-icon" [ngClass]="tipoClasse(item.tipo)">
-                      <i class="bi" [ngClass]="tipoIcone(item.tipo)"></i>
+                    <span
+                      class="tipo-icon"
+                      [ngClass]="tipoClasse(item.tipo)"
+                    >
+                      <i
+                        class="bi"
+                        [ngClass]="tipoIcone(item.tipo)"
+                      ></i>
                     </span>
-                    <strong>{{ item.tipo }}</strong>
+
+                    <strong>
+                      {{ item.tipo }}
+                    </strong>
                   </div>
-                  <small class="text-secondary">{{ item.protocolo }}</small>
+
+                  <small class="text-secondary">
+                    {{ item.protocolo }}
+                  </small>
                 </td>
 
                 <td>
-                  <small class="text-secondary d-block">Enviada em</small>
-                  <strong class="d-block mb-1">{{ item.dataSolicitacao }}</strong>
-                  <small class="text-secondary">Referência: {{ item.dataReferencia }}</small>
+                  <small class="text-secondary d-block">
+                    Enviada em
+                  </small>
+
+                  <strong class="d-block mb-1">
+                    {{ item.dataSolicitacao }}
+                  </strong>
+
+                  <small class="text-secondary">
+                    Referência: {{ item.dataReferencia }}
+                  </small>
                 </td>
 
                 <td>
-                  <span class="badge rounded-pill prioridade-badge" [ngClass]="prioridadeClasse(item.prioridade)">
-                    <i class="bi" [ngClass]="item.prioridade === 'Alta' ? 'bi-exclamation-circle' : 'bi-dash-circle'"></i>
+                  <span
+                    class="badge rounded-pill prioridade-badge"
+                    [ngClass]="prioridadeClasse(item.prioridade)"
+                  >
+                    <i
+                      class="bi"
+                      [ngClass]="
+                        item.prioridade === 'Alta'
+                          ? 'bi-exclamation-circle'
+                          : 'bi-dash-circle'
+                      "
+                    ></i>
+
                     {{ item.prioridade }}
                   </span>
                 </td>
 
                 <td>
-                  <span class="badge rounded-pill status-badge" [ngClass]="statusClasse(item.status)">
+                  <span
+                    class="badge rounded-pill status-badge"
+                    [ngClass]="statusClasse(item.status)"
+                  >
                     <span class="status-dot"></span>
                     {{ item.status }}
                   </span>
                 </td>
 
                 <td class="text-end">
-                  <button type="button" class="btn btn-sm btn-outline-primary fw-semibold" (click)="abrirDetalhes(item)">
-                    <i class="bi" [ngClass]="item.status === 'Pendente' ? 'bi-clipboard-check' : 'bi-eye'"></i>
-                    <span class="ms-2">{{ item.status === 'Pendente' ? 'Analisar' : 'Detalhes' }}</span>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary fw-semibold"
+                    (click)="abrirDetalhes(item)"
+                  >
+                    <i
+                      class="bi"
+                      [ngClass]="
+                        item.status === 'Pendente'
+                          ? 'bi-clipboard-check'
+                          : 'bi-eye'
+                      "
+                    ></i>
+
+                    <span class="ms-2">
+                      {{
+                        item.status === 'Pendente'
+                          ? 'Analisar'
+                          : 'Detalhes'
+                      }}
+                    </span>
                   </button>
                 </td>
               </tr>
@@ -224,67 +501,149 @@
           </table>
         </div>
 
+        <!-- Cards mobile -->
         <div class="d-lg-none p-3 p-sm-4 pt-0">
           <article
             class="solicitacao-mobile-card"
-            *ngFor="let item of solicitacoesFiltradas; trackBy: trackById"
+            *ngFor="
+              let item of solicitacoesFiltradas;
+              trackBy: trackById
+            "
           >
-            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+            <div
+              class="d-flex align-items-start justify-content-between gap-3 mb-3"
+            >
               <div class="d-flex align-items-center gap-3 min-w-0">
-                <span class="funcionario-avatar">{{ iniciais(item.funcionario) }}</span>
+                <span class="funcionario-avatar">
+                  {{ iniciais(item.funcionario) }}
+                </span>
+
                 <div class="min-w-0">
-                  <strong class="d-block text-truncate">{{ item.funcionario }}</strong>
-                  <small class="text-secondary d-block text-truncate">{{ item.matricula }} · {{ item.setor }}</small>
+                  <strong class="d-block text-truncate">
+                    {{ item.funcionario }}
+                  </strong>
+
+                  <small class="text-secondary d-block text-truncate">
+                    {{ item.matricula }} · {{ item.setor }}
+                  </small>
                 </div>
               </div>
 
-              <span class="badge rounded-pill status-badge" [ngClass]="statusClasse(item.status)">
+              <span
+                class="badge rounded-pill status-badge"
+                [ngClass]="statusClasse(item.status)"
+              >
                 <span class="status-dot"></span>
                 {{ item.status }}
               </span>
             </div>
 
-            <div class="solicitacao-mobile-tipo d-flex align-items-center gap-2 mb-3">
-              <span class="tipo-icon" [ngClass]="tipoClasse(item.tipo)">
-                <i class="bi" [ngClass]="tipoIcone(item.tipo)"></i>
+            <div
+              class="solicitacao-mobile-tipo d-flex align-items-center gap-2 mb-3"
+            >
+              <span
+                class="tipo-icon"
+                [ngClass]="tipoClasse(item.tipo)"
+              >
+                <i
+                  class="bi"
+                  [ngClass]="tipoIcone(item.tipo)"
+                ></i>
               </span>
+
               <div>
-                <strong class="d-block">{{ item.tipo }}</strong>
-                <small class="text-secondary">{{ item.protocolo }}</small>
+                <strong class="d-block">
+                  {{ item.tipo }}
+                </strong>
+
+                <small class="text-secondary">
+                  {{ item.protocolo }}
+                </small>
               </div>
             </div>
 
             <div class="row g-2 small mb-3">
               <div class="col-6">
-                <span class="text-secondary d-block">Enviada em</span>
-                <strong>{{ item.dataSolicitacao }}</strong>
+                <span class="text-secondary d-block">
+                  Enviada em
+                </span>
+
+                <strong>
+                  {{ item.dataSolicitacao }}
+                </strong>
               </div>
+
               <div class="col-6">
-                <span class="text-secondary d-block">Prioridade</span>
-                <span class="badge rounded-pill prioridade-badge" [ngClass]="prioridadeClasse(item.prioridade)">
+                <span class="text-secondary d-block">
+                  Prioridade
+                </span>
+
+                <span
+                  class="badge rounded-pill prioridade-badge"
+                  [ngClass]="prioridadeClasse(item.prioridade)"
+                >
                   {{ item.prioridade }}
                 </span>
               </div>
+
               <div class="col-12">
-                <span class="text-secondary d-block">Data de referência</span>
-                <strong>{{ item.dataReferencia }}</strong>
+                <span class="text-secondary d-block">
+                  Data de referência
+                </span>
+
+                <strong>
+                  {{ item.dataReferencia }}
+                </strong>
               </div>
             </div>
 
-            <button type="button" class="btn btn-outline-primary w-100 fw-semibold" (click)="abrirDetalhes(item)">
-              <i class="bi" [ngClass]="item.status === 'Pendente' ? 'bi-clipboard-check' : 'bi-eye'"></i>
-              <span class="ms-2">{{ item.status === 'Pendente' ? 'Analisar solicitação' : 'Ver detalhes' }}</span>
+            <button
+              type="button"
+              class="btn btn-outline-primary w-100 fw-semibold"
+              (click)="abrirDetalhes(item)"
+            >
+              <i
+                class="bi"
+                [ngClass]="
+                  item.status === 'Pendente'
+                    ? 'bi-clipboard-check'
+                    : 'bi-eye'
+                "
+              ></i>
+
+              <span class="ms-2">
+                {{
+                  item.status === 'Pendente'
+                    ? 'Analisar solicitação'
+                    : 'Ver detalhes'
+                }}
+              </span>
             </button>
           </article>
         </div>
       </div>
 
+      <!-- Estado vazio -->
       <ng-template #estadoVazio>
         <div class="estado-vazio text-center px-4 py-5">
-          <span class="estado-vazio-icon"><i class="bi bi-search"></i></span>
-          <h3 class="h5 fw-bold mt-3 mb-2">Nenhuma solicitação encontrada</h3>
-          <p class="text-secondary mb-3">Revise os filtros ou faça uma nova busca.</p>
-          <button type="button" class="btn btn-outline-primary" (click)="limparFiltros()">
+          <span class="estado-vazio-icon">
+            <i class="bi bi-search"></i>
+          </span>
+
+          <h3 class="h5 fw-bold mt-3 mb-2">
+            Nenhuma solicitação encontrada
+          </h3>
+
+          <p class="text-secondary mb-3">
+            Revise os filtros ou faça uma nova busca.
+          </p>
+
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            [disabled]="quantidadeFiltrosAtivos === 0"
+            (click)="limparFiltros()"
+          >
             Limpar filtros
           </button>
         </div>
@@ -293,6 +652,7 @@
   </div>
 </section>
 
+<!-- Modal de detalhes -->
 <div
   *ngIf="solicitacaoSelecionada as item"
   class="solicitacao-modal-backdrop"
@@ -304,116 +664,262 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="tituloDetalhesSolicitacao"
+    [attr.aria-busy]="processandoAnalise"
     (click)="$event.stopPropagation()"
   >
-    <header class="solicitacao-modal-header d-flex align-items-start justify-content-between gap-3">
+    <header
+      class="solicitacao-modal-header d-flex align-items-start justify-content-between gap-3"
+    >
       <div>
-        <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
-          <span class="badge rounded-pill status-badge" [ngClass]="statusClasse(item.status)">
+        <div
+          class="d-flex align-items-center gap-2 flex-wrap mb-2"
+        >
+          <span
+            class="badge rounded-pill status-badge"
+            [ngClass]="statusClasse(item.status)"
+          >
             <span class="status-dot"></span>
             {{ item.status }}
           </span>
-          <span class="text-secondary small fw-semibold">{{ item.protocolo }}</span>
+
+          <span class="text-secondary small fw-semibold">
+            {{ item.protocolo }}
+          </span>
         </div>
-        <h2 id="tituloDetalhesSolicitacao" class="h4 fw-bold mb-1">{{ item.tipo }}</h2>
-        <p class="text-secondary mb-0">Confira os dados enviados antes de registrar a decisão.</p>
+
+        <h2
+          id="tituloDetalhesSolicitacao"
+          class="h4 fw-bold mb-1"
+        >
+          {{ item.tipo }}
+        </h2>
+
+        <p class="text-secondary mb-0">
+          Confira os dados enviados antes de registrar a decisão.
+        </p>
       </div>
 
-      <button type="button" class="btn-close" aria-label="Fechar detalhes" (click)="fecharDetalhes()"></button>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Fechar detalhes"
+        [disabled]="processandoAnalise"
+        (click)="fecharDetalhes()"
+      ></button>
     </header>
 
     <div class="solicitacao-modal-body">
-      <div class="funcionario-resumo d-flex align-items-center gap-3 mb-4">
-        <span class="funcionario-avatar funcionario-avatar-lg">{{ iniciais(item.funcionario) }}</span>
+
+      <!-- Funcionário -->
+      <div
+        class="funcionario-resumo d-flex align-items-center gap-3 mb-4"
+      >
+        <span class="funcionario-avatar funcionario-avatar-lg">
+          {{ iniciais(item.funcionario) }}
+        </span>
+
         <div>
-          <strong class="d-block fs-5">{{ item.funcionario }}</strong>
-          <span class="text-secondary d-block">{{ item.cargo }} · {{ item.setor }}</span>
-          <small class="text-secondary">Matrícula {{ item.matricula }}</small>
+          <strong class="d-block fs-5">
+            {{ item.funcionario }}
+          </strong>
+
+          <span class="text-secondary d-block">
+            {{ item.cargo }} · {{ item.setor }}
+          </span>
+
+          <small class="text-secondary">
+            Matrícula {{ item.matricula }}
+          </small>
         </div>
       </div>
 
+      <!-- Informações -->
       <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
           <div class="detalhe-box h-100">
-            <small class="text-secondary d-block mb-1">Solicitada em</small>
-            <strong>{{ item.dataSolicitacao }}</strong>
+            <small class="text-secondary d-block mb-1">
+              Solicitada em
+            </small>
+
+            <strong>
+              {{ item.dataSolicitacao }}
+            </strong>
           </div>
         </div>
+
         <div class="col-6 col-md-3">
           <div class="detalhe-box h-100">
-            <small class="text-secondary d-block mb-1">Referência</small>
-            <strong>{{ item.dataReferencia }}</strong>
+            <small class="text-secondary d-block mb-1">
+              Referência
+            </small>
+
+            <strong>
+              {{ item.dataReferencia }}
+            </strong>
           </div>
         </div>
+
         <div class="col-6 col-md-3">
           <div class="detalhe-box h-100">
-            <small class="text-secondary d-block mb-1">Prioridade</small>
-            <span class="badge rounded-pill prioridade-badge" [ngClass]="prioridadeClasse(item.prioridade)">
+            <small class="text-secondary d-block mb-1">
+              Prioridade
+            </small>
+
+            <span
+              class="badge rounded-pill prioridade-badge"
+              [ngClass]="prioridadeClasse(item.prioridade)"
+            >
               {{ item.prioridade }}
             </span>
           </div>
         </div>
+
         <div class="col-6 col-md-3">
           <div class="detalhe-box h-100">
-            <small class="text-secondary d-block mb-1">Horário</small>
-            <strong>{{ item.horarioSolicitado || 'Não informado' }}</strong>
+            <small class="text-secondary d-block mb-1">
+              Horário
+            </small>
+
+            <strong>
+              {{ item.horarioSolicitado || 'Não informado' }}
+            </strong>
           </div>
         </div>
       </div>
 
+      <!-- Descrição -->
       <div class="mb-4">
-        <h3 class="h6 fw-bold mb-2">Descrição do funcionário</h3>
-        <div class="descricao-box">{{ item.descricao }}</div>
+        <h3 class="h6 fw-bold mb-2">
+          Descrição do funcionário
+        </h3>
+
+        <div class="descricao-box">
+          {{ item.descricao }}
+        </div>
       </div>
 
-      <div *ngIf="item.anexo" class="anexo-box d-flex align-items-center justify-content-between gap-3 mb-4">
+      <!-- Anexo -->
+      <div
+        *ngIf="item.anexo"
+        class="anexo-box d-flex align-items-center justify-content-between gap-3 mb-4"
+      >
         <div class="d-flex align-items-center gap-3 min-w-0">
-          <span class="anexo-icon"><i class="bi bi-paperclip"></i></span>
+          <span class="anexo-icon">
+            <i class="bi bi-paperclip"></i>
+          </span>
+
           <div class="min-w-0">
-            <small class="text-secondary d-block">Documento anexado</small>
-            <strong class="d-block text-truncate">{{ item.anexo }}</strong>
+            <small class="text-secondary d-block">
+              Documento informado
+            </small>
+
+            <strong class="d-block text-truncate">
+              {{ item.anexo }}
+            </strong>
           </div>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-primary" aria-label="Visualizar anexo">
-          <i class="bi bi-eye"></i>
-        </button>
+
+        <span
+          class="badge text-bg-secondary"
+          title="O sistema armazena somente o nome do arquivo nesta versão"
+        >
+          Sem upload
+        </span>
       </div>
 
-      <div *ngIf="item.status === 'Pendente'; else analiseConcluida" class="analise-box">
+      <!-- Formulário de análise -->
+      <div
+        *ngIf="item.status === 'Pendente'; else analiseConcluida"
+        class="analise-box"
+      >
         <div class="mb-3">
-          <h3 class="h6 fw-bold mb-1">Parecer da análise</h3>
+          <h3 class="h6 fw-bold mb-1">
+            Parecer da análise
+          </h3>
+
           <p class="text-secondary small mb-0">
-            A observação é opcional para aprovação e obrigatória para rejeição.
+            A observação é opcional para aprovação e obrigatória
+            para rejeição.
           </p>
         </div>
 
-        <label for="observacaoAnalise" class="form-label fw-semibold">Observação</label>
+        <label
+          for="observacaoAnalise"
+          class="form-label fw-semibold"
+        >
+          Observação
+        </label>
+
         <textarea
           id="observacaoAnalise"
           class="form-control"
           rows="4"
+          maxlength="2000"
           placeholder="Registre o motivo da decisão ou uma orientação para o funcionário."
           [(ngModel)]="observacaoAnalise"
+          [disabled]="processandoAnalise"
           (ngModelChange)="erroAnalise = ''"
         ></textarea>
 
-        <div *ngIf="erroAnalise" class="text-danger small mt-2" role="alert">
+        <div class="d-flex justify-content-between mt-1">
+          <small class="text-secondary">
+            Obrigatória para rejeição, com no mínimo 5 caracteres.
+          </small>
+
+          <small class="text-secondary">
+            {{ observacaoAnalise.length }}/2000
+          </small>
+        </div>
+
+        <div
+          *ngIf="erroAnalise"
+          class="alert alert-danger py-2 mt-3 mb-0"
+          role="alert"
+        >
           <i class="bi bi-exclamation-circle me-1"></i>
           {{ erroAnalise }}
         </div>
       </div>
 
+      <!-- Análise concluída -->
       <ng-template #analiseConcluida>
-        <div class="analise-concluida" [ngClass]="item.status === 'Aprovada' ? 'analise-aprovada' : 'analise-rejeitada'">
+        <div
+          class="analise-concluida"
+          [ngClass]="
+            item.status === 'Aprovada'
+              ? 'analise-aprovada'
+              : 'analise-rejeitada'
+          "
+        >
           <div class="d-flex align-items-start gap-3">
             <span class="analise-concluida-icon">
-              <i class="bi" [ngClass]="item.status === 'Aprovada' ? 'bi-check-lg' : 'bi-x-lg'"></i>
+              <i
+                class="bi"
+                [ngClass]="
+                  item.status === 'Aprovada'
+                    ? 'bi-check-lg'
+                    : 'bi-x-lg'
+                "
+              ></i>
             </span>
+
             <div>
-              <strong class="d-block mb-1">Solicitação {{ item.status.toLowerCase() }}</strong>
-              <p class="mb-2">{{ item.observacaoAnalise }}</p>
+              <strong class="d-block mb-1">
+                Solicitação {{ item.status.toLowerCase() }}
+              </strong>
+
+              <p class="mb-2">
+                {{
+                  item.observacaoAnalise ||
+                  'Nenhuma observação foi registrada.'
+                }}
+              </p>
+
               <small>
-                Analisada por {{ item.analisadoPor }} em {{ item.dataAnalise }}.
+                Analisada por
+                {{ item.analisadoPor || 'Equipe de Gestão/RH' }}
+                em
+                {{ item.dataAnalise || 'data não informada' }}.
               </small>
             </div>
           </div>
@@ -421,19 +927,60 @@
       </ng-template>
     </div>
 
-    <footer class="solicitacao-modal-footer d-flex flex-column flex-sm-row justify-content-end gap-2">
-      <button type="button" class="btn btn-outline-secondary" (click)="fecharDetalhes()">
+    <!-- Rodapé -->
+    <footer
+      class="solicitacao-modal-footer d-flex flex-column flex-sm-row justify-content-end gap-2"
+    >
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        [disabled]="processandoAnalise"
+        (click)="fecharDetalhes()"
+      >
         Fechar
       </button>
 
       <ng-container *ngIf="item.status === 'Pendente'">
-        <button type="button" class="btn btn-outline-danger fw-semibold" (click)="rejeitarSelecionada()">
-          <i class="bi bi-x-lg me-2"></i>
-          Rejeitar
+        <button
+          type="button"
+          class="btn btn-outline-danger fw-semibold"
+          [disabled]="processandoAnalise"
+          (click)="rejeitarSelecionada()"
+        >
+          <i
+            *ngIf="!processandoAnalise"
+            class="bi bi-x-lg me-2"
+          ></i>
+
+          {{
+            processandoAnalise
+              ? 'Processando...'
+              : 'Rejeitar'
+          }}
         </button>
-        <button type="button" class="btn btn-success fw-semibold" (click)="aprovarSelecionada()">
-          <i class="bi bi-check-lg me-2"></i>
-          Aprovar
+
+        <button
+          type="button"
+          class="btn btn-success fw-semibold"
+          [disabled]="processandoAnalise"
+          (click)="aprovarSelecionada()"
+        >
+          <span
+            *ngIf="processandoAnalise"
+            class="spinner-border spinner-border-sm me-2"
+            aria-hidden="true"
+          ></span>
+
+          <i
+            *ngIf="!processandoAnalise"
+            class="bi bi-check-lg me-2"
+          ></i>
+
+          {{
+            processandoAnalise
+              ? 'Processando...'
+              : 'Aprovar'
+          }}
         </button>
       </ng-container>
     </footer>

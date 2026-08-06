@@ -67,3 +67,11 @@ export interface SolicitacaoResponse {
   atualizadoEm: string;
   analisadoEm: string | null;
 }
+
+export interface SolicitacaoAprovacaoRequest {
+  observacao?: string;
+}
+
+export interface SolicitacaoRejeicaoRequest {
+  observacao: string;
+}
