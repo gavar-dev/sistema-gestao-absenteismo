@@ -1,0 +1,527 @@
+<section class="avisos-gestao-page">
+    <!-- Feedback -->
+    <div *ngIf="mensagemFeedback"
+        class="alert alert-success d-flex align-items-center justify-content-between gap-3 border-0 shadow-sm mb-4"
+        role="status">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ mensagemFeedback }}</span>
+        </div>
+
+        <button type="button" class="btn-close" aria-label="Fechar mensagem" (click)="mensagemFeedback = ''"></button>
+    </div>
+
+    <!-- Erro de carregamento -->
+    <div *ngIf="erroCarregamento"
+        class="alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-0 shadow-sm mb-4"
+        role="alert">
+        <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ erroCarregamento }}</span>
+        </div>
+
+        <button type="button" class="btn btn-sm btn-outline-danger" (click)="carregarAvisos()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Tentar novamente
+        </button>
+    </div>
+
+    <!-- Permissão do gestor -->
+    <div *ngIf="!ehRh" class="alert alert-info d-flex align-items-start gap-3 border-0 shadow-sm mb-4" role="status">
+        <i class="bi bi-eye-fill fs-5"></i>
+
+        <div>
+            <strong class="d-block">
+                Modo de consulta
+            </strong>
+            <span>
+                Gestores podem consultar os avisos. A criação,
+                edição e exclusão são exclusivas do RH.
+            </span>
+        </div>
+    </div>
+
+    <!-- Indicadores -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3" *ngFor="let item of resumo">
+            <article class="card aviso-gestao-indicador border-0 shadow-sm h-100" [ngClass]="'indicador-' + item.tipo">
+                <div class="card-body p-4">
+                    <span
+                        class="aviso-gestao-indicador-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
+                        <i class="bi" [ngClass]="item.icone"></i>
+                    </span>
+
+                    <p class="text-secondary fw-semibold mb-1">
+                        {{ item.titulo }}
+                    </p>
+
+                    <strong class="aviso-gestao-indicador-valor d-block mb-1">
+                        {{ item.valor }}
+                    </strong>
+
+                    <small class="text-secondary">
+                        {{ item.detalhe }}
+                    </small>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Formulário do RH -->
+    <div *ngIf="ehRh" class="card aviso-gestao-card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
+                <div>
+                    <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis mb-2">
+                        <i class="bi" [ngClass]="
+                modoEdicao
+                  ? 'bi-pencil-square'
+                  : 'bi-plus-circle'
+              "></i>
+                        {{ modoEdicao ? 'Edição' : 'Novo aviso' }}
+                    </span>
+
+                    <h2 class="h5 fw-bold mb-1">
+                        {{
+                        modoEdicao
+                        ? 'Editar aviso'
+                        : 'Publicar aviso'
+                        }}
+                    </h2>
+
+                    <p class="text-secondary mb-0">
+                        Defina a mensagem, prioridade, público e período
+                        de exibição.
+                    </p>
+                </div>
+
+                <button *ngIf="modoEdicao" type="button" class="btn btn-sm btn-outline-secondary" [disabled]="salvando"
+                    (click)="cancelarEdicao()">
+                    <i class="bi bi-x-lg me-1"></i>
+                    Cancelar edição
+                </button>
+            </div>
+
+            <div *ngIf="erroFormulario" class="alert alert-danger py-2" role="alert">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                {{ erroFormulario }}
+            </div>
+
+            <form class="row g-3" (ngSubmit)="salvarAviso()">
+                <div class="col-12 col-lg-8">
+                    <label for="tituloAviso" class="form-label fw-semibold">
+                        Título
+                    </label>
+
+                    <input id="tituloAviso" type="text" class="form-control" name="titulo" maxlength="150" required
+                        [(ngModel)]="formulario.titulo" placeholder="Ex.: Fechamento mensal do ponto" />
+
+                    <div class="form-text">
+                        Entre 3 e 150 caracteres.
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label for="nivelAvisoGestao" class="form-label fw-semibold">
+                        Nível
+                    </label>
+
+                    <select id="nivelAvisoGestao" class="form-select" name="nivel" [(ngModel)]="formulario.nivel">
+                        <option value="INFORMATIVO">
+                            Informativo
+                        </option>
+                        <option value="SUCESSO">
+                            Sucesso
+                        </option>
+                        <option value="ALERTA">
+                            Alerta
+                        </option>
+                        <option value="URGENTE">
+                            Urgente
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label for="mensagemAviso" class="form-label fw-semibold">
+                        Mensagem
+                    </label>
+
+                    <textarea id="mensagemAviso" class="form-control" name="mensagem" rows="4" maxlength="3000" required
+                        [(ngModel)]="formulario.mensagem"
+                        placeholder="Escreva o comunicado que será exibido aos destinatários."></textarea>
+
+                    <div class="form-text text-end">
+                        {{ formulario.mensagem.length }}/3000
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label for="destinoAviso" class="form-label fw-semibold">
+                        Destino
+                    </label>
+
+                    <select id="destinoAviso" class="form-select" name="destino" [(ngModel)]="formulario.destino"
+                        (ngModelChange)="aoAlterarDestino()">
+                        <option value="TODOS">
+                            Toda a empresa
+                        </option>
+                        <option value="TIPO_ACESSO">
+                            Por tipo de acesso
+                        </option>
+                        <option value="SETOR">
+                            Por setor
+                        </option>
+                    </select>
+                </div>
+
+                <div *ngIf="
+            formulario.destino === 'TIPO_ACESSO'
+          " class="col-12 col-lg-4">
+                    <label for="tipoAcessoAlvo" class="form-label fw-semibold">
+                        Tipo de acesso
+                    </label>
+
+                    <select id="tipoAcessoAlvo" class="form-select" name="tipoAcessoAlvo" [(ngModel)]="
+              formulario.tipoAcessoAlvo
+            ">
+                        <option value="">
+                            Selecione
+                        </option>
+
+                        <option *ngFor="let tipo of tiposAcesso" [value]="tipo">
+                            {{ nomeTipoAcesso(tipo) }}
+                        </option>
+                    </select>
+                </div>
+
+                <div *ngIf="formulario.destino === 'SETOR'" class="col-12 col-lg-4">
+                    <label for="setorAlvo" class="form-label fw-semibold">
+                        Setor
+                    </label>
+
+                    <input id="setorAlvo" type="text" class="form-control" name="setorAlvo" maxlength="100"
+                        [(ngModel)]="formulario.setorAlvo" placeholder="Ex.: Comercial" />
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="publicadoEm" class="form-label fw-semibold">
+                        Publicar em
+                    </label>
+
+                    <input id="publicadoEm" type="datetime-local" class="form-control" name="publicadoEm"
+                        [(ngModel)]="formulario.publicadoEm" />
+
+                    <div class="form-text">
+                        Em branco: publicação imediata.
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="expiraEm" class="form-label fw-semibold">
+                        Expirar em
+                    </label>
+
+                    <input id="expiraEm" type="datetime-local" class="form-control" name="expiraEm"
+                        [(ngModel)]="formulario.expiraEm" />
+
+                    <div class="form-text">
+                        Em branco: sem data de expiração.
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex flex-column flex-sm-row justify-content-end gap-2 pt-2">
+                    <button type="button" class="btn btn-outline-secondary" [disabled]="salvando"
+                        (click)="cancelarEdicao()">
+                        Limpar
+                    </button>
+
+                    <button type="submit" class="btn btn-primary fw-semibold" [disabled]="salvando">
+                        <span *ngIf="salvando" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+
+                        <i *ngIf="!salvando" class="bi me-2" [ngClass]="
+                modoEdicao
+                  ? 'bi-save'
+                  : 'bi-send'
+              "></i>
+
+                        {{
+                        salvando
+                        ? 'Salvando...'
+                        : modoEdicao
+                        ? 'Salvar alterações'
+                        : 'Publicar aviso'
+                        }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista -->
+    <div class="card aviso-gestao-card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
+                <div>
+                    <h2 class="h5 fw-bold mb-1">
+                        Avisos cadastrados
+                    </h2>
+
+                    <p class="text-secondary mb-0">
+                        Consulte publicações atuais, futuras e expiradas.
+                    </p>
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-primary" [disabled]="carregando"
+                    (click)="carregarAvisos()">
+                    <i class="bi bi-arrow-clockwise me-2"></i>
+                    Atualizar
+                </button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-xl-5">
+                    <label for="buscaAvisoGestao" class="form-label fw-semibold">
+                        Buscar
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input id="buscaAvisoGestao" type="search" class="form-control"
+                            placeholder="Título, mensagem, autor ou público" [(ngModel)]="filtroBusca" />
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-4 col-xl-2">
+                    <label for="filtroNivelGestao" class="form-label fw-semibold">
+                        Nível
+                    </label>
+
+                    <select id="filtroNivelGestao" class="form-select" [(ngModel)]="filtroNivel">
+                        <option *ngFor="let nivel of niveis" [value]="nivel">
+                            {{
+                            nivel === 'Todos'
+                            ? nivel
+                            : nomeNivel(nivel)
+                            }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-sm-4 col-xl-3">
+                    <label for="filtroDestinoGestao" class="form-label fw-semibold">
+                        Destino
+                    </label>
+
+                    <select id="filtroDestinoGestao" class="form-select" [(ngModel)]="filtroDestino">
+                        <option *ngFor="let destino of destinos" [value]="destino">
+                            {{
+                            destino === 'Todos'
+                            ? 'Todos'
+                            : destino === 'TODOS'
+                            ? 'Toda a empresa'
+                            : destino === 'TIPO_ACESSO'
+                            ? 'Tipo de acesso'
+                            : 'Setor'
+                            }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-sm-4 col-xl-2">
+                    <label for="filtroAtivoGestao" class="form-label fw-semibold">
+                        Cadastro
+                    </label>
+
+                    <select id="filtroAtivoGestao" class="form-select" [(ngModel)]="filtroAtivo">
+                        <option value="Todos">
+                            Todos
+                        </option>
+                        <option value="Ativos">
+                            Ativos
+                        </option>
+                        <option value="Inativos">
+                            Inativos
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="limparFiltros()">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+                        Limpar filtros
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div *ngIf="carregando" class="text-center py-5" aria-busy="true">
+                <div class="spinner-border text-primary" role="status" aria-label="Carregando avisos"></div>
+
+                <p class="text-secondary mt-3 mb-0">
+                    Carregando avisos...
+                </p>
+            </div>
+
+            <!-- Cards -->
+            <div *ngIf="
+          !carregando &&
+          avisosFiltrados.length > 0
+        " class="row g-3">
+                <div class="col-12 col-xl-6" *ngFor="
+            let aviso of avisosFiltrados;
+            trackBy: trackById
+          ">
+                    <article class="aviso-gestao-item h-100" [ngClass]="classeNivel(aviso.nivel)">
+                        <div class="d-flex align-items-start gap-3">
+                            <span
+                                class="aviso-gestao-item-icon d-inline-flex align-items-center justify-content-center rounded-4 flex-shrink-0">
+                                <i class="bi" [ngClass]="iconeNivel(aviso.nivel)"></i>
+                            </span>
+
+                            <div class="flex-grow-1 min-w-0">
+                                <div class="d-flex align-items-start justify-content-between gap-2 flex-wrap mb-2">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span class="badge rounded-pill" [ngClass]="classeStatus(aviso)">
+                                            {{ statusPublicacao(aviso) }}
+                                        </span>
+
+                                        <span class="badge rounded-pill text-bg-light border">
+                                            {{ nomeNivel(aviso.nivel) }}
+                                        </span>
+
+                                        <span class="badge rounded-pill text-bg-light border">
+                                            {{ nomeDestino(aviso) }}
+                                        </span>
+                                    </div>
+
+                                    <small class="text-secondary">
+                                        #{{ aviso.id }}
+                                    </small>
+                                </div>
+
+                                <h3 class="h5 fw-bold mb-2">
+                                    {{ aviso.titulo }}
+                                </h3>
+
+                                <p class="text-secondary aviso-gestao-mensagem mb-3">
+                                    {{ aviso.mensagem }}
+                                </p>
+
+                                <div class="aviso-gestao-meta small text-secondary">
+                                    <span>
+                                        <i class="bi bi-calendar-check me-1"></i>
+                                        Publicação:
+                                        {{
+                                        formatarDataHora(
+                                        aviso.publicadoEm
+                                        )
+                                        }}
+                                    </span>
+
+                                    <span>
+                                        <i class="bi bi-hourglass me-1"></i>
+                                        Expiração:
+                                        {{
+                                        formatarDataHora(
+                                        aviso.expiraEm
+                                        )
+                                        }}
+                                    </span>
+
+                                    <span>
+                                        <i class="bi bi-person me-1"></i>
+                                        Criado por:
+                                        {{ aviso.nomeCriadoPor }}
+                                    </span>
+                                </div>
+
+                                <div *ngIf="ehRh" class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                        [disabled]="salvando || excluindo" (click)="editarAviso(aviso)">
+                                        <i class="bi bi-pencil-square me-1"></i>
+                                        Editar
+                                    </button>
+
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        [disabled]="salvando || excluindo" (click)="solicitarExclusao(aviso)">
+                                        <i class="bi bi-trash3 me-1"></i>
+                                        Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- Vazio -->
+            <div *ngIf="
+          !carregando &&
+          avisosFiltrados.length === 0
+        " class="text-center text-secondary py-5">
+                <i class="bi bi-megaphone fs-2 d-block mb-2"></i>
+
+                <strong class="d-block">
+                    Nenhum aviso encontrado
+                </strong>
+
+                <small>
+                    Ajuste os filtros ou publique um novo aviso.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmação de exclusão -->
+    <div *ngIf="avisoParaExcluir" class="aviso-gestao-modal-backdrop" role="presentation" (click)="cancelarExclusao()">
+        <div class="aviso-gestao-modal card border-0 shadow-lg" role="dialog" aria-modal="true"
+            aria-labelledby="tituloExcluirAviso" (click)="$event.stopPropagation()">
+            <div class="card-body p-4">
+                <span
+                    class="aviso-gestao-modal-icon d-inline-flex align-items-center justify-content-center rounded-circle mb-3">
+                    <i class="bi bi-trash3"></i>
+                </span>
+
+                <h2 id="tituloExcluirAviso" class="h5 fw-bold mb-2">
+                    Excluir aviso?
+                </h2>
+
+                <p class="text-secondary mb-1">
+                    O aviso
+                    <strong>
+                        {{ avisoParaExcluir.titulo }}
+                    </strong>
+                    será removido definitivamente.
+                </p>
+
+                <p class="small text-danger mb-4">
+                    Esta ação não pode ser desfeita.
+                </p>
+
+                <div class="d-flex flex-column flex-sm-row justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary" [disabled]="excluindo"
+                        (click)="cancelarExclusao()">
+                        Cancelar
+                    </button>
+
+                    <button type="button" class="btn btn-danger" [disabled]="excluindo" (click)="confirmarExclusao()">
+                        <span *ngIf="excluindo" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+
+                        <i *ngIf="!excluindo" class="bi bi-trash3 me-2"></i>
+
+                        {{
+                        excluindo
+                        ? 'Excluindo...'
+                        : 'Excluir aviso'
+                        }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

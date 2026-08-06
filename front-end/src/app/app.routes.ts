@@ -14,6 +14,7 @@ import { MeuPontoComponente } from './pages/funcionario/meu-ponto-componente/meu
 import { MeusDadosComponente } from './pages/funcionario/meus-dados-componente/meus-dados-componente';
 import { SolicitacaoComponente } from './pages/funcionario/solicitacao-componente/solicitacao-componente';
 
+import { AvisosGestaoComponent } from './pages/admin-rh/avisos-gestao-component/avisos-gestao-component';
 import { CadastroFuncionarioComponent } from './pages/admin-rh/cadastro-funcionario-component/cadastro-funcionario-component';
 import { GestaoComponent } from './pages/admin-rh/gestao-component/gestao-component';
 import { InicioComponent as AdminInicioComponent } from './pages/admin-rh/inicio-component/inicio-component';
@@ -106,17 +107,26 @@ export const routes: Routes = [
         component: SolicitacoesComponent,
       },
       {
+        path: 'avisos',
+        component: AvisosGestaoComponent,
+      },
+      {
         path: 'cadastro',
         component: CadastroFuncionarioComponent,
       },
-      { path: 'meu-ponto', 
-        component: MeuPontoComponente, 
-        data: { area: 'gestao' } 
+      {
+        path: 'meu-ponto',
+        component: MeuPontoComponente,
+        data: {
+          area: 'gestao',
+        },
       },
-      { 
-        path: 'meus-dados', 
-        component: MeusDadosComponente, 
-        data: { area: 'gestao' } 
+      {
+        path: 'meus-dados',
+        component: MeusDadosComponente,
+        data: {
+          area: 'gestao',
+        },
       },
     ],
   },
