@@ -1,186 +1,361 @@
 <section class="avisos-page">
-  <!-- <div class="avisos-hero card border-0 shadow-sm mb-4">
-    <div class="card-body p-4 p-lg-5">
-      <div class="row g-4 align-items-center">
-        <div class="col-12 col-xl-7">
-          <span class="avisos-kicker d-inline-flex align-items-center gap-2 mb-3">
-            <i class="bi bi-bell"></i>
-            Central de notificações
-          </span>
+  <!-- Erro -->
+  <div
+    *ngIf="erro"
+    class="alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-0 shadow-sm mb-4"
+    role="alert"
+  >
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ erro }}</span>
+    </div>
 
-          <h2 class="display-6 fw-bold mb-3">Avisos e comunicados</h2>
-          <p class="lead mb-4">
-            Acompanhe pendências de ponto, atualizações de solicitações e comunicados importantes da empresa.
-          </p>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-danger flex-shrink-0"
+      (click)="carregarAvisos()"
+    >
+      <i class="bi bi-arrow-clockwise me-2"></i>
+      Tentar novamente
+    </button>
+  </div>
 
-          <div class="d-flex flex-column flex-sm-row gap-2">
-            <button type="button" class="btn btn-light fw-semibold" (click)="marcarTodosComoLidos()" [disabled]="naoLidos === 0">
-              <i class="bi bi-check2-all me-2"></i>
+  <!-- Carregamento -->
+  <div
+    *ngIf="carregando"
+    class="card avisos-card border-0 shadow-sm mb-4"
+    aria-busy="true"
+  >
+    <div class="card-body text-center py-5">
+      <div
+        class="spinner-border text-primary"
+        role="status"
+        aria-label="Carregando avisos"
+      ></div>
+
+      <p class="text-secondary mt-3 mb-0">
+        Carregando avisos e comunicados...
+      </p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!carregando">
+    <!-- Resumo -->
+    <div class="row g-3 mb-4">
+      <div
+        class="col-12 col-sm-6 col-xl-3"
+        *ngFor="let item of resumo"
+      >
+        <article
+          class="card avisos-indicador-card border-0 shadow-sm h-100"
+          [ngClass]="'avisos-indicador-' + item.tipo"
+        >
+          <div class="card-body p-4">
+            <span
+              class="avisos-indicador-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3"
+            >
+              <i class="bi" [ngClass]="item.icone"></i>
+            </span>
+
+            <p class="text-secondary fw-semibold mb-1">
+              {{ item.titulo }}
+            </p>
+
+            <strong
+              class="avisos-indicador-valor d-block mb-1"
+            >
+              {{ item.valor }}
+            </strong>
+
+            <small class="text-secondary">
+              {{ item.detalhe }}
+            </small>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div
+      class="card avisos-card border-0 shadow-sm mb-4"
+    >
+      <div class="card-body p-4">
+        <div
+          class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4"
+        >
+          <div>
+            <h3 class="h5 fw-bold mb-1">
+              Filtrar avisos
+            </h3>
+            <p class="text-secondary mb-0">
+              Encontre rapidamente um comunicado
+              publicado pelo RH.
+            </p>
+          </div>
+
+          <div class="d-flex gap-2 flex-wrap">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary"
+              [disabled]="naoLidos === 0"
+              (click)="marcarTodosComoLidos()"
+            >
+              <i class="bi bi-check2-all me-1"></i>
               Marcar todos como lidos
             </button>
-            <a routerLink="/solicitacao" class="btn btn-outline-light fw-semibold">
-              <i class="bi bi-send me-2"></i>
-              Abrir solicitação
-            </a>
+
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              (click)="limparFiltros()"
+            >
+              <i
+                class="bi bi-arrow-counterclockwise me-1"
+              ></i>
+              Limpar filtros
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              (click)="carregarAvisos()"
+            >
+              <i class="bi bi-arrow-clockwise me-1"></i>
+              Atualizar
+            </button>
           </div>
         </div>
 
-        <div class="col-12 col-xl-5">
-          <div class="avisos-hero-card">
-            <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-              <div>
-                <span class="text-white-50 small text-uppercase fw-bold">Sua caixa de avisos</span>
-                <h3 class="h5 fw-bold mb-1">{{ naoLidos }} notificação(ões) não lida(s)</h3>
-                <small class="text-white-50">Os avisos urgentes aparecem primeiro.</small>
-              </div>
+        <div class="row g-3">
+          <div class="col-12 col-lg-6">
+            <label
+              for="buscaAviso"
+              class="form-label fw-semibold"
+            >
+              Buscar
+            </label>
 
-              <div class="avisos-hero-icon">
-                <i class="bi bi-inbox"></i>
-              </div>
-            </div>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-search"></i>
+              </span>
 
-            <div class="avisos-atualizacao-box">
-              <small class="text-white-50 d-block mb-1">Última atualização</small>
-              <div class="d-flex align-items-center justify-content-between gap-3">
-                <strong>Hoje, às 13:18</strong>
-                <span class="badge rounded-pill text-bg-light">Tempo real</span>
-              </div>
+              <input
+                id="buscaAviso"
+                type="search"
+                class="form-control"
+                placeholder="Título, mensagem, nível ou destino"
+                [(ngModel)]="filtroBusca"
+              />
             </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-lg-3">
+            <label
+              for="nivelAviso"
+              class="form-label fw-semibold"
+            >
+              Nível
+            </label>
+
+            <select
+              id="nivelAviso"
+              class="form-select"
+              [(ngModel)]="filtroNivel"
+            >
+              <option
+                *ngFor="let nivel of niveis"
+                [value]="nivel"
+              >
+                {{ nivel }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-12 col-sm-6 col-lg-3">
+            <label
+              for="leituraAviso"
+              class="form-label fw-semibold"
+            >
+              Situação
+            </label>
+
+            <select
+              id="leituraAviso"
+              class="form-select"
+              [(ngModel)]="filtroLeitura"
+            >
+              <option
+                *ngFor="let estado of estadosLeitura"
+                [value]="estado"
+              >
+                {{ estado }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
     </div>
-  </div> -->
 
-  <div class="row g-3 mb-4">
-    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let item of resumo">
-      <article class="card avisos-indicador-card border-0 shadow-sm h-100" [ngClass]="'avisos-indicador-' + item.tipo">
+    <!-- Lista -->
+    <div
+      class="vstack gap-3"
+      *ngIf="
+        avisosFiltrados.length > 0;
+        else semAvisos
+      "
+    >
+      <article
+        class="card aviso-item border-0 shadow-sm"
+        [ngClass]="[
+          classeTipo(aviso.tipo),
+          aviso.lido
+            ? 'aviso-item-lido'
+            : 'aviso-item-nao-lido'
+        ]"
+        *ngFor="
+          let aviso of avisosFiltrados;
+          trackBy: trackByAviso
+        "
+      >
         <div class="card-body p-4">
-          <span class="avisos-indicador-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
-            <i class="bi" [ngClass]="item.icone"></i>
-          </span>
-          <p class="text-secondary fw-semibold mb-1">{{ item.titulo }}</p>
-          <strong class="avisos-indicador-valor d-block mb-1">{{ item.valor }}</strong>
-          <small class="text-secondary">{{ item.detalhe }}</small>
+          <div
+            class="d-flex align-items-start gap-3 gap-md-4"
+          >
+            <span
+              class="aviso-item-icon d-inline-flex align-items-center justify-content-center rounded-4 flex-shrink-0"
+            >
+              <i
+                class="bi"
+                [ngClass]="aviso.icone"
+              ></i>
+            </span>
+
+            <div class="flex-grow-1 min-w-0">
+              <div
+                class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-2"
+              >
+                <div>
+                  <div
+                    class="d-flex align-items-center gap-2 flex-wrap mb-2"
+                  >
+                    <span
+                      class="badge rounded-pill aviso-tipo-badge"
+                    >
+                      {{ rotuloTipo(aviso.tipo) }}
+                    </span>
+
+                    <span
+                      class="badge rounded-pill text-bg-light border"
+                    >
+                      {{ aviso.rotuloNivel }}
+                    </span>
+
+                    <span
+                      class="badge rounded-pill text-bg-light border"
+                    >
+                      {{ aviso.destino }}
+                    </span>
+
+                    <span
+                      class="aviso-nao-lido"
+                      *ngIf="!aviso.lido"
+                    >
+                      <span
+                        class="aviso-nao-lido-ponto"
+                      ></span>
+                      Novo
+                    </span>
+                  </div>
+
+                  <h3 class="h5 fw-bold mb-0">
+                    {{ aviso.titulo }}
+                  </h3>
+                </div>
+
+                <small
+                  class="text-secondary text-md-end"
+                >
+                  <i class="bi bi-calendar3 me-1"></i>
+                  {{ aviso.data }} às
+                  {{ aviso.horario }}
+                </small>
+              </div>
+
+              <p class="text-secondary mb-3">
+                {{ aviso.descricao }}
+              </p>
+
+              <div
+                class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3"
+              >
+                <div>
+                  <small
+                    class="text-secondary d-block"
+                  >
+                    <i class="bi bi-person me-1"></i>
+                    Publicado por {{ aviso.autor }}
+                  </small>
+
+                  <small
+                    *ngIf="aviso.expiracao"
+                    class="text-secondary d-block mt-1"
+                  >
+                    <i class="bi bi-hourglass me-1"></i>
+                    Disponível até
+                    {{ aviso.expiracao }}
+                  </small>
+                </div>
+
+                <button
+                  *ngIf="!aviso.lido"
+                  type="button"
+                  class="btn btn-sm btn-link text-decoration-none ms-lg-auto"
+                  (click)="marcarComoLido(aviso)"
+                >
+                  <i class="bi bi-check2 me-1"></i>
+                  Marcar como lido
+                </button>
+
+                <span
+                  *ngIf="aviso.lido"
+                  class="aviso-lido-label ms-lg-auto"
+                >
+                  <i class="bi bi-check2-all me-1"></i>
+                  Lido
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </article>
     </div>
-  </div>
 
-  <div class="card avisos-card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-      <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
-        <div>
-          <h3 class="h5 fw-bold mb-1">Filtrar avisos</h3>
-          <p class="text-secondary mb-0">Encontre rapidamente uma pendência ou atualização.</p>
-        </div>
-        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="limparFiltros()">
-          <i class="bi bi-arrow-counterclockwise me-1"></i>
+    <ng-template #semAvisos>
+      <div class="avisos-vazio text-center p-5">
+        <span
+          class="avisos-vazio-icon d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+        >
+          <i class="bi bi-inbox"></i>
+        </span>
+
+        <h3 class="h5 fw-bold mb-2">
+          Nenhum aviso encontrado
+        </h3>
+
+        <p class="text-secondary mb-3">
+          Não há avisos ativos para o seu perfil ou os
+          filtros não encontraram resultados.
+        </p>
+
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="limparFiltros()"
+        >
           Limpar filtros
         </button>
       </div>
-
-      <div class="row g-3">
-        <div class="col-12 col-lg-6">
-          <label for="buscaAviso" class="form-label fw-semibold">Buscar</label>
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input
-              id="buscaAviso"
-              type="search"
-              class="form-control"
-              placeholder="Título, descrição ou categoria"
-              [(ngModel)]="filtroBusca"
-            />
-          </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-          <label for="categoriaAviso" class="form-label fw-semibold">Categoria</label>
-          <select id="categoriaAviso" class="form-select" [(ngModel)]="filtroCategoria">
-            <option *ngFor="let categoria of categorias" [value]="categoria">{{ categoria }}</option>
-          </select>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-          <label for="leituraAviso" class="form-label fw-semibold">Situação</label>
-          <select id="leituraAviso" class="form-select" [(ngModel)]="filtroLeitura">
-            <option *ngFor="let estado of estadosLeitura" [value]="estado">{{ estado }}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="vstack gap-3" *ngIf="avisosFiltrados.length; else semAvisos">
-    <article
-      class="card aviso-item border-0 shadow-sm"
-      [ngClass]="[classeTipo(aviso.tipo), aviso.lido ? 'aviso-item-lido' : 'aviso-item-nao-lido']"
-      *ngFor="let aviso of avisosFiltrados"
-    >
-      <div class="card-body p-4">
-        <div class="d-flex align-items-start gap-3 gap-md-4">
-          <span class="aviso-item-icon d-inline-flex align-items-center justify-content-center rounded-4">
-            <i class="bi" [ngClass]="aviso.icone"></i>
-          </span>
-
-          <div class="flex-grow-1 min-w-0">
-            <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-2">
-              <div>
-                <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
-                  <span class="badge rounded-pill aviso-tipo-badge">{{ rotuloTipo(aviso.tipo) }}</span>
-                  <span class="badge rounded-pill text-bg-light border">{{ aviso.categoria }}</span>
-                  <span class="aviso-nao-lido" *ngIf="!aviso.lido">
-                    <span class="aviso-nao-lido-ponto"></span>
-                    Novo
-                  </span>
-                </div>
-                <h3 class="h5 fw-bold mb-0">{{ aviso.titulo }}</h3>
-              </div>
-
-              <small class="text-secondary text-md-end">
-                <i class="bi bi-calendar3 me-1"></i>
-                {{ aviso.data }} às {{ aviso.horario }}
-              </small>
-            </div>
-
-            <p class="text-secondary mb-3">{{ aviso.descricao }}</p>
-
-            <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2">
-              <a *ngIf="aviso.rota" [routerLink]="aviso.rota" class="btn btn-sm btn-primary fw-semibold">
-                {{ aviso.acao }}
-                <i class="bi bi-arrow-right ms-1"></i>
-              </a>
-
-              <button
-                *ngIf="!aviso.lido"
-                type="button"
-                class="btn btn-sm btn-link text-decoration-none ms-sm-auto"
-                (click)="marcarComoLido(aviso)"
-              >
-                <i class="bi bi-check2 me-1"></i>
-                Marcar como lido
-              </button>
-
-              <span *ngIf="aviso.lido" class="aviso-lido-label ms-sm-auto">
-                <i class="bi bi-check2-all me-1"></i>
-                Lido
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </article>
-  </div>
-
-  <ng-template #semAvisos>
-    <div class="avisos-vazio text-center p-5">
-      <span class="avisos-vazio-icon d-inline-flex align-items-center justify-content-center rounded-circle mb-3">
-        <i class="bi bi-inbox"></i>
-      </span>
-      <h3 class="h5 fw-bold mb-2">Nenhum aviso encontrado</h3>
-      <p class="text-secondary mb-3">Tente alterar ou limpar os filtros utilizados.</p>
-      <button type="button" class="btn btn-outline-primary" (click)="limparFiltros()">Limpar filtros</button>
-    </div>
-  </ng-template>
+    </ng-template>
+  </ng-container>
 </section>

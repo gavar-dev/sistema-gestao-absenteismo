@@ -1,10 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import {ChangeDetectorRef,Component,OnInit,} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { timeout } from 'rxjs';
 
-type TipoAviso = 'info' | 'warning' | 'success' | 'danger';
-type CategoriaAviso = 'Ponto' | 'Solicitação' | 'Cadastro' | 'Comunicado';
+import { AvisoService } from '../../../core/services/aviso.service';
+import { UsuarioLogadoService } from '../../../core/services/usuario-logado.service';
+import {AvisoResponse,DestinoAviso,NivelAviso,TipoAcessoAviso,} from '../../../models/aviso';
+
+type TipoAvisoVisual =
+  | 'info'
+  | 'warning'
+  | 'success'
+  | 'danger';
+
+type RotuloNivel =
+  | 'Informativo'
+  | 'Sucesso'
+  | 'Alerta'
+  | 'Urgente';
 
 interface AvisoFuncionario {
   id: number;
@@ -12,12 +26,14 @@ interface AvisoFuncionario {
   descricao: string;
   data: string;
   horario: string;
-  tipo: TipoAviso;
-  categoria: CategoriaAviso;
+  tipo: TipoAvisoVisual;
+  nivel: NivelAviso;
+  rotuloNivel: RotuloNivel;
+  destino: string;
   icone: string;
   lido: boolean;
-  rota?: string;
-  acao?: string;
+  autor: string;
+  expiracao: string | null;
 }
 
 interface ResumoAviso {
@@ -25,131 +41,115 @@ interface ResumoAviso {
   valor: string;
   detalhe: string;
   icone: string;
-  tipo: 'neutro' | 'atencao' | 'positivo' | 'perigo';
+  tipo:
+    | 'neutro'
+    | 'atencao'
+    | 'positivo'
+    | 'perigo';
 }
 
 @Component({
   selector: 'app-aviso-componente',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './aviso-componente.html',
   styleUrl: './aviso-componente.css',
 })
-export class AvisoComponente {
-  filtroCategoria = 'Todos';
+export class AvisoComponente implements OnInit {
+  filtroNivel = 'Todos';
   filtroLeitura = 'Todos';
   filtroBusca = '';
 
-  categorias = ['Todos', 'Ponto', 'Solicitação', 'Cadastro', 'Comunicado'];
-  estadosLeitura = ['Todos', 'Não lidos', 'Lidos'];
-
-  avisos: AvisoFuncionario[] = [
-    {
-      id: 1,
-      titulo: 'Prazo para justificar falta termina amanhã',
-      descricao: 'A falta do dia 29/07 ainda precisa de justificativa. Envie a solicitação dentro do prazo de 48 horas.',
-      data: '31/07/2026',
-      horario: '08:10',
-      tipo: 'danger',
-      categoria: 'Ponto',
-      icone: 'bi-calendar-x',
-      lido: false,
-      rota: '/solicitacao',
-      acao: 'Justificar agora',
-    },
-    {
-      id: 2,
-      titulo: 'Retorno do almoço ainda não registrado',
-      descricao: 'O sistema não encontrou o registro de retorno do almoço de hoje. Confira sua jornada antes da saída.',
-      data: '31/07/2026',
-      horario: '13:18',
-      tipo: 'warning',
-      categoria: 'Ponto',
-      icone: 'bi-exclamation-triangle',
-      lido: false,
-      rota: '/meus-pontos',
-      acao: 'Ver meu ponto',
-    },
-    {
-      id: 3,
-      titulo: 'Correção cadastral concluída',
-      descricao: 'A solicitação de atualização do telefone foi aprovada e seus dados já foram atualizados pelo RH.',
-      data: '30/07/2026',
-      horario: '16:42',
-      tipo: 'success',
-      categoria: 'Cadastro',
-      icone: 'bi-person-check',
-      lido: true,
-      rota: '/meus-dados',
-      acao: 'Conferir dados',
-    },
-    {
-      id: 4,
-      titulo: 'Solicitação de correção em análise',
-      descricao: 'O RH iniciou a análise do protocolo #SOL-1024. Você receberá um novo aviso quando houver uma decisão.',
-      data: '30/07/2026',
-      horario: '10:05',
-      tipo: 'info',
-      categoria: 'Solicitação',
-      icone: 'bi-hourglass-split',
-      lido: false,
-      rota: '/solicitacao',
-      acao: 'Acompanhar pedido',
-    },
-    {
-      id: 5,
-      titulo: 'Comunicado sobre fechamento mensal',
-      descricao: 'Os registros de julho serão consolidados no dia 03/08. Verifique possíveis pendências antes dessa data.',
-      data: '29/07/2026',
-      horario: '09:00',
-      tipo: 'info',
-      categoria: 'Comunicado',
-      icone: 'bi-megaphone',
-      lido: true,
-      rota: '/historico',
-      acao: 'Ver histórico',
-    },
+  readonly niveis: Array<
+    'Todos' | RotuloNivel
+  > = [
+    'Todos',
+    'Informativo',
+    'Sucesso',
+    'Alerta',
+    'Urgente',
   ];
 
+  readonly estadosLeitura = [
+    'Todos',
+    'Não lidos',
+    'Lidos',
+  ];
+
+  avisos: AvisoFuncionario[] = [];
+
+  carregando = true;
+  erro = '';
+
+  private idsLidos = new Set<number>();
+
+  constructor(
+    private readonly avisoService: AvisoService,
+    private readonly usuarioLogadoService:
+      UsuarioLogadoService,
+    private readonly cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.idsLidos = this.carregarIdsLidos();
+    this.carregarAvisos();
+  }
+
   get naoLidos(): number {
-    return this.avisos.filter((aviso) => !aviso.lido).length;
+    return this.avisos.filter(
+      (aviso: AvisoFuncionario) => !aviso.lido
+    ).length;
   }
 
   get urgentes(): number {
-    return this.avisos.filter((aviso) => aviso.tipo === 'danger' && !aviso.lido).length;
+    return this.avisos.filter(
+      (aviso: AvisoFuncionario) =>
+        aviso.nivel === 'URGENTE' &&
+        !aviso.lido
+    ).length;
   }
 
-  get concluidos(): number {
-    return this.avisos.filter((aviso) => aviso.tipo === 'success').length;
+  get sucessos(): number {
+    return this.avisos.filter(
+      (aviso: AvisoFuncionario) =>
+        aviso.nivel === 'SUCESSO'
+    ).length;
   }
 
   get resumo(): ResumoAviso[] {
     return [
       {
         titulo: 'Total de avisos',
-        valor: this.avisos.length.toString(),
-        detalhe: 'Comunicados disponíveis',
+        valor: String(this.avisos.length),
+        detalhe:
+          'Ativos e destinados ao seu perfil',
         icone: 'bi-bell',
         tipo: 'neutro',
       },
       {
         titulo: 'Não lidos',
-        valor: this.naoLidos.toString(),
+        valor: String(this.naoLidos),
         detalhe: 'Precisam da sua atenção',
         icone: 'bi-envelope-exclamation',
-        tipo: 'atencao',
+        tipo:
+          this.naoLidos > 0
+            ? 'atencao'
+            : 'positivo',
       },
       {
         titulo: 'Urgentes',
-        valor: this.urgentes.toString(),
-        detalhe: 'Com prazo ou pendência',
+        valor: String(this.urgentes),
+        detalhe: 'Com prioridade máxima',
         icone: 'bi-exclamation-octagon',
-        tipo: 'perigo',
+        tipo:
+          this.urgentes > 0
+            ? 'perigo'
+            : 'positivo',
       },
       {
-        titulo: 'Concluídos',
-        valor: this.concluidos.toString(),
-        detalhe: 'Atualizações confirmadas',
+        titulo: 'Confirmações',
+        valor: String(this.sucessos),
+        detalhe: 'Avisos de sucesso publicados',
         icone: 'bi-check2-circle',
         tipo: 'positivo',
       },
@@ -157,50 +157,406 @@ export class AvisoComponente {
   }
 
   get avisosFiltrados(): AvisoFuncionario[] {
-    const busca = this.filtroBusca.trim().toLowerCase();
+    const busca =
+      this.filtroBusca.trim().toLowerCase();
 
-    return this.avisos.filter((aviso) => {
-      const categoriaConfere = this.filtroCategoria === 'Todos' || aviso.categoria === this.filtroCategoria;
-      const leituraConfere =
-        this.filtroLeitura === 'Todos' ||
-        (this.filtroLeitura === 'Não lidos' && !aviso.lido) ||
-        (this.filtroLeitura === 'Lidos' && aviso.lido);
-      const buscaConfere =
-        !busca ||
-        aviso.titulo.toLowerCase().includes(busca) ||
-        aviso.descricao.toLowerCase().includes(busca) ||
-        aviso.categoria.toLowerCase().includes(busca);
+    return this.avisos.filter(
+      (aviso: AvisoFuncionario) => {
+        const nivelConfere =
+          this.filtroNivel === 'Todos' ||
+          aviso.rotuloNivel ===
+            this.filtroNivel;
 
-      return categoriaConfere && leituraConfere && buscaConfere;
-    });
+        const leituraConfere =
+          this.filtroLeitura === 'Todos' ||
+          (this.filtroLeitura ===
+            'Não lidos' &&
+            !aviso.lido) ||
+          (this.filtroLeitura === 'Lidos' &&
+            aviso.lido);
+
+        const buscaConfere =
+          !busca ||
+          aviso.titulo
+            .toLowerCase()
+            .includes(busca) ||
+          aviso.descricao
+            .toLowerCase()
+            .includes(busca) ||
+          aviso.rotuloNivel
+            .toLowerCase()
+            .includes(busca) ||
+          aviso.destino
+            .toLowerCase()
+            .includes(busca) ||
+          aviso.autor
+            .toLowerCase()
+            .includes(busca);
+
+        return (
+          nivelConfere &&
+          leituraConfere &&
+          buscaConfere
+        );
+      }
+    );
   }
 
-  marcarComoLido(aviso: AvisoFuncionario): void {
+  carregarAvisos(): void {
+    this.carregando = true;
+    this.erro = '';
+
+    this.avisoService
+      .listarMeus()
+      .pipe(timeout(10000))
+      .subscribe({
+        next: (
+          resposta: AvisoResponse[]
+        ) => {
+          this.avisos = resposta.map(
+            (
+              aviso: AvisoResponse
+            ): AvisoFuncionario =>
+              this.mapearAviso(aviso)
+          );
+
+          this.removerIdsInexistentes();
+          this.carregando = false;
+          this.cdr.detectChanges();
+        },
+        error: (erro: unknown) => {
+          console.error(
+            'Erro ao carregar avisos:',
+            erro
+          );
+
+          this.erro =
+            this.obterMensagemErro(
+              erro,
+              'Não foi possível carregar os avisos.'
+            );
+
+          this.carregando = false;
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  marcarComoLido(
+    aviso: AvisoFuncionario
+  ): void {
+    if (aviso.lido) {
+      return;
+    }
+
     aviso.lido = true;
+    this.idsLidos.add(aviso.id);
+    this.salvarIdsLidos();
   }
 
   marcarTodosComoLidos(): void {
-    this.avisos = this.avisos.map((aviso) => ({ ...aviso, lido: true }));
+    this.avisos = this.avisos.map(
+      (
+        aviso: AvisoFuncionario
+      ): AvisoFuncionario => {
+        this.idsLidos.add(aviso.id);
+
+        return {
+          ...aviso,
+          lido: true,
+        };
+      }
+    );
+
+    this.salvarIdsLidos();
   }
 
   limparFiltros(): void {
-    this.filtroCategoria = 'Todos';
+    this.filtroNivel = 'Todos';
     this.filtroLeitura = 'Todos';
     this.filtroBusca = '';
   }
 
-  classeTipo(tipo: TipoAviso): string {
+  classeTipo(
+    tipo: TipoAvisoVisual
+  ): string {
     return `aviso-item-${tipo}`;
   }
 
-  rotuloTipo(tipo: TipoAviso): string {
-    const rotulos: Record<TipoAviso, string> = {
+  rotuloTipo(
+    tipo: TipoAvisoVisual
+  ): string {
+    const rotulos: Record<
+      TipoAvisoVisual,
+      string
+    > = {
       info: 'Informação',
       warning: 'Atenção',
-      success: 'Concluído',
+      success: 'Confirmação',
       danger: 'Urgente',
     };
 
     return rotulos[tipo];
+  }
+
+  trackByAviso(
+    _index: number,
+    aviso: AvisoFuncionario
+  ): number {
+    return aviso.id;
+  }
+
+  private mapearAviso(
+    aviso: AvisoResponse
+  ): AvisoFuncionario {
+    const visual =
+      this.obterVisualNivel(aviso.nivel);
+
+    const dataHora =
+      this.formatarDataHora(
+        aviso.publicadoEm
+      );
+
+    return {
+      id: aviso.id,
+      titulo: aviso.titulo,
+      descricao: aviso.mensagem,
+      data: dataHora.data,
+      horario: dataHora.horario,
+      tipo: visual.tipo,
+      nivel: aviso.nivel,
+      rotuloNivel: visual.rotulo,
+      destino: this.formatarDestino(aviso),
+      icone: visual.icone,
+      lido: this.idsLidos.has(aviso.id),
+      autor: aviso.nomeCriadoPor,
+      expiracao: aviso.expiraEm
+        ? this.formatarExpiracao(
+            aviso.expiraEm
+          )
+        : null,
+    };
+  }
+
+  private obterVisualNivel(
+    nivel: NivelAviso
+  ): {
+    tipo: TipoAvisoVisual;
+    rotulo: RotuloNivel;
+    icone: string;
+  } {
+    const visuais: Record<
+      NivelAviso,
+      {
+        tipo: TipoAvisoVisual;
+        rotulo: RotuloNivel;
+        icone: string;
+      }
+    > = {
+      INFORMATIVO: {
+        tipo: 'info',
+        rotulo: 'Informativo',
+        icone: 'bi-info-circle',
+      },
+      SUCESSO: {
+        tipo: 'success',
+        rotulo: 'Sucesso',
+        icone: 'bi-check-circle',
+      },
+      ALERTA: {
+        tipo: 'warning',
+        rotulo: 'Alerta',
+        icone:
+          'bi-exclamation-triangle',
+      },
+      URGENTE: {
+        tipo: 'danger',
+        rotulo: 'Urgente',
+        icone: 'bi-exclamation-octagon',
+      },
+    };
+
+    return visuais[nivel];
+  }
+
+  private formatarDestino(
+    aviso: AvisoResponse
+  ): string {
+    const destinos: Record<
+      DestinoAviso,
+      string
+    > = {
+      TODOS: 'Toda a empresa',
+      TIPO_ACESSO:
+        this.nomeTipoAcesso(
+          aviso.tipoAcessoAlvo
+        ),
+      SETOR: aviso.setorAlvo
+        ? `Setor: ${aviso.setorAlvo}`
+        : 'Setor específico',
+    };
+
+    return destinos[aviso.destino];
+  }
+
+  private nomeTipoAcesso(
+    tipo: TipoAcessoAviso | null
+  ): string {
+    if (!tipo) {
+      return 'Perfil específico';
+    }
+
+    const nomes: Record<
+      TipoAcessoAviso,
+      string
+    > = {
+      FUNCIONARIO: 'Funcionários',
+      RH: 'Recursos Humanos',
+      GESTOR: 'Gestores',
+    };
+
+    return nomes[tipo];
+  }
+
+  private formatarDataHora(
+    valor: string
+  ): {
+    data: string;
+    horario: string;
+  } {
+    const dataISO = valor.substring(0, 10);
+    const horario =
+      valor.substring(11, 16) || '--:--';
+
+    const partes = dataISO.split('-');
+    const ano = Number(partes[0]);
+    const mes = Number(partes[1]);
+    const dia = Number(partes[2]);
+
+    const data = new Date(
+      ano,
+      mes - 1,
+      dia
+    ).toLocaleDateString('pt-BR');
+
+    return {
+      data,
+      horario,
+    };
+  }
+
+  private formatarExpiracao(
+    valor: string
+  ): string {
+    const dataHora =
+      this.formatarDataHora(valor);
+
+    return `${dataHora.data} às ${dataHora.horario}`;
+  }
+
+  private get chaveIdsLidos(): string {
+    const usuario =
+      this.usuarioLogadoService
+        .obterUsuarioLogado();
+
+    const identificador =
+      usuario?.id ?? 'anonimo';
+
+    return `avisosLidos:${identificador}`;
+  }
+
+  private carregarIdsLidos(): Set<number> {
+    const valor =
+      localStorage.getItem(
+        this.chaveIdsLidos
+      );
+
+    if (!valor) {
+      return new Set<number>();
+    }
+
+    try {
+      const ids = JSON.parse(valor) as unknown;
+
+      if (!Array.isArray(ids)) {
+        return new Set<number>();
+      }
+
+      return new Set<number>(
+        ids.filter(
+          (id: unknown): id is number =>
+            typeof id === 'number'
+        )
+      );
+    } catch {
+      localStorage.removeItem(
+        this.chaveIdsLidos
+      );
+
+      return new Set<number>();
+    }
+  }
+
+  private salvarIdsLidos(): void {
+    localStorage.setItem(
+      this.chaveIdsLidos,
+      JSON.stringify(
+        Array.from(this.idsLidos)
+      )
+    );
+  }
+
+  private removerIdsInexistentes(): void {
+    const idsAtuais = new Set<number>(
+      this.avisos.map(
+        (
+          aviso: AvisoFuncionario
+        ): number => aviso.id
+      )
+    );
+
+    this.idsLidos = new Set<number>(
+      Array.from(this.idsLidos).filter(
+        (id: number) => idsAtuais.has(id)
+      )
+    );
+
+    this.salvarIdsLidos();
+  }
+
+  private obterMensagemErro(
+    erro: unknown,
+    mensagemPadrao: string
+  ): string {
+    if (erro instanceof HttpErrorResponse) {
+      if (erro.status === 0) {
+        return 'Não foi possível conectar ao servidor.';
+      }
+
+      if (
+        typeof erro.error?.mensagem ===
+        'string'
+      ) {
+        return erro.error.mensagem;
+      }
+
+      if (
+        typeof erro.error?.message ===
+        'string'
+      ) {
+        return erro.error.message;
+      }
+    }
+
+    if (
+      typeof erro === 'object' &&
+      erro !== null &&
+      'name' in erro &&
+      erro.name === 'TimeoutError'
+    ) {
+      return 'O servidor demorou muito para responder.';
+    }
+
+    return mensagemPadrao;
   }
 }
