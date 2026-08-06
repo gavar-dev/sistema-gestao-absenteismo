@@ -1,6 +1,19 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
+import { FuncionarioResponse } from '../../models/funcionario';
 
 @Injectable({
   providedIn: 'root',
 })
-export class Funcionario {}
+export class FuncionarioService {
+  private readonly url = `${environment.apiUrl}/funcionarios`;
+
+  constructor(private readonly http: HttpClient) {}
+
+  buscarMeuPerfil(): Observable<FuncionarioResponse> {
+    return this.http.get<FuncionarioResponse>(`${this.url}/me`);
+  }
+}
