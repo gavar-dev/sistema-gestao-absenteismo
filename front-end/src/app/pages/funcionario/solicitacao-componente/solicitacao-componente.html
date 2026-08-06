@@ -1,57 +1,5 @@
 <section class="solicitacao-page">
-  <!-- <div class="solicitacao-hero card border-0 shadow-sm mb-4">
-    <div class="card-body p-4 p-lg-5">
-      <div class="row g-4 align-items-center">
-        <div class="col-12 col-xl-7">
-          <span class="solicitacao-kicker d-inline-flex align-items-center gap-2 mb-3">
-            <i class="bi bi-send-check"></i>
-            Central de atendimento
-          </span>
-
-          <h2 class="display-6 fw-bold mb-3">Solicitações ao RH</h2>
-          <p class="lead mb-4">
-            Envie correções, justificativas, pedidos de férias e atualizações cadastrais em um único lugar.
-          </p>
-
-          <div class="d-flex flex-column flex-sm-row gap-2">
-            <a href="#formulario-solicitacao" class="btn btn-light fw-semibold">
-              <i class="bi bi-plus-lg me-2"></i>
-              Abrir solicitação
-            </a>
-            <a href="#historico-solicitacoes" class="btn btn-outline-light fw-semibold">
-              <i class="bi bi-clock-history me-2"></i>
-              Acompanhar pedidos
-            </a>
-          </div>
-        </div>
-
-        <div class="col-12 col-xl-5">
-          <div class="solicitacao-hero-card">
-            <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-              <div>
-                <span class="text-white-50 small text-uppercase fw-bold">Situação atual</span>
-                <h3 class="h5 fw-bold mb-1">{{ totalPendentes }} pedido(s) em análise</h3>
-                <small class="text-white-50">Acompanhe as atualizações pelo histórico abaixo.</small>
-              </div>
-
-              <div class="solicitacao-hero-icon">
-                <i class="bi bi-headset"></i>
-              </div>
-            </div>
-
-            <div class="solicitacao-prazo-box">
-              <small class="text-white-50 d-block mb-1">Prazo para correção de ponto</small>
-              <div class="d-flex align-items-center justify-content-between gap-3">
-                <strong>Até 48 horas após o registro</strong>
-                <span class="badge rounded-pill text-bg-light">Importante</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
+  <!-- Tipos de solicitação -->
   <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3" *ngFor="let tipo of tipos">
       <button
@@ -61,12 +9,15 @@
         (click)="selecionarTipo(tipo.titulo)"
       >
         <span class="card-body p-4 d-block">
-          <span class="solicitacao-tipo-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
+          <span
+            class="solicitacao-tipo-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3"
+          >
             <i class="bi" [ngClass]="tipo.icone"></i>
           </span>
 
           <strong class="h5 d-block mb-2">{{ tipo.titulo }}</strong>
           <small class="text-secondary d-block mb-3">{{ tipo.descricao }}</small>
+
           <span class="solicitacao-tipo-link d-inline-flex align-items-center gap-2 fw-semibold">
             Selecionar
             <i class="bi bi-arrow-right"></i>
@@ -77,101 +28,360 @@
   </div>
 
   <div class="row g-4 mb-4">
+    <!-- Formulário -->
     <div class="col-12 col-xl-8">
-      <div id="formulario-solicitacao" class="card solicitacao-card border-0 shadow-sm h-100 scroll-anchor">
+      <div
+        id="formulario-solicitacao"
+        class="card solicitacao-card border-0 shadow-sm h-100 scroll-anchor"
+      >
         <div class="card-body p-4">
           <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
             <div>
               <h3 class="h5 fw-bold mb-1">Abrir nova solicitação</h3>
-              <p class="text-secondary mb-0">Preencha os dados para que o RH analise o pedido com clareza.</p>
+              <p class="text-secondary mb-0">
+                Preencha os dados para que o RH analise o pedido com clareza.
+              </p>
             </div>
+
             <span class="badge text-bg-light border">Protocolo automático</span>
           </div>
 
-          <div *ngIf="mensagemSucesso" class="solicitacao-feedback d-flex align-items-start gap-3 mb-4" role="status">
-            <span class="solicitacao-feedback-icon d-inline-flex align-items-center justify-content-center rounded-circle">
+          <div
+            *ngIf="mensagemSucesso"
+            class="solicitacao-feedback d-flex align-items-start gap-3 mb-4"
+            role="status"
+          >
+            <span
+              class="solicitacao-feedback-icon d-inline-flex align-items-center justify-content-center rounded-circle"
+            >
               <i class="bi bi-check-lg"></i>
             </span>
+
             <div>
               <strong class="d-block">Solicitação enviada</strong>
               <small>{{ mensagemSucesso }}</small>
             </div>
           </div>
 
-          <form class="row g-3" (ngSubmit)="criarSolicitacao()">
-            <div class="col-12 col-md-6">
-              <label for="tipoSolicitacao" class="form-label fw-semibold">Tipo de solicitação</label>
+          <div *ngIf="erroEnvio" class="alert alert-danger mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ erroEnvio }}
+          </div>
+
+          <form
+            #formSolicitacao="ngForm"
+            class="row g-3"
+            (ngSubmit)="criarSolicitacao(formSolicitacao)"
+          >
+            <div class="col-12 col-md-8">
+              <label for="tipoSolicitacao" class="form-label fw-semibold">
+                Tipo de solicitação
+              </label>
+
               <select
                 id="tipoSolicitacao"
                 name="tipoSolicitacao"
                 class="form-select form-select-lg"
                 [(ngModel)]="formulario.tipo"
+                (ngModelChange)="alterarTipo($event)"
+                [disabled]="enviandoSolicitacao"
+                required
               >
-                <option *ngFor="let tipo of tipos" [ngValue]="tipo.titulo">{{ tipo.titulo }}</option>
+                <option *ngFor="let tipo of tipos" [ngValue]="tipo.titulo">
+                  {{ tipo.titulo }}
+                </option>
               </select>
             </div>
 
-            <div class="col-12 col-md-6">
-              <label for="dataRelacionada" class="form-label fw-semibold">Data relacionada</label>
-              <input
-                id="dataRelacionada"
-                name="dataRelacionada"
-                type="date"
-                class="form-control form-control-lg"
-                [(ngModel)]="formulario.dataRelacionada"
-              />
-            </div>
+            <div class="col-12 col-md-4">
+              <label for="prioridade" class="form-label fw-semibold">
+                Prioridade
+              </label>
 
-            <div class="col-12 col-md-6">
-              <label for="horarioSugerido" class="form-label fw-semibold">Horário sugerido</label>
-              <input
-                id="horarioSugerido"
-                name="horarioSugerido"
-                type="time"
-                class="form-control form-control-lg"
-                [(ngModel)]="formulario.horarioSugerido"
-              />
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label for="prioridade" class="form-label fw-semibold">Prioridade</label>
               <select
                 id="prioridade"
                 name="prioridade"
                 class="form-select form-select-lg"
                 [(ngModel)]="formulario.prioridade"
+                [disabled]="enviandoSolicitacao"
+                required
               >
                 <option value="Normal">Normal</option>
                 <option value="Alta">Alta</option>
               </select>
             </div>
 
+            <!-- Correção de ponto -->
+            <ng-container *ngIf="ehCorrecaoPonto">
+              <div class="col-12">
+                <div class="alert alert-primary mb-0">
+                  <i class="bi bi-info-circle me-2"></i>
+                  Informe a data e pelo menos um horário que precisa ser corrigido.
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="dataCorrecaoPonto" class="form-label fw-semibold">
+                  Data do registro
+                </label>
+
+                <input
+                  id="dataCorrecaoPonto"
+                  name="dataCorrecaoPonto"
+                  type="date"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="formulario.dataRelacionada"
+                  [max]="dataHoje"
+                  [disabled]="enviandoSolicitacao"
+                  required
+                />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="entradaSolicitada" class="form-label fw-semibold">
+                  Entrada
+                </label>
+
+                <input
+                  id="entradaSolicitada"
+                  name="entradaSolicitada"
+                  type="time"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="formulario.entradaSolicitada"
+                  [disabled]="enviandoSolicitacao"
+                />
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label for="inicioIntervaloSolicitado" class="form-label fw-semibold">
+                  Início do intervalo
+                </label>
+
+                <input
+                  id="inicioIntervaloSolicitado"
+                  name="inicioIntervaloSolicitado"
+                  type="time"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="formulario.inicioIntervaloSolicitado"
+                  [disabled]="enviandoSolicitacao"
+                />
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label for="fimIntervaloSolicitado" class="form-label fw-semibold">
+                  Fim do intervalo
+                </label>
+
+                <input
+                  id="fimIntervaloSolicitado"
+                  name="fimIntervaloSolicitado"
+                  type="time"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="formulario.fimIntervaloSolicitado"
+                  [disabled]="enviandoSolicitacao"
+                />
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label for="saidaSolicitada" class="form-label fw-semibold">
+                  Saída
+                </label>
+
+                <input
+                  id="saidaSolicitada"
+                  name="saidaSolicitada"
+                  type="time"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="formulario.saidaSolicitada"
+                  [disabled]="enviandoSolicitacao"
+                />
+              </div>
+            </ng-container>
+
+            <!-- Justificativa de falta -->
+            <ng-container *ngIf="ehJustificativaFalta">
+              <div class="col-12 col-md-6">
+                <label for="dataFalta" class="form-label fw-semibold">
+                  Data da falta ou pendência
+                </label>
+
+                <input
+                  id="dataFalta"
+                  name="dataFalta"
+                  type="date"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="formulario.dataRelacionada"
+                  [max]="dataHoje"
+                  [disabled]="enviandoSolicitacao"
+                  required
+                />
+              </div>
+
+              <div class="col-12 col-md-6 d-flex align-items-end">
+                <div class="alert alert-warning w-100 mb-0">
+                  <i class="bi bi-exclamation-circle me-2"></i>
+                  A data precisa possuir um registro com status de falta ou pendência.
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Férias -->
+            <ng-container *ngIf="ehSolicitacaoFerias">
+              <div class="col-12 col-md-6">
+                <label for="dataInicioFerias" class="form-label fw-semibold">
+                  Início das férias
+                </label>
+
+                <input
+                  id="dataInicioFerias"
+                  name="dataInicioFerias"
+                  type="date"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="formulario.dataInicio"
+                  [min]="dataHoje"
+                  [disabled]="enviandoSolicitacao"
+                  required
+                />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="dataFimFerias" class="form-label fw-semibold">
+                  Fim das férias
+                </label>
+
+                <input
+                  id="dataFimFerias"
+                  name="dataFimFerias"
+                  type="date"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="formulario.dataFim"
+                  [min]="formulario.dataInicio || dataHoje"
+                  [disabled]="enviandoSolicitacao"
+                  required
+                />
+              </div>
+            </ng-container>
+
+            <!-- Correção cadastral -->
+            <ng-container *ngIf="ehCorrecaoCadastro">
+              <div class="col-12 col-md-6">
+                <label for="campoCadastro" class="form-label fw-semibold">
+                  Campo que será alterado
+                </label>
+
+                <select
+                  id="campoCadastro"
+                  name="campoCadastro"
+                  class="form-select form-select-lg"
+                  [(ngModel)]="formulario.campoCadastro"
+                  [disabled]="enviandoSolicitacao"
+                  required
+                >
+                  <option value="" disabled>Selecione o campo</option>
+                  <option *ngFor="let campo of camposCadastro" [value]="campo.valor">
+                    {{ campo.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="novoValor" class="form-label fw-semibold">
+                  Novo valor
+                </label>
+
+                <input
+                  id="novoValor"
+                  name="novoValor"
+                  [type]="tipoInputNovoValor"
+                  class="form-control form-control-lg"
+                  [placeholder]="placeholderNovoValor"
+                  [(ngModel)]="formulario.novoValor"
+                  [disabled]="enviandoSolicitacao"
+                  maxlength="255"
+                  required
+                />
+              </div>
+            </ng-container>
+
+            <!-- Justificativa -->
             <div class="col-12">
-              <label for="descricao" class="form-label fw-semibold">Descrição da solicitação</label>
+              <label for="descricao" class="form-label fw-semibold">
+                Justificativa da solicitação
+              </label>
+
               <textarea
                 id="descricao"
                 name="descricao"
                 class="form-control"
                 rows="5"
+                minlength="10"
+                maxlength="2000"
                 required
                 [(ngModel)]="formulario.descricao"
-                placeholder="Exemplo: esqueci de registrar o retorno do almoço. Retornei às 13:05."
+                [disabled]="enviandoSolicitacao"
+                placeholder="Explique o ocorrido e forneça informações suficientes para a análise."
+                #descricao="ngModel"
               ></textarea>
+
+              <div class="d-flex justify-content-between mt-1">
+                <small
+                  *ngIf="descricao.invalid && descricao.touched"
+                  class="text-danger"
+                >
+                  Informe uma justificativa com pelo menos 10 caracteres.
+                </small>
+
+                <small class="text-secondary ms-auto">
+                  {{ formulario.descricao.length }}/2000
+                </small>
+              </div>
             </div>
 
-            <div class="col-12">
-              <label for="anexo" class="form-label fw-semibold">Anexo opcional</label>
-              <input id="anexo" name="anexo" type="file" class="form-control" />
-              <div class="form-text">Adicione comprovantes, atestados ou documentos que apoiem a análise.</div>
+            <!-- Anexo: nesta versão somente o nome é enviado -->
+            <div class="col-12" *ngIf="permiteAnexo">
+              <label for="anexo" class="form-label fw-semibold">
+                Anexo opcional
+              </label>
+
+              <input
+                #inputAnexo
+                id="anexo"
+                name="anexo"
+                type="file"
+                class="form-control"
+                [disabled]="enviandoSolicitacao"
+                (change)="selecionarAnexo($event)"
+              />
+
+              <div class="form-text">
+                Nesta versão, o sistema registra apenas o nome do arquivo, sem realizar upload.
+              </div>
             </div>
 
             <div class="col-12 d-flex flex-column flex-sm-row justify-content-end gap-2 pt-2">
-              <button type="button" class="btn btn-outline-secondary btn-lg" (click)="limparFormulario()">
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-lg"
+                [disabled]="enviandoSolicitacao"
+                (click)="limparFormulario(formSolicitacao)"
+              >
                 Limpar
               </button>
-              <button type="submit" class="btn btn-primary btn-lg">
-                <i class="bi bi-send me-2"></i>
-                Enviar para o RH
+
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg"
+                [disabled]="formSolicitacao.invalid || enviandoSolicitacao"
+              >
+                <span
+                  *ngIf="enviandoSolicitacao"
+                  class="spinner-border spinner-border-sm me-2"
+                  aria-hidden="true"
+                ></span>
+
+                <i *ngIf="!enviandoSolicitacao" class="bi bi-send me-2"></i>
+
+                {{ enviandoSolicitacao ? 'Enviando...' : 'Enviar para o RH' }}
               </button>
             </div>
           </form>
@@ -179,6 +389,7 @@
       </div>
     </div>
 
+    <!-- Regras -->
     <div class="col-12 col-xl-4">
       <div class="card solicitacao-card border-0 shadow-sm h-100">
         <div class="card-body p-4">
@@ -189,20 +400,28 @@
 
           <div class="vstack gap-3 mb-4">
             <div class="solicitacao-regra d-flex gap-3" *ngFor="let regra of regras">
-              <span class="solicitacao-regra-icon d-inline-flex align-items-center justify-content-center rounded-circle">
+              <span
+                class="solicitacao-regra-icon d-inline-flex align-items-center justify-content-center rounded-circle"
+              >
                 <i class="bi bi-check2"></i>
               </span>
+
               <span [innerHTML]="regra"></span>
             </div>
           </div>
 
           <div class="solicitacao-ajuda d-flex gap-3">
-            <span class="solicitacao-ajuda-icon d-inline-flex align-items-center justify-content-center rounded-4">
+            <span
+              class="solicitacao-ajuda-icon d-inline-flex align-items-center justify-content-center rounded-4"
+            >
               <i class="bi bi-chat-dots"></i>
             </span>
+
             <div>
               <strong class="d-block mb-1">Facilite a análise</strong>
-              <small>Explique o ocorrido, informe horários e anexe um documento quando necessário.</small>
+              <small>
+                Explique o ocorrido, informe horários e registre o nome do documento quando necessário.
+              </small>
             </div>
           </div>
         </div>
@@ -210,12 +429,18 @@
     </div>
   </div>
 
-  <div id="historico-solicitacoes" class="card solicitacao-card border-0 shadow-sm scroll-anchor">
+  <!-- Histórico -->
+  <div
+    id="historico-solicitacoes"
+    class="card solicitacao-card border-0 shadow-sm scroll-anchor"
+  >
     <div class="card-body p-4">
       <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
         <div>
           <h3 class="h5 fw-bold mb-1">Minhas solicitações</h3>
-          <p class="text-secondary mb-0">Acompanhe os pedidos enviados recentemente.</p>
+          <p class="text-secondary mb-0">
+            Acompanhe os pedidos enviados recentemente.
+          </p>
         </div>
 
         <div class="d-flex gap-2 flex-wrap">
@@ -224,35 +449,173 @@
         </div>
       </div>
 
-      <div class="table-responsive">
-        <table class="table solicitacao-table table-hover align-middle mb-0">
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th>Tipo</th>
-              <th>Enviada em</th>
-              <th>Status</th>
-              <th class="text-end">Detalhes</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr *ngFor="let item of historico">
-              <td class="fw-bold">{{ item.codigo }}</td>
-              <td>{{ item.tipo }}</td>
-              <td>{{ item.data }}</td>
-              <td>
-                <span class="badge rounded-pill" [ngClass]="classeStatus(item.status)">{{ item.status }}</span>
-              </td>
-              <td class="text-end">
-                <button type="button" class="btn btn-sm btn-outline-primary" [attr.aria-label]="'Ver detalhes de ' + item.codigo">
-                  <i class="bi bi-eye"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div *ngIf="carregandoHistorico" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-secondary mt-3 mb-0">Carregando solicitações...</p>
       </div>
+
+      <div
+        *ngIf="erroHistorico && !carregandoHistorico"
+        class="alert alert-danger d-flex flex-column flex-sm-row justify-content-between gap-3"
+        role="alert"
+      >
+        <span>
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ erroHistorico }}
+        </span>
+
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-danger"
+          (click)="carregarHistorico()"
+        >
+          Tentar novamente
+        </button>
+      </div>
+
+      <ng-container *ngIf="!carregandoHistorico && !erroHistorico">
+        <div *ngIf="historico.length > 0; else historicoVazio" class="table-responsive">
+          <table class="table solicitacao-table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Tipo</th>
+                <th>Referência</th>
+                <th>Enviada em</th>
+                <th>Status</th>
+                <th class="text-end">Detalhes</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of historico; trackBy: trackById">
+                <td class="fw-bold">{{ item.codigo }}</td>
+                <td>{{ item.tipo }}</td>
+                <td>{{ item.referencia }}</td>
+                <td>{{ item.data }}</td>
+                <td>
+                  <span class="badge rounded-pill" [ngClass]="classeStatus(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    [attr.aria-label]="'Ver detalhes de ' + item.codigo"
+                    (click)="abrirDetalhes(item)"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #historicoVazio>
+          <div class="text-center text-secondary py-5">
+            <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+            <h4 class="h6 fw-bold">Nenhuma solicitação enviada</h4>
+            <p class="mb-0">Suas solicitações aparecerão aqui após o envio.</p>
+          </div>
+        </ng-template>
+      </ng-container>
     </div>
   </div>
 </section>
+
+<!-- Detalhes da solicitação -->
+<ng-container *ngIf="solicitacaoSelecionada as item">
+  <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge rounded-pill" [ngClass]="classeStatus(item.status)">
+                {{ item.status }}
+              </span>
+              <span class="text-secondary fw-semibold">{{ item.codigo }}</span>
+            </div>
+
+            <h2 class="modal-title h4 fw-bold">{{ item.tipo }}</h2>
+          </div>
+
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Fechar"
+            (click)="fecharDetalhes()"
+          ></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+              <small class="text-secondary d-block">Enviada em</small>
+              <strong>{{ item.data }}</strong>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <small class="text-secondary d-block">Referência</small>
+              <strong>{{ item.referencia }}</strong>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <small class="text-secondary d-block">Prioridade</small>
+              <strong>{{ item.prioridade }}</strong>
+            </div>
+          </div>
+
+          <div *ngIf="item.horarios" class="mb-4">
+            <h3 class="h6 fw-bold mb-2">Horários solicitados</h3>
+            <p class="mb-0">{{ item.horarios }}</p>
+          </div>
+
+          <div *ngIf="item.campoCadastro" class="mb-4">
+            <h3 class="h6 fw-bold mb-2">Alteração cadastral</h3>
+            <p class="mb-1"><strong>Campo:</strong> {{ item.campoCadastro }}</p>
+            <p class="mb-0"><strong>Novo valor:</strong> {{ item.novoValor }}</p>
+          </div>
+
+          <div class="mb-4">
+            <h3 class="h6 fw-bold mb-2">Justificativa</h3>
+            <p class="mb-0">{{ item.descricao }}</p>
+          </div>
+
+          <div *ngIf="item.anexo" class="mb-4">
+            <h3 class="h6 fw-bold mb-2">Documento informado</h3>
+            <p class="mb-0">
+              <i class="bi bi-paperclip me-2"></i>
+              {{ item.anexo }}
+            </p>
+          </div>
+
+          <div
+            *ngIf="item.status !== 'Pendente'"
+            class="alert mb-0"
+            [ngClass]="item.status === 'Aprovada' ? 'alert-success' : 'alert-danger'"
+          >
+            <strong class="d-block mb-1">Parecer do RH</strong>
+            <p class="mb-2">
+              {{ item.observacaoAnalise || 'Nenhuma observação foi registrada.' }}
+            </p>
+            <small>
+              Analisada por {{ item.analisadoPor || 'Equipe de Gestão/RH' }}
+              <span *ngIf="item.dataAnalise"> em {{ item.dataAnalise }}</span>.
+            </small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="fecharDetalhes()">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop fade show" (click)="fecharDetalhes()"></div>
+</ng-container>
