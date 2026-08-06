@@ -109,6 +109,13 @@ export class HeaderComponent {
         icone: 'bi-fingerprint',
         area: 'gestao',
       },
+      '/gestao/meus-dados': {
+        titulo: 'Meus dados',
+        subtitulo: 'Painel de Gestão e RH',
+        descricao: 'Consulte suas próprias informações pessoais e profissionais cadastradas no sistema.',
+        icone: 'bi-person-vcard',
+        area: 'gestao',
+      },
       '/gestao/funcionarios': {
         titulo: 'Gestão de funcionários',
         subtitulo: 'Painel de Gestão e RH',
