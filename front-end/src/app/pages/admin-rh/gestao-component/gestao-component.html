@@ -1,54 +1,1068 @@
 <section class="admin-page">
+  <!-- Feedback -->
+  <div *ngIf="mensagemFeedback"
+    class="alert alert-success d-flex align-items-center justify-content-between gap-3 border-0 shadow-sm mb-4"
+    role="status">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ mensagemFeedback }}</span>
+    </div>
+
+    <button type="button" class="btn-close" aria-label="Fechar mensagem" (click)="mensagemFeedback = ''"></button>
+  </div>
+
+  <!-- Erro -->
+  <div *ngIf="erroCarregamento"
+    class="alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-0 shadow-sm mb-4"
+    role="alert">
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ erroCarregamento }}</span>
+    </div>
+
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="carregarFuncionarios()">
+      <i class="bi bi-arrow-clockwise me-2"></i>
+      Tentar novamente
+    </button>
+  </div>
+
+  <!-- Modo gestor -->
+  <div *ngIf="!ehRh" class="alert alert-info d-flex align-items-start gap-3 border-0 shadow-sm mb-4" role="status">
+    <i class="bi bi-eye-fill fs-5"></i>
+
+    <div>
+      <strong class="d-block">
+        Modo de consulta
+      </strong>
+
+      <span>
+        Gestores podem consultar funcionários e
+        indicadores. Alterações são exclusivas do RH.
+      </span>
+    </div>
+  </div>
+
+  <!-- Indicadores -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl">
+      <article class="card indicador-funcionario border-0 shadow-sm h-100 indicador-total">
+        <div class="card-body p-4">
+          <span class="indicador-funcionario-icon">
+            <i class="bi bi-people-fill"></i>
+          </span>
+
+          <small class="text-secondary d-block mt-3">
+            Total cadastrado
+          </small>
+
+          <strong class="indicador-funcionario-valor">
+            {{ funcionarios.length }}
+          </strong>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl">
+      <article class="card indicador-funcionario border-0 shadow-sm h-100 indicador-ativo">
+        <div class="card-body p-4">
+          <span class="indicador-funcionario-icon">
+            <i class="bi bi-person-check-fill"></i>
+          </span>
+
+          <small class="text-secondary d-block mt-3">
+            Ativos
+          </small>
+
+          <strong class="indicador-funcionario-valor">
+            {{ totalAtivos }}
+          </strong>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl">
+      <article class="card indicador-funcionario border-0 shadow-sm h-100 indicador-ferias">
+        <div class="card-body p-4">
+          <span class="indicador-funcionario-icon">
+            <i class="bi bi-suitcase-lg-fill"></i>
+          </span>
+
+          <small class="text-secondary d-block mt-3">
+            Férias
+          </small>
+
+          <strong class="indicador-funcionario-valor">
+            {{ totalFerias }}
+          </strong>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl">
+      <article class="card indicador-funcionario border-0 shadow-sm h-100 indicador-afastado">
+        <div class="card-body p-4">
+          <span class="indicador-funcionario-icon">
+            <i class="bi bi-person-dash-fill"></i>
+          </span>
+
+          <small class="text-secondary d-block mt-3">
+            Afastados
+          </small>
+
+          <strong class="indicador-funcionario-valor">
+            {{ totalAfastados }}
+          </strong>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl">
+      <article class="card indicador-funcionario border-0 shadow-sm h-100 indicador-inativo">
+        <div class="card-body p-4">
+          <span class="indicador-funcionario-icon">
+            <i class="bi bi-person-x-fill"></i>
+          </span>
+
+          <small class="text-secondary d-block mt-3">
+            Inativos
+          </small>
+
+          <strong class="indicador-funcionario-valor">
+            {{ totalInativos }}
+          </strong>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- Cabeçalho e filtros -->
   <div class="card border-0 shadow-sm app-card mb-4">
     <div class="card-body p-4">
-      <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+      <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4">
         <div>
-          <h2 class="h5 fw-bold mb-1">Base de colaboradores</h2>
-          <p class="text-secondary mb-0">Use esta área para consultar status, atrasos e faltas por funcionário.</p>
+          <h2 class="h5 fw-bold mb-1">
+            Base de colaboradores
+          </h2>
+
+          <p class="text-secondary mb-0">
+            Consulta de dados e ocorrências do mês atual.
+            Foram encontradas {{ totalOcorrencias }}
+            ocorrência(s).
+          </p>
         </div>
-        <a routerLink="/gestao/cadastro" class="btn btn-primary">
-          <i class="bi bi-person-plus me-2"></i>
-          Novo funcionário
-        </a>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-outline-secondary" [disabled]="carregando"
+            (click)="carregarFuncionarios()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Atualizar
+          </button>
+
+          <a *ngIf="ehRh" routerLink="/gestao/cadastro" class="btn btn-primary">
+            <i class="bi bi-person-plus me-2"></i>
+            Novo funcionário
+          </a>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-xl-5">
+          <label for="buscaFuncionario" class="form-label fw-semibold">
+            Buscar
+          </label>
+
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+
+            <input id="buscaFuncionario" type="search" class="form-control"
+              placeholder="Nome, e-mail, matrícula, cargo ou setor" [(ngModel)]="filtroBusca" />
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-4 col-xl">
+          <label for="filtroStatus" class="form-label fw-semibold">
+            Status
+          </label>
+
+          <select id="filtroStatus" class="form-select" [(ngModel)]="filtroStatus">
+            <option value="Todos">
+              Todos
+            </option>
+
+            <option *ngFor="let status of statusDisponiveis" [value]="status">
+              {{ status }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12 col-sm-4 col-xl">
+          <label for="filtroSetor" class="form-label fw-semibold">
+            Setor
+          </label>
+
+          <select id="filtroSetor" class="form-select" [(ngModel)]="filtroSetor">
+            <option *ngFor="let setor of setoresDisponiveis" [value]="setor">
+              {{ setor }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12 col-sm-4 col-xl">
+          <label for="filtroAcesso" class="form-label fw-semibold">
+            Acesso
+          </label>
+
+          <select id="filtroAcesso" class="form-select" [(ngModel)]="filtroAcesso">
+            <option value="Todos">
+              Todos
+            </option>
+            <option value="funcionario">
+              Funcionário
+            </option>
+            <option value="gestor">
+              Gestor
+            </option>
+            <option value="rh">
+              RH
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="limparFiltros()">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>
+            Limpar filtros
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card border-0 shadow-sm app-card">
+  <!-- Loading -->
+  <div *ngIf="carregando" class="card border-0 shadow-sm app-card" aria-busy="true">
+    <div class="card-body text-center py-5">
+      <div class="spinner-border text-primary" role="status" aria-label="Carregando funcionários"></div>
+
+      <p class="text-secondary mt-3 mb-0">
+        Carregando funcionários e registros do mês...
+      </p>
+    </div>
+  </div>
+
+  <!-- Tabela desktop -->
+  <div *ngIf="!carregando" class="card border-0 shadow-sm app-card d-none d-lg-block">
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table align-middle mb-0 admin-table">
           <thead>
             <tr>
               <th>Funcionário</th>
-              <th>Setor</th>
-              <th>Cargo</th>
+              <th>Setor e cargo</th>
+              <th>Acesso</th>
               <th>Status</th>
               <th>Atrasos</th>
               <th>Faltas</th>
+              <th>Pendências</th>
               <th class="text-end">Ações</th>
             </tr>
           </thead>
+
           <tbody>
-            <tr *ngFor="let funcionario of funcionarios">
-              <td class="fw-semibold">{{ funcionario.nome }}</td>
-              <td>{{ funcionario.setor }}</td>
-              <td>{{ funcionario.cargo }}</td>
+            <tr *ngFor="
+                let funcionario of funcionariosFiltrados;
+                trackBy: trackByFuncionario
+              ">
               <td>
-                <span class="badge rounded-pill" [ngClass]="statusClasse(funcionario.status)">
-                  {{ funcionario.status }}
+                <div class="d-flex align-items-center gap-3">
+                  <span class="funcionario-avatar">
+                    {{
+                    iniciais(
+                    funcionario.dados.nomeCompleto
+                    )
+                    }}
+                  </span>
+
+                  <div>
+                    <strong class="d-block">
+                      {{
+                      funcionario.dados.nomeCompleto
+                      }}
+                    </strong>
+
+                    <small class="text-secondary">
+                      {{
+                      funcionario.dados.matricula
+                      }}
+                      •
+                      {{
+                      funcionario.dados.emailCorporativo
+                      }}
+                    </small>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <strong class="d-block">
+                  {{ funcionario.dados.setor }}
+                </strong>
+
+                <small class="text-secondary">
+                  {{ funcionario.dados.cargo }}
+                </small>
+              </td>
+
+              <td>
+                <span class="badge rounded-pill" [ngClass]="
+                    acessoClasse(
+                      funcionario.dados.tipoAcesso
+                    )
+                  ">
+                  {{
+                  nomeTipoAcesso(
+                  funcionario.dados.tipoAcesso
+                  )
+                  }}
                 </span>
               </td>
-              <td>{{ funcionario.atrasos }}</td>
-              <td>{{ funcionario.faltas }}</td>
+
+              <td>
+                <span class="badge rounded-pill" [ngClass]="
+                    statusClasse(
+                      funcionario.dados.status
+                    )
+                  ">
+                  {{ funcionario.dados.status }}
+                </span>
+              </td>
+
+              <td>
+                {{
+                funcionario.estatisticas.atrasos
+                }}
+              </td>
+
+              <td>
+                {{
+                funcionario.estatisticas.faltas
+                }}
+              </td>
+
+              <td>
+                {{
+                funcionario.estatisticas.pendencias
+                }}
+              </td>
+
               <td class="text-end">
-                <button type="button" class="btn btn-sm btn-outline-primary me-2">Editar</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Detalhes</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="abrirDetalhes(funcionario)">
+                  <i class="bi bi-eye me-1"></i>
+                  Detalhes
+                </button>
+
+                <button *ngIf="ehRh" type="button" class="btn btn-sm btn-outline-primary ms-2"
+                  (click)="abrirEdicao(funcionario)">
+                  <i class="bi bi-pencil-square me-1"></i>
+                  Editar
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="
+                funcionariosFiltrados.length === 0
+              ">
+              <td colspan="8" class="text-center text-secondary py-5">
+                <i class="bi bi-people fs-2 d-block mb-2"></i>
+                Nenhum funcionário corresponde aos
+                filtros informados.
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+  </div>
+
+  <!-- Cards mobile -->
+  <div *ngIf="!carregando" class="d-grid gap-3 d-lg-none">
+    <article class="card border-0 shadow-sm app-card" *ngFor="
+        let funcionario of funcionariosFiltrados;
+        trackBy: trackByFuncionario
+      ">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start gap-3 mb-3">
+          <span class="funcionario-avatar">
+            {{
+            iniciais(
+            funcionario.dados.nomeCompleto
+            )
+            }}
+          </span>
+
+          <div class="flex-grow-1 min-w-0">
+            <strong class="d-block">
+              {{ funcionario.dados.nomeCompleto }}
+            </strong>
+
+            <small class="text-secondary d-block">
+              {{ funcionario.dados.matricula }}
+            </small>
+
+            <small class="text-secondary d-block text-truncate">
+              {{
+              funcionario.dados.emailCorporativo
+              }}
+            </small>
+          </div>
+
+          <span class="badge rounded-pill" [ngClass]="
+              statusClasse(
+                funcionario.dados.status
+              )
+            ">
+            {{ funcionario.dados.status }}
+          </span>
+        </div>
+
+        <div class="row g-2 small mb-3">
+          <div class="col-6">
+            <span class="text-secondary d-block">
+              Setor
+            </span>
+            <strong>
+              {{ funcionario.dados.setor }}
+            </strong>
+          </div>
+
+          <div class="col-6">
+            <span class="text-secondary d-block">
+              Acesso
+            </span>
+            <strong>
+              {{
+              nomeTipoAcesso(
+              funcionario.dados.tipoAcesso
+              )
+              }}
+            </strong>
+          </div>
+
+          <div class="col-4">
+            <span class="text-secondary d-block">
+              Atrasos
+            </span>
+            <strong>
+              {{ funcionario.estatisticas.atrasos }}
+            </strong>
+          </div>
+
+          <div class="col-4">
+            <span class="text-secondary d-block">
+              Faltas
+            </span>
+            <strong>
+              {{ funcionario.estatisticas.faltas }}
+            </strong>
+          </div>
+
+          <div class="col-4">
+            <span class="text-secondary d-block">
+              Pendências
+            </span>
+            <strong>
+              {{
+              funcionario.estatisticas.pendencias
+              }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary flex-fill" (click)="abrirDetalhes(funcionario)">
+            <i class="bi bi-eye me-1"></i>
+            Detalhes
+          </button>
+
+          <button *ngIf="ehRh" type="button" class="btn btn-sm btn-outline-primary flex-fill"
+            (click)="abrirEdicao(funcionario)">
+            <i class="bi bi-pencil-square me-1"></i>
+            Editar
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <div *ngIf="
+        funcionariosFiltrados.length === 0
+      " class="card border-0 shadow-sm app-card">
+      <div class="card-body text-center text-secondary py-5">
+        <i class="bi bi-people fs-2 d-block mb-2"></i>
+        Nenhum funcionário encontrado.
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div *ngIf="funcionarioSelecionado && modoModal" class="gestao-modal-backdrop" role="presentation"
+    (click)="fecharModal()">
+    <section class="gestao-modal card border-0 shadow-lg" role="dialog" aria-modal="true"
+      aria-labelledby="tituloModalFuncionario" (click)="$event.stopPropagation()">
+      <header class="card-header border-0 d-flex align-items-start justify-content-between gap-3 p-4">
+        <div>
+          <span class="badge rounded-pill text-bg-light border mb-2">
+            {{
+            modoModal === 'edicao'
+            ? 'Edição'
+            : 'Detalhes'
+            }}
+          </span>
+
+          <h2 id="tituloModalFuncionario" class="h5 fw-bold mb-1">
+            {{
+            funcionarioSelecionado
+            .dados.nomeCompleto
+            }}
+          </h2>
+
+          <small class="text-secondary">
+            Matrícula
+            {{
+            funcionarioSelecionado
+            .dados.matricula
+            }}
+          </small>
+        </div>
+
+        <button type="button" class="btn-close" aria-label="Fechar" [disabled]="processando"
+          (click)="fecharModal()"></button>
+      </header>
+
+      <div class="card-body p-4">
+        <div *ngIf="erroModal" class="alert alert-danger py-2" role="alert">
+          <i class="bi bi-exclamation-circle-fill me-2"></i>
+          {{ erroModal }}
+        </div>
+
+        <!-- Detalhes -->
+        <ng-container *ngIf="modoModal === 'detalhes'">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <span class="funcionario-avatar funcionario-avatar-lg">
+              {{
+              iniciais(
+              funcionarioSelecionado
+              .dados.nomeCompleto
+              )
+              }}
+            </span>
+
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <span class="badge rounded-pill" [ngClass]="
+                    statusClasse(
+                      funcionarioSelecionado
+                        .dados.status
+                    )
+                  ">
+                  {{
+                  funcionarioSelecionado
+                  .dados.status
+                  }}
+                </span>
+
+                <span class="badge rounded-pill" [ngClass]="
+                    acessoClasse(
+                      funcionarioSelecionado
+                        .dados.tipoAcesso
+                    )
+                  ">
+                  {{
+                  nomeTipoAcesso(
+                  funcionarioSelecionado
+                  .dados.tipoAcesso
+                  )
+                  }}
+                </span>
+              </div>
+
+              <strong class="d-block">
+                {{
+                funcionarioSelecionado
+                .dados.cargo
+                }}
+              </strong>
+
+              <small class="text-secondary">
+                {{
+                funcionarioSelecionado
+                .dados.setor
+                }}
+              </small>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-4">
+              <div class="ocorrencia-box">
+                <small>Atrasos</small>
+                <strong>
+                  {{
+                  funcionarioSelecionado
+                  .estatisticas.atrasos
+                  }}
+                </strong>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="ocorrencia-box">
+                <small>Faltas</small>
+                <strong>
+                  {{
+                  funcionarioSelecionado
+                  .estatisticas.faltas
+                  }}
+                </strong>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="ocorrencia-box">
+                <small>Pendências</small>
+                <strong>
+                  {{
+                  funcionarioSelecionado
+                  .estatisticas.pendencias
+                  }}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 detalhes-grid">
+            <div class="col-12 col-md-6">
+              <span>E-mail corporativo</span>
+              <strong>
+                {{
+                funcionarioSelecionado
+                .dados.emailCorporativo
+                }}
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>CPF</span>
+              <strong>
+                {{
+                valorOuNaoInformado(
+                funcionarioSelecionado
+                .dados.cpf
+                )
+                }}
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>Telefone</span>
+              <strong>
+                {{
+                valorOuNaoInformado(
+                funcionarioSelecionado
+                .dados.telefone
+                )
+                }}
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>Data de nascimento</span>
+              <strong>
+                {{
+                formatarData(
+                funcionarioSelecionado
+                .dados.dataNascimento
+                )
+                }}
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>Data de admissão</span>
+              <strong>
+                {{
+                formatarData(
+                funcionarioSelecionado
+                .dados.dataAdmissao
+                )
+                }}
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>Vínculo</span>
+              <strong>
+                {{
+                valorOuNaoInformado(
+                funcionarioSelecionado
+                .dados.tipoVinculo
+                )
+                }}
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>Carga semanal</span>
+              <strong>
+                {{
+                valorOuNaoInformado(
+                funcionarioSelecionado
+                .dados.cargaHorariaSemanal
+                )
+                }}
+                <ng-container *ngIf="
+                    funcionarioSelecionado
+                      .dados.cargaHorariaSemanal
+                  ">
+                  horas
+                </ng-container>
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>Gestor imediato</span>
+              <strong>
+                {{
+                valorOuNaoInformado(
+                funcionarioSelecionado
+                .dados.gestorImediato
+                )
+                }}
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>Local de trabalho</span>
+              <strong>
+                {{
+                valorOuNaoInformado(
+                funcionarioSelecionado
+                .dados.localTrabalho
+                )
+                }}
+              </strong>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <span>Nacionalidade</span>
+              <strong>
+                {{
+                valorOuNaoInformado(
+                funcionarioSelecionado
+                .dados.nacionalidade
+                )
+                }}
+              </strong>
+            </div>
+          </div>
+
+          <div *ngIf="ehRh" class="border-top mt-4 pt-4">
+            <label for="statusSelecionado" class="form-label fw-semibold">
+              Alterar status
+            </label>
+
+            <div class="d-flex flex-column flex-sm-row gap-2">
+              <select id="statusSelecionado" class="form-select" [(ngModel)]="statusSelecionado">
+                <option *ngFor="
+                    let status of statusDisponiveis
+                  " [value]="status">
+                  {{ status }}
+                </option>
+              </select>
+
+              <button type="button" class="btn btn-outline-primary flex-shrink-0" [disabled]="processando"
+                (click)="alterarStatus()">
+                Atualizar status
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="confirmarDesativacao" class="alert alert-danger mt-4 mb-0">
+            <strong class="d-block mb-1">
+              Confirmar desativação?
+            </strong>
+
+            <p class="mb-3">
+              O funcionário perderá o acesso ao
+              sistema.
+            </p>
+
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="processando"
+                (click)="cancelarDesativacao()">
+                Cancelar
+              </button>
+
+              <button type="button" class="btn btn-sm btn-danger" [disabled]="processando"
+                (click)="desativarFuncionario()">
+                {{
+                processando
+                ? 'Desativando...'
+                : 'Confirmar'
+                }}
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Edição -->
+        <form *ngIf="modoModal === 'edicao'" class="row g-3" (ngSubmit)="salvarEdicao()">
+          <div class="col-12">
+            <h3 class="h6 fw-bold">
+              Dados pessoais
+            </h3>
+          </div>
+
+          <div class="col-12 col-md-8">
+            <label for="nomeCompleto" class="form-label fw-semibold">
+              Nome completo
+            </label>
+
+            <input id="nomeCompleto" type="text" class="form-control" name="nomeCompleto" maxlength="150"
+              [(ngModel)]="formulario.nomeCompleto" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="cpf" class="form-label fw-semibold">
+              CPF
+            </label>
+
+            <input id="cpf" type="text" class="form-control" name="cpf" [(ngModel)]="formulario.cpf" />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="emailCorporativo" class="form-label fw-semibold">
+              E-mail corporativo
+            </label>
+
+            <input id="emailCorporativo" type="email" class="form-control" name="emailCorporativo" [(ngModel)]="
+                formulario.emailCorporativo
+              " />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="telefone" class="form-label fw-semibold">
+              Telefone
+            </label>
+
+            <input id="telefone" type="text" class="form-control" name="telefone" maxlength="20"
+              [(ngModel)]="formulario.telefone" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="dataNascimento" class="form-label fw-semibold">
+              Data de nascimento
+            </label>
+
+            <input id="dataNascimento" type="date" class="form-control" name="dataNascimento" [(ngModel)]="
+                formulario.dataNascimento
+              " />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="estadoCivil" class="form-label fw-semibold">
+              Estado civil
+            </label>
+
+            <input id="estadoCivil" type="text" class="form-control" name="estadoCivil"
+              [(ngModel)]="formulario.estadoCivil" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="nacionalidade" class="form-label fw-semibold">
+              Nacionalidade
+            </label>
+
+            <input id="nacionalidade" type="text" class="form-control" name="nacionalidade" [(ngModel)]="
+                formulario.nacionalidade
+              " />
+          </div>
+
+          <div class="col-12">
+            <label for="naturalidade" class="form-label fw-semibold">
+              Naturalidade
+            </label>
+
+            <input id="naturalidade" type="text" class="form-control" name="naturalidade"
+              [(ngModel)]="formulario.naturalidade" />
+          </div>
+
+          <div class="col-12 mt-4">
+            <h3 class="h6 fw-bold">
+              Dados profissionais
+            </h3>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="matricula" class="form-label fw-semibold">
+              Matrícula
+            </label>
+
+            <input id="matricula" type="text" class="form-control" name="matricula"
+              [(ngModel)]="formulario.matricula" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="cargo" class="form-label fw-semibold">
+              Cargo
+            </label>
+
+            <input id="cargo" type="text" class="form-control" name="cargo" [(ngModel)]="formulario.cargo" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="setor" class="form-label fw-semibold">
+              Setor
+            </label>
+
+            <input id="setor" type="text" class="form-control" name="setor" [(ngModel)]="formulario.setor" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="dataAdmissao" class="form-label fw-semibold">
+              Data de admissão
+            </label>
+
+            <input id="dataAdmissao" type="date" class="form-control" name="dataAdmissao"
+              [(ngModel)]="formulario.dataAdmissao" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="tipoVinculo" class="form-label fw-semibold">
+              Tipo de vínculo
+            </label>
+
+            <select id="tipoVinculo" class="form-select" name="tipoVinculo" [(ngModel)]="formulario.tipoVinculo">
+              <option value="">
+                Selecione
+              </option>
+
+              <option *ngFor="
+                  let tipo of tiposVinculo
+                " [value]="tipo">
+                {{ tipo }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="cargaHoraria" class="form-label fw-semibold">
+              Carga semanal
+            </label>
+
+            <input id="cargaHoraria" type="number" class="form-control" name="cargaHoraria" min="1" max="60"
+              [(ngModel)]="
+                formulario.cargaHorariaSemanal
+              " />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="gestorImediato" class="form-label fw-semibold">
+              Gestor imediato
+            </label>
+
+            <input id="gestorImediato" type="text" class="form-control" name="gestorImediato" [(ngModel)]="
+                formulario.gestorImediato
+              " />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="localTrabalho" class="form-label fw-semibold">
+              Local de trabalho
+            </label>
+
+            <input id="localTrabalho" type="text" class="form-control" name="localTrabalho" [(ngModel)]="
+                formulario.localTrabalho
+              " />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="tipoAcesso" class="form-label fw-semibold">
+              Tipo de acesso
+            </label>
+
+            <select id="tipoAcesso" class="form-select" name="tipoAcesso" [(ngModel)]="formulario.tipoAcesso">
+              <option *ngFor="
+                  let tipo of tiposAcesso
+                " [value]="tipo">
+                {{ nomeTipoAcesso(tipo) }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="statusFuncionario" class="form-label fw-semibold">
+              Status
+            </label>
+
+            <select id="statusFuncionario" class="form-select" name="statusFuncionario" [(ngModel)]="formulario.status">
+              <option *ngFor="
+                  let status of statusDisponiveis
+                " [value]="status">
+                {{ status }}
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <footer class="card-footer border-0 d-flex flex-column flex-sm-row justify-content-between gap-2 p-4">
+        <div>
+          <button *ngIf="
+              modoModal === 'detalhes' &&
+              podeDesativarSelecionado &&
+              !confirmarDesativacao
+            " type="button" class="btn btn-outline-danger" [disabled]="processando" (click)="solicitarDesativacao()">
+            <i class="bi bi-person-x me-2"></i>
+            Desativar
+          </button>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row gap-2">
+          <button type="button" class="btn btn-outline-secondary" [disabled]="processando" (click)="
+              modoModal === 'edicao'
+                ? voltarParaDetalhes()
+                : fecharModal()
+            ">
+            {{
+            modoModal === 'edicao'
+            ? 'Voltar'
+            : 'Fechar'
+            }}
+          </button>
+
+          <button *ngIf="
+              ehRh &&
+              modoModal === 'detalhes'
+            " type="button" class="btn btn-primary" [disabled]="processando" (click)="abrirEdicao()">
+            <i class="bi bi-pencil-square me-2"></i>
+            Editar funcionário
+          </button>
+
+          <button *ngIf="modoModal === 'edicao'" type="button" class="btn btn-primary" [disabled]="processando"
+            (click)="salvarEdicao()">
+            <span *ngIf="processando" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+
+            <i *ngIf="!processando" class="bi bi-save me-2"></i>
+
+            {{
+            processando
+            ? 'Salvando...'
+            : 'Salvar alterações'
+            }}
+          </button>
+        </div>
+      </footer>
+    </section>
   </div>
 </section>

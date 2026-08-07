@@ -3,7 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { FuncionarioResponse } from '../../models/funcionario';
+import {
+  FuncionarioResponse,
+  FuncionarioStatusRequest,
+  FuncionarioUpdateRequest,
+  StatusFuncionario,
+} from '../../models/funcionario';
 
 @Injectable({
   providedIn: 'root',
@@ -19,21 +24,17 @@ export class FuncionarioService {
   buscarMeuPerfil():
     Observable<FuncionarioResponse> {
 
-    return this.http.get<
-      FuncionarioResponse
-    >(
+    return this.http.get<FuncionarioResponse>(
       `${this.url}/me`
     );
   }
 
   listar(
-    status?: string
+    status?: StatusFuncionario
   ): Observable<FuncionarioResponse[]> {
 
     if (status) {
-      return this.http.get<
-        FuncionarioResponse[]
-      >(
+      return this.http.get<FuncionarioResponse[]>(
         this.url,
         {
           params: {
@@ -43,9 +44,7 @@ export class FuncionarioService {
       );
     }
 
-    return this.http.get<
-      FuncionarioResponse[]
-    >(
+    return this.http.get<FuncionarioResponse[]>(
       this.url
     );
   }
@@ -54,9 +53,39 @@ export class FuncionarioService {
     id: number
   ): Observable<FuncionarioResponse> {
 
-    return this.http.get<
-      FuncionarioResponse
-    >(
+    return this.http.get<FuncionarioResponse>(
+      `${this.url}/${id}`
+    );
+  }
+
+  atualizar(
+    id: number,
+    request: FuncionarioUpdateRequest
+  ): Observable<FuncionarioResponse> {
+
+    return this.http.put<FuncionarioResponse>(
+      `${this.url}/${id}`,
+      request
+    );
+  }
+
+  alterarStatus(
+    id: number,
+    status: StatusFuncionario
+  ): Observable<FuncionarioResponse> {
+
+    const request: FuncionarioStatusRequest = {
+      status,
+    };
+
+    return this.http.patch<FuncionarioResponse>(
+      `${this.url}/${id}/status`,
+      request
+    );
+  }
+
+  desativar(id: number): Observable<void> {
+    return this.http.delete<void>(
       `${this.url}/${id}`
     );
   }

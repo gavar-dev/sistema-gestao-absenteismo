@@ -1,5 +1,18 @@
 import { TipoUsuario } from './tipoUsuario';
 
+export type StatusFuncionario =
+  | 'Ativo'
+  | 'Férias'
+  | 'Afastado'
+  | 'Inativo';
+
+export type TipoVinculo =
+  | 'CLT'
+  | 'PJ'
+  | 'Estágio'
+  | 'Temporário'
+  | 'Aprendiz';
+
 export interface FuncionarioResponse {
   id: number;
   nomeCompleto: string;
@@ -14,12 +27,37 @@ export interface FuncionarioResponse {
   cargo: string;
   setor: string;
   dataAdmissao: string | null;
-  tipoVinculo: string | null;
+  tipoVinculo: TipoVinculo | null;
   cargaHorariaSemanal: number | null;
   gestorImediato: string | null;
   localTrabalho: string | null;
   tipoAcesso: TipoUsuario;
-  status: string;
+  status: StatusFuncionario;
   criadoEm: string;
   atualizadoEm: string;
+}
+
+export interface FuncionarioUpdateRequest {
+  nomeCompleto: string;
+  emailCorporativo: string;
+  cpf: string;
+  telefone: string;
+  dataNascimento: string;
+  estadoCivil: string | null;
+  nacionalidade: string;
+  naturalidade: string | null;
+  matricula: string;
+  cargo: string;
+  setor: string;
+  dataAdmissao: string;
+  tipoVinculo: TipoVinculo;
+  cargaHorariaSemanal: number | null;
+  gestorImediato: string | null;
+  localTrabalho: string | null;
+  tipoAcesso: TipoUsuario;
+  status: StatusFuncionario;
+}
+
+export interface FuncionarioStatusRequest {
+  status: StatusFuncionario;
 }
