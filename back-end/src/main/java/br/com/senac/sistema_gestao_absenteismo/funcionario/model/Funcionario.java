@@ -92,6 +92,20 @@ public class Funcionario {
     @Column(nullable = false, length = 100)
     private String senhaHash;
 
+    @Column(length = 255)
+    private String fotoNomeOriginal;
+
+    @Column(unique = true, length = 255)
+    private String fotoNomeArmazenado;
+
+    @Column(length = 100)
+    private String fotoContentType;
+
+    private Long fotoTamanho;
+
+    @Column(unique = true, length = 500)
+    private String fotoCaminhoRelativo;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 

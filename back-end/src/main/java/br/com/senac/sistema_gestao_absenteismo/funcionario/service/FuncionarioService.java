@@ -1,6 +1,7 @@
 package br.com.senac.sistema_gestao_absenteismo.funcionario.service;
 
-
+import br.com.senac.sistema_gestao_absenteismo.arquivo.service.FuncionarioArquivoService;
+// import br.com.senac.sistema_gestao_absenteismo.arquivo.service.FuncionarioArquivoService;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioCreateRequest;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioResponse;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioUpdateRequest;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Locale;
@@ -23,16 +25,35 @@ public class FuncionarioService {
 
     private final FuncionarioRepository funcionarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FuncionarioArquivoService funcionarioArquivoService;
+
 
     @Transactional
     public FuncionarioResponse criar(
             FuncionarioCreateRequest request
     ) {
+        return criar(
+                request,
+                null,
+                List.of()
+        );
+    }
+
+    @Transactional
+    public FuncionarioResponse criar(
+            FuncionarioCreateRequest request,
+            MultipartFile foto,
+            List<MultipartFile> documentos
+    ) {
         String email =
-                normalizarEmail(request.emailCorporativo());
+                normalizarEmail(
+                        request.emailCorporativo()
+                );
 
         String cpf =
-                somenteDigitos(request.cpf());
+                somenteDigitos(
+                        request.cpf()
+                );
 
         String matricula =
                 request.matricula().trim();
@@ -108,8 +129,30 @@ public class FuncionarioService {
                         )
                         .build();
 
+        Funcionario funcionarioSalvo =
+                funcionarioRepository.save(
+                        funcionario
+                );
+
+        funcionarioArquivoService.salvarFoto(
+                funcionarioSalvo,
+                foto
+        );
+
+        funcionarioArquivoService.salvarDocumentos(
+                funcionarioSalvo,
+                documentos == null
+                        ? List.of()
+                        : documentos
+        );
+
+        Funcionario funcionarioAtualizado =
+                funcionarioRepository.save(
+                        funcionarioSalvo
+                );
+
         return FuncionarioResponse.from(
-                funcionarioRepository.save(funcionario)
+                funcionarioAtualizado
         );
     }
 
@@ -149,10 +192,14 @@ public class FuncionarioService {
                 buscarEntidade(id);
 
         String email =
-                normalizarEmail(request.emailCorporativo());
+                normalizarEmail(
+                        request.emailCorporativo()
+                );
 
         String cpf =
-                somenteDigitos(request.cpf());
+                somenteDigitos(
+                        request.cpf()
+                );
 
         String matricula =
                 request.matricula().trim();
@@ -167,62 +214,80 @@ public class FuncionarioService {
         funcionario.setNomeCompleto(
                 request.nomeCompleto().trim()
         );
+
         funcionario.setEmailCorporativo(email);
         funcionario.setCpf(cpf);
+
         funcionario.setTelefone(
                 request.telefone().trim()
         );
+
         funcionario.setDataNascimento(
                 request.dataNascimento()
         );
+
         funcionario.setEstadoCivil(
                 limparOpcional(
                         request.estadoCivil()
                 )
         );
+
         funcionario.setNacionalidade(
                 request.nacionalidade().trim()
         );
+
         funcionario.setNaturalidade(
                 limparOpcional(
                         request.naturalidade()
                 )
         );
+
         funcionario.setMatricula(matricula);
+
         funcionario.setCargo(
                 request.cargo().trim()
         );
+
         funcionario.setSetor(
                 request.setor().trim()
         );
+
         funcionario.setDataAdmissao(
                 request.dataAdmissao()
         );
+
         funcionario.setTipoVinculo(
                 request.tipoVinculo()
         );
+
         funcionario.setCargaHorariaSemanal(
                 request.cargaHorariaSemanal()
         );
+
         funcionario.setGestorImediato(
                 limparOpcional(
                         request.gestorImediato()
                 )
         );
+
         funcionario.setLocalTrabalho(
                 limparOpcional(
                         request.localTrabalho()
                 )
         );
+
         funcionario.setTipoAcesso(
                 request.tipoAcesso()
         );
+
         funcionario.setStatus(
                 request.status()
         );
 
         return FuncionarioResponse.from(
-                funcionarioRepository.save(funcionario)
+                funcionarioRepository.save(
+                        funcionario
+                )
         );
     }
 
@@ -237,7 +302,9 @@ public class FuncionarioService {
         funcionario.setStatus(status);
 
         return FuncionarioResponse.from(
-                funcionarioRepository.save(funcionario)
+                funcionarioRepository.save(
+                        funcionario
+                )
         );
     }
 
@@ -252,10 +319,11 @@ public class FuncionarioService {
                 StatusFuncionario.INATIVO
         );
 
-        funcionarioRepository.save(funcionario);
+        funcionarioRepository.save(
+                funcionario
+        );
     }
 
-    
     private Funcionario buscarEntidade(
             Long id
     ) {
@@ -361,7 +429,10 @@ public class FuncionarioService {
     private String somenteDigitos(
             String valor
     ) {
-        return valor.replaceAll("\\D", "");
+        return valor.replaceAll(
+                "\\D",
+                ""
+        );
     }
 
     private String limparOpcional(
