@@ -24,12 +24,67 @@ export class SolicitacaoService {
     private readonly http: HttpClient
   ) {}
 
+  visualizarAnexo(
+    id: number
+  ): Observable<Blob> {
+    return this.http.get(
+      `${this.url}/${id}/anexo/visualizar`,
+      {
+        responseType: 'blob',
+      }
+    );
+  }
+
+  baixarAnexo(
+    id: number
+  ): Observable<Blob> {
+    return this.http.get(
+      `${this.url}/${id}/anexo/download`,
+      {
+        responseType: 'blob',
+      }
+    );
+  }
+
   criar(
-    request: SolicitacaoCreateRequest
+    request: SolicitacaoCreateRequest,
+    anexo: File | null = null
   ): Observable<SolicitacaoResponse> {
+
+    if (!anexo) {
+      return this.http.post<SolicitacaoResponse>(
+        this.url,
+        request
+      );
+    }
+
+    const formulario =
+      new FormData();
+
+    const dados =
+      new Blob(
+        [
+          JSON.stringify(request),
+        ],
+        {
+          type: 'application/json',
+        }
+      );
+
+    formulario.append(
+      'dados',
+      dados
+    );
+
+    formulario.append(
+      'anexo',
+      anexo,
+      anexo.name
+    );
+
     return this.http.post<SolicitacaoResponse>(
       this.url,
-      request
+      formulario
     );
   }
 

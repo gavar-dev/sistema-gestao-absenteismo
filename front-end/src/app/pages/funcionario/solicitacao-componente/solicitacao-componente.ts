@@ -100,6 +100,7 @@ export class SolicitacaoComponente implements OnInit {
   enviandoSolicitacao = false;
 
   solicitacaoSelecionada: SolicitacaoRecente | null = null;
+  anexoSelecionado: File | null = null;
 
   readonly tipos: TipoSolicitacaoCard[] = [
     {
@@ -270,11 +271,61 @@ export class SolicitacaoComponente implements OnInit {
     this.erroEnvio = '';
   }
 
-  selecionarAnexo(evento: Event): void {
-    const input = evento.target as HTMLInputElement;
-    const arquivo = input.files?.[0];
+  selecionarAnexo(
+    evento: Event
+  ): void {
 
-    this.formulario.anexo = arquivo?.name ?? '';
+    const input =
+      evento.target as HTMLInputElement;
+
+    const arquivo =
+      input.files?.[0] ?? null;
+
+    this.erroEnvio = '';
+    this.anexoSelecionado = null;
+    this.formulario.anexo = '';
+
+    if (!arquivo) {
+      return;
+    }
+
+    const tiposPermitidos = [
+      'application/pdf',
+      'image/jpeg',
+      'image/png',
+    ];
+
+    if (
+      !tiposPermitidos.includes(
+        arquivo.type
+      )
+    ) {
+      this.erroEnvio =
+        'Formato não permitido. Envie PDF, JPG ou PNG.';
+
+      input.value = '';
+      return;
+    }
+
+    const tamanhoMaximo =
+      5 * 1024 * 1024;
+
+    if (
+      arquivo.size >
+      tamanhoMaximo
+    ) {
+      this.erroEnvio =
+        'O anexo deve possuir no máximo 5 MB.';
+
+      input.value = '';
+      return;
+    }
+
+    this.anexoSelecionado =
+      arquivo;
+
+    this.formulario.anexo =
+      arquivo.name;
   }
 
   criarSolicitacao(form: NgForm): void {
@@ -302,39 +353,39 @@ export class SolicitacaoComponente implements OnInit {
 
     this.enviandoSolicitacao = true;
 
-    this.solicitacaoService
-      .criar(request)
-      .pipe(timeout(10000))
-      .subscribe({
-        next: (resposta) => {
-          const novaSolicitacao = this.converterSolicitacao(resposta);
+   this.solicitacaoService
+    .criar(request,this.anexoSelecionado)
+    .pipe(timeout(10000))
+    .subscribe({
+      next: (resposta) => {
+        const novaSolicitacao = this.converterSolicitacao(resposta);
 
-          this.historico = [
-            novaSolicitacao,
-            ...this.historico.filter((item) => item.id !== novaSolicitacao.id),
-          ];
+        this.historico = [
+          novaSolicitacao,
+          ...this.historico.filter((item) => item.id !== novaSolicitacao.id),
+        ];
 
-          this.mensagemSucesso = `${resposta.protocolo} foi enviada para análise do RH.`;
-          this.enviandoSolicitacao = false;
+        this.mensagemSucesso = `${resposta.protocolo} foi enviada para análise do RH.`;
+        this.enviandoSolicitacao = false;
 
-          this.formulario = this.criarFormularioInicial();
-          form.resetForm(this.formulario);
-          this.limparInputAnexo();
+        this.formulario = this.criarFormularioInicial();
+        form.resetForm(this.formulario);
+        this.limparInputAnexo();
 
-          this.cdr.detectChanges();
-        },
-        error: (erro: unknown) => {
-          console.error('Erro ao criar solicitação:', erro);
+        this.cdr.detectChanges();
+      },
+      error: (erro: unknown) => {
+        console.error('Erro ao criar solicitação:', erro);
 
-          this.erroEnvio = this.obterMensagemErro(
-            erro,
-            'Não foi possível enviar a solicitação.'
-          );
+        this.erroEnvio = this.obterMensagemErro(
+          erro,
+          'Não foi possível enviar a solicitação.'
+        );
 
-          this.enviandoSolicitacao = false;
-          this.cdr.detectChanges();
-        },
-      });
+        this.enviandoSolicitacao = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   limparFormulario(form?: NgForm): void {
@@ -441,12 +492,12 @@ export class SolicitacaoComponente implements OnInit {
       request.saidaSolicitada = this.valorOuUndefined(
         this.formulario.saidaSolicitada
       );
-      request.nomeAnexo = this.valorOuUndefined(this.formulario.anexo);
+      
     }
 
     if (this.ehJustificativaFalta) {
       request.dataReferencia = this.formulario.dataRelacionada;
-      request.nomeAnexo = this.valorOuUndefined(this.formulario.anexo);
+      
     }
 
     if (this.ehSolicitacaoFerias) {
@@ -647,8 +698,13 @@ export class SolicitacaoComponente implements OnInit {
   }
 
   private limparInputAnexo(): void {
+    this.anexoSelecionado = null;
+    this.formulario.anexo = '';
+
     if (this.inputAnexo) {
-      this.inputAnexo.nativeElement.value = '';
+      this.inputAnexo
+        .nativeElement
+        .value = '';
     }
   }
 

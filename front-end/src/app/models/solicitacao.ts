@@ -23,7 +23,7 @@ export interface SolicitacaoCreateRequest {
   novoValor?: string;
 
   justificativa: string;
-  nomeAnexo?: string;
+  
 }
 
 export interface SolicitacaoResponse {
@@ -57,6 +57,10 @@ export interface SolicitacaoResponse {
 
   justificativa: string;
   nomeAnexo: string | null;
+
+  anexoContentType: string | null;
+  anexoTamanho: number | null;
+  possuiAnexo: boolean;
 
   observacaoAnalise: string | null;
 

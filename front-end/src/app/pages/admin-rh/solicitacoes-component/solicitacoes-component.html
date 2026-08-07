@@ -800,8 +800,8 @@
 
       <!-- Anexo -->
       <div
-        *ngIf="item.anexo"
-        class="anexo-box d-flex align-items-center justify-content-between gap-3 mb-4"
+        *ngIf="item.possuiAnexo"
+        class="anexo-box d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4"
       >
         <div class="d-flex align-items-center gap-3 min-w-0">
           <span class="anexo-icon">
@@ -810,21 +810,52 @@
 
           <div class="min-w-0">
             <small class="text-secondary d-block">
-              Documento informado
+              Documento anexado
             </small>
 
             <strong class="d-block text-truncate">
-              {{ item.anexo }}
+              {{ item.anexo || 'Documento sem nome' }}
             </strong>
+
+            <small
+              *ngIf="item.anexoContentType"
+              class="text-secondary d-block"
+            >
+              {{ item.anexoContentType }}
+            </small>
           </div>
         </div>
 
-        <span
-          class="badge text-bg-secondary"
-          title="O sistema armazena somente o nome do arquivo nesta versão"
-        >
-          Sem upload
-        </span>
+        <div class="d-flex flex-column flex-sm-row gap-2 flex-shrink-0">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-primary fw-semibold"
+            [disabled]="processandoAnalise"
+            (click)="visualizarAnexo(item)"
+          >
+            <i class="bi bi-eye me-2"></i>
+            Visualizar
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-sm btn-primary fw-semibold"
+            [disabled]="processandoAnalise"
+            (click)="baixarAnexo(item)"
+          >
+            <i class="bi bi-download me-2"></i>
+            Baixar
+          </button>
+        </div>
+      </div>
+
+      <div
+        *ngIf="!item.possuiAnexo"
+        class="alert alert-light border d-flex align-items-center gap-2 mb-4"
+        role="status"
+      >
+        <i class="bi bi-paperclip"></i>
+        <span>Esta solicitação não possui documento anexado.</span>
       </div>
 
       <!-- Formulário de análise -->

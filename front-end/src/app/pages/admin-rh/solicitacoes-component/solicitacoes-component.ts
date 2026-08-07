@@ -52,6 +52,9 @@ interface SolicitacaoGestao {
   descricao: string;
   status: StatusSolicitacao;
   anexo?: string;
+  possuiAnexo: boolean;
+  anexoContentType?: string;
+  anexoTamanho?: number;
   horarioSolicitado?: string;
   observacaoAnalise?: string;
   analisadoPor?: string;
@@ -506,6 +509,141 @@ export class SolicitacoesComponent
     return item.id;
   }
 
+  visualizarAnexo(
+    solicitacao: SolicitacaoGestao
+  ): void {
+
+    if (!solicitacao.possuiAnexo) {
+      return;
+    }
+
+    const janela =
+      window.open(
+        '',
+        '_blank'
+      );
+
+    this.solicitacaoService
+      .visualizarAnexo(
+        solicitacao.id
+      )
+      .subscribe({
+        next: (arquivo) => {
+
+          const url =
+            URL.createObjectURL(
+              arquivo
+            );
+
+          if (janela) {
+            janela.location.href =
+              url;
+          } else {
+            window.open(
+              url,
+              '_blank'
+            );
+          }
+
+          setTimeout(
+            () =>
+              URL.revokeObjectURL(
+                url
+              ),
+            60000
+          );
+        },
+
+        error: (
+          erro: HttpErrorResponse
+        ) => {
+
+          if (janela) {
+            janela.close();
+          }
+
+          console.error(
+            'Erro ao visualizar anexo:',
+            erro
+          );
+
+          this.erroAnalise =
+            this.obterMensagemErro(
+              erro,
+              'Não foi possível visualizar o documento.'
+            );
+
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  baixarAnexo(
+    solicitacao: SolicitacaoGestao
+  ): void {
+
+    if (!solicitacao.possuiAnexo) {
+      return;
+    }
+
+    this.solicitacaoService
+      .baixarAnexo(
+        solicitacao.id
+      )
+      .subscribe({
+        next: (arquivo) => {
+
+          const url =
+            URL.createObjectURL(
+              arquivo
+            );
+
+          const link =
+            document.createElement(
+              'a'
+            );
+
+          link.href = url;
+
+          link.download =
+            solicitacao.anexo
+            || `anexo-${solicitacao.id}`;
+
+          document.body.appendChild(
+            link
+          );
+
+          link.click();
+
+          document.body.removeChild(
+            link
+          );
+
+          URL.revokeObjectURL(
+            url
+          );
+        },
+
+        error: (
+          erro: HttpErrorResponse
+        ) => {
+
+          console.error(
+            'Erro ao baixar anexo:',
+            erro
+          );
+
+          this.erroAnalise =
+            this.obterMensagemErro(
+              erro,
+              'Não foi possível baixar o documento.'
+            );
+
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
   private finalizarAnalise(
     resposta: SolicitacaoResponse,
     acao: 'aprovada' | 'rejeitada'
@@ -590,6 +728,17 @@ export class SolicitacoesComponent
 
       anexo:
         solicitacao.nomeAnexo
+        || undefined,
+
+      possuiAnexo:
+        solicitacao.possuiAnexo,
+
+      anexoContentType:
+        solicitacao.anexoContentType
+        || undefined,
+
+      anexoTamanho:
+        solicitacao.anexoTamanho
         || undefined,
 
       horarioSolicitado:

@@ -2,16 +2,10 @@
   <!-- Tipos de solicitação -->
   <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3" *ngFor="let tipo of tipos">
-      <button
-        type="button"
-        class="card solicitacao-tipo-card border-0 shadow-sm h-100 w-100 text-start"
-        [ngClass]="'solicitacao-tipo-' + tipo.tipo"
-        (click)="selecionarTipo(tipo.titulo)"
-      >
+      <button type="button" class="card solicitacao-tipo-card border-0 shadow-sm h-100 w-100 text-start"
+        [ngClass]="'solicitacao-tipo-' + tipo.tipo" (click)="selecionarTipo(tipo.titulo)">
         <span class="card-body p-4 d-block">
-          <span
-            class="solicitacao-tipo-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3"
-          >
+          <span class="solicitacao-tipo-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
             <i class="bi" [ngClass]="tipo.icone"></i>
           </span>
 
@@ -30,10 +24,7 @@
   <div class="row g-4 mb-4">
     <!-- Formulário -->
     <div class="col-12 col-xl-8">
-      <div
-        id="formulario-solicitacao"
-        class="card solicitacao-card border-0 shadow-sm h-100 scroll-anchor"
-      >
+      <div id="formulario-solicitacao" class="card solicitacao-card border-0 shadow-sm h-100 scroll-anchor">
         <div class="card-body p-4">
           <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
             <div>
@@ -46,14 +37,9 @@
             <span class="badge text-bg-light border">Protocolo automático</span>
           </div>
 
-          <div
-            *ngIf="mensagemSucesso"
-            class="solicitacao-feedback d-flex align-items-start gap-3 mb-4"
-            role="status"
-          >
+          <div *ngIf="mensagemSucesso" class="solicitacao-feedback d-flex align-items-start gap-3 mb-4" role="status">
             <span
-              class="solicitacao-feedback-icon d-inline-flex align-items-center justify-content-center rounded-circle"
-            >
+              class="solicitacao-feedback-icon d-inline-flex align-items-center justify-content-center rounded-circle">
               <i class="bi bi-check-lg"></i>
             </span>
 
@@ -68,25 +54,15 @@
             {{ erroEnvio }}
           </div>
 
-          <form
-            #formSolicitacao="ngForm"
-            class="row g-3"
-            (ngSubmit)="criarSolicitacao(formSolicitacao)"
-          >
+          <form #formSolicitacao="ngForm" class="row g-3" (ngSubmit)="criarSolicitacao(formSolicitacao)">
             <div class="col-12 col-md-8">
               <label for="tipoSolicitacao" class="form-label fw-semibold">
                 Tipo de solicitação
               </label>
 
-              <select
-                id="tipoSolicitacao"
-                name="tipoSolicitacao"
-                class="form-select form-select-lg"
-                [(ngModel)]="formulario.tipo"
-                (ngModelChange)="alterarTipo($event)"
-                [disabled]="enviandoSolicitacao"
-                required
-              >
+              <select id="tipoSolicitacao" name="tipoSolicitacao" class="form-select form-select-lg"
+                [(ngModel)]="formulario.tipo" (ngModelChange)="alterarTipo($event)" [disabled]="enviandoSolicitacao"
+                required>
                 <option *ngFor="let tipo of tipos" [ngValue]="tipo.titulo">
                   {{ tipo.titulo }}
                 </option>
@@ -98,14 +74,8 @@
                 Prioridade
               </label>
 
-              <select
-                id="prioridade"
-                name="prioridade"
-                class="form-select form-select-lg"
-                [(ngModel)]="formulario.prioridade"
-                [disabled]="enviandoSolicitacao"
-                required
-              >
+              <select id="prioridade" name="prioridade" class="form-select form-select-lg"
+                [(ngModel)]="formulario.prioridade" [disabled]="enviandoSolicitacao" required>
                 <option value="Normal">Normal</option>
                 <option value="Alta">Alta</option>
               </select>
@@ -125,16 +95,8 @@
                   Data do registro
                 </label>
 
-                <input
-                  id="dataCorrecaoPonto"
-                  name="dataCorrecaoPonto"
-                  type="date"
-                  class="form-control form-control-lg"
-                  [(ngModel)]="formulario.dataRelacionada"
-                  [max]="dataHoje"
-                  [disabled]="enviandoSolicitacao"
-                  required
-                />
+                <input id="dataCorrecaoPonto" name="dataCorrecaoPonto" type="date" class="form-control form-control-lg"
+                  [(ngModel)]="formulario.dataRelacionada" [max]="dataHoje" [disabled]="enviandoSolicitacao" required />
               </div>
 
               <div class="col-12 col-md-6">
@@ -142,14 +104,8 @@
                   Entrada
                 </label>
 
-                <input
-                  id="entradaSolicitada"
-                  name="entradaSolicitada"
-                  type="time"
-                  class="form-control form-control-lg"
-                  [(ngModel)]="formulario.entradaSolicitada"
-                  [disabled]="enviandoSolicitacao"
-                />
+                <input id="entradaSolicitada" name="entradaSolicitada" type="time" class="form-control form-control-lg"
+                  [(ngModel)]="formulario.entradaSolicitada" [disabled]="enviandoSolicitacao" />
               </div>
 
               <div class="col-12 col-md-4">
@@ -157,14 +113,9 @@
                   Início do intervalo
                 </label>
 
-                <input
-                  id="inicioIntervaloSolicitado"
-                  name="inicioIntervaloSolicitado"
-                  type="time"
-                  class="form-control form-control-lg"
-                  [(ngModel)]="formulario.inicioIntervaloSolicitado"
-                  [disabled]="enviandoSolicitacao"
-                />
+                <input id="inicioIntervaloSolicitado" name="inicioIntervaloSolicitado" type="time"
+                  class="form-control form-control-lg" [(ngModel)]="formulario.inicioIntervaloSolicitado"
+                  [disabled]="enviandoSolicitacao" />
               </div>
 
               <div class="col-12 col-md-4">
@@ -172,14 +123,9 @@
                   Fim do intervalo
                 </label>
 
-                <input
-                  id="fimIntervaloSolicitado"
-                  name="fimIntervaloSolicitado"
-                  type="time"
-                  class="form-control form-control-lg"
-                  [(ngModel)]="formulario.fimIntervaloSolicitado"
-                  [disabled]="enviandoSolicitacao"
-                />
+                <input id="fimIntervaloSolicitado" name="fimIntervaloSolicitado" type="time"
+                  class="form-control form-control-lg" [(ngModel)]="formulario.fimIntervaloSolicitado"
+                  [disabled]="enviandoSolicitacao" />
               </div>
 
               <div class="col-12 col-md-4">
@@ -187,14 +133,8 @@
                   Saída
                 </label>
 
-                <input
-                  id="saidaSolicitada"
-                  name="saidaSolicitada"
-                  type="time"
-                  class="form-control form-control-lg"
-                  [(ngModel)]="formulario.saidaSolicitada"
-                  [disabled]="enviandoSolicitacao"
-                />
+                <input id="saidaSolicitada" name="saidaSolicitada" type="time" class="form-control form-control-lg"
+                  [(ngModel)]="formulario.saidaSolicitada" [disabled]="enviandoSolicitacao" />
               </div>
             </ng-container>
 
@@ -205,16 +145,8 @@
                   Data da falta ou pendência
                 </label>
 
-                <input
-                  id="dataFalta"
-                  name="dataFalta"
-                  type="date"
-                  class="form-control form-control-lg"
-                  [(ngModel)]="formulario.dataRelacionada"
-                  [max]="dataHoje"
-                  [disabled]="enviandoSolicitacao"
-                  required
-                />
+                <input id="dataFalta" name="dataFalta" type="date" class="form-control form-control-lg"
+                  [(ngModel)]="formulario.dataRelacionada" [max]="dataHoje" [disabled]="enviandoSolicitacao" required />
               </div>
 
               <div class="col-12 col-md-6 d-flex align-items-end">
@@ -232,16 +164,8 @@
                   Início das férias
                 </label>
 
-                <input
-                  id="dataInicioFerias"
-                  name="dataInicioFerias"
-                  type="date"
-                  class="form-control form-control-lg"
-                  [(ngModel)]="formulario.dataInicio"
-                  [min]="dataHoje"
-                  [disabled]="enviandoSolicitacao"
-                  required
-                />
+                <input id="dataInicioFerias" name="dataInicioFerias" type="date" class="form-control form-control-lg"
+                  [(ngModel)]="formulario.dataInicio" [min]="dataHoje" [disabled]="enviandoSolicitacao" required />
               </div>
 
               <div class="col-12 col-md-6">
@@ -249,16 +173,9 @@
                   Fim das férias
                 </label>
 
-                <input
-                  id="dataFimFerias"
-                  name="dataFimFerias"
-                  type="date"
-                  class="form-control form-control-lg"
-                  [(ngModel)]="formulario.dataFim"
-                  [min]="formulario.dataInicio || dataHoje"
-                  [disabled]="enviandoSolicitacao"
-                  required
-                />
+                <input id="dataFimFerias" name="dataFimFerias" type="date" class="form-control form-control-lg"
+                  [(ngModel)]="formulario.dataFim" [min]="formulario.dataInicio || dataHoje"
+                  [disabled]="enviandoSolicitacao" required />
               </div>
             </ng-container>
 
@@ -269,14 +186,8 @@
                   Campo que será alterado
                 </label>
 
-                <select
-                  id="campoCadastro"
-                  name="campoCadastro"
-                  class="form-select form-select-lg"
-                  [(ngModel)]="formulario.campoCadastro"
-                  [disabled]="enviandoSolicitacao"
-                  required
-                >
+                <select id="campoCadastro" name="campoCadastro" class="form-select form-select-lg"
+                  [(ngModel)]="formulario.campoCadastro" [disabled]="enviandoSolicitacao" required>
                   <option value="" disabled>Selecione o campo</option>
                   <option *ngFor="let campo of camposCadastro" [value]="campo.valor">
                     {{ campo.label }}
@@ -289,17 +200,9 @@
                   Novo valor
                 </label>
 
-                <input
-                  id="novoValor"
-                  name="novoValor"
-                  [type]="tipoInputNovoValor"
-                  class="form-control form-control-lg"
-                  [placeholder]="placeholderNovoValor"
-                  [(ngModel)]="formulario.novoValor"
-                  [disabled]="enviandoSolicitacao"
-                  maxlength="255"
-                  required
-                />
+                <input id="novoValor" name="novoValor" [type]="tipoInputNovoValor" class="form-control form-control-lg"
+                  [placeholder]="placeholderNovoValor" [(ngModel)]="formulario.novoValor"
+                  [disabled]="enviandoSolicitacao" maxlength="255" required />
               </div>
             </ng-container>
 
@@ -309,25 +212,13 @@
                 Justificativa da solicitação
               </label>
 
-              <textarea
-                id="descricao"
-                name="descricao"
-                class="form-control"
-                rows="5"
-                minlength="10"
-                maxlength="2000"
-                required
-                [(ngModel)]="formulario.descricao"
-                [disabled]="enviandoSolicitacao"
+              <textarea id="descricao" name="descricao" class="form-control" rows="5" minlength="10" maxlength="2000"
+                required [(ngModel)]="formulario.descricao" [disabled]="enviandoSolicitacao"
                 placeholder="Explique o ocorrido e forneça informações suficientes para a análise."
-                #descricao="ngModel"
-              ></textarea>
+                #descricao="ngModel"></textarea>
 
               <div class="d-flex justify-content-between mt-1">
-                <small
-                  *ngIf="descricao.invalid && descricao.touched"
-                  class="text-danger"
-                >
+                <small *ngIf="descricao.invalid && descricao.touched" class="text-danger">
                   Informe uma justificativa com pelo menos 10 caracteres.
                 </small>
 
@@ -343,41 +234,37 @@
                 Anexo opcional
               </label>
 
-              <input
-                #inputAnexo
-                id="anexo"
-                name="anexo"
-                type="file"
-                class="form-control"
-                [disabled]="enviandoSolicitacao"
-                (change)="selecionarAnexo($event)"
-              />
+              <input #inputAnexo id="anexo" name="anexo" type="file" class="form-control"
+                accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" [disabled]="enviandoSolicitacao"
+                (change)="selecionarAnexo($event)" />
 
               <div class="form-text">
-                Nesta versão, o sistema registra apenas o nome do arquivo, sem realizar upload.
+                PDF, JPG ou PNG, com no máximo 5 MB.
+              </div>
+
+              <div *ngIf="anexoSelecionado" class="alert alert-success d-flex align-items-center gap-2 mt-2 mb-0 py-2">
+                <i class="bi bi-paperclip"></i>
+
+                <span>
+                  {{ anexoSelecionado.name }}
+                </span>
+
+                <small class="ms-auto">
+                  {{(anexoSelecionado.size /1024 /1024).toFixed(2)}}MB
+                </small>
               </div>
             </div>
 
             <div class="col-12 d-flex flex-column flex-sm-row justify-content-end gap-2 pt-2">
-              <button
-                type="button"
-                class="btn btn-outline-secondary btn-lg"
-                [disabled]="enviandoSolicitacao"
-                (click)="limparFormulario(formSolicitacao)"
-              >
+              <button type="button" class="btn btn-outline-secondary btn-lg" [disabled]="enviandoSolicitacao"
+                (click)="limparFormulario(formSolicitacao)">
                 Limpar
               </button>
 
-              <button
-                type="submit"
-                class="btn btn-primary btn-lg"
-                [disabled]="formSolicitacao.invalid || enviandoSolicitacao"
-              >
-                <span
-                  *ngIf="enviandoSolicitacao"
-                  class="spinner-border spinner-border-sm me-2"
-                  aria-hidden="true"
-                ></span>
+              <button type="submit" class="btn btn-primary btn-lg"
+                [disabled]="formSolicitacao.invalid || enviandoSolicitacao">
+                <span *ngIf="enviandoSolicitacao" class="spinner-border spinner-border-sm me-2"
+                  aria-hidden="true"></span>
 
                 <i *ngIf="!enviandoSolicitacao" class="bi bi-send me-2"></i>
 
@@ -401,8 +288,7 @@
           <div class="vstack gap-3 mb-4">
             <div class="solicitacao-regra d-flex gap-3" *ngFor="let regra of regras">
               <span
-                class="solicitacao-regra-icon d-inline-flex align-items-center justify-content-center rounded-circle"
-              >
+                class="solicitacao-regra-icon d-inline-flex align-items-center justify-content-center rounded-circle">
                 <i class="bi bi-check2"></i>
               </span>
 
@@ -411,9 +297,7 @@
           </div>
 
           <div class="solicitacao-ajuda d-flex gap-3">
-            <span
-              class="solicitacao-ajuda-icon d-inline-flex align-items-center justify-content-center rounded-4"
-            >
+            <span class="solicitacao-ajuda-icon d-inline-flex align-items-center justify-content-center rounded-4">
               <i class="bi bi-chat-dots"></i>
             </span>
 
@@ -430,10 +314,7 @@
   </div>
 
   <!-- Histórico -->
-  <div
-    id="historico-solicitacoes"
-    class="card solicitacao-card border-0 shadow-sm scroll-anchor"
-  >
+  <div id="historico-solicitacoes" class="card solicitacao-card border-0 shadow-sm scroll-anchor">
     <div class="card-body p-4">
       <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-4">
         <div>
@@ -454,21 +335,14 @@
         <p class="text-secondary mt-3 mb-0">Carregando solicitações...</p>
       </div>
 
-      <div
-        *ngIf="erroHistorico && !carregandoHistorico"
-        class="alert alert-danger d-flex flex-column flex-sm-row justify-content-between gap-3"
-        role="alert"
-      >
+      <div *ngIf="erroHistorico && !carregandoHistorico"
+        class="alert alert-danger d-flex flex-column flex-sm-row justify-content-between gap-3" role="alert">
         <span>
           <i class="bi bi-exclamation-triangle-fill me-2"></i>
           {{ erroHistorico }}
         </span>
 
-        <button
-          type="button"
-          class="btn btn-sm btn-outline-danger"
-          (click)="carregarHistorico()"
-        >
+        <button type="button" class="btn btn-sm btn-outline-danger" (click)="carregarHistorico()">
           Tentar novamente
         </button>
       </div>
@@ -499,12 +373,8 @@
                   </span>
                 </td>
                 <td class="text-end">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-primary"
-                    [attr.aria-label]="'Ver detalhes de ' + item.codigo"
-                    (click)="abrirDetalhes(item)"
-                  >
+                  <button type="button" class="btn btn-sm btn-outline-primary"
+                    [attr.aria-label]="'Ver detalhes de ' + item.codigo" (click)="abrirDetalhes(item)">
                     <i class="bi bi-eye"></i>
                   </button>
                 </td>
@@ -542,12 +412,7 @@
             <h2 class="modal-title h4 fw-bold">{{ item.tipo }}</h2>
           </div>
 
-          <button
-            type="button"
-            class="btn-close"
-            aria-label="Fechar"
-            (click)="fecharDetalhes()"
-          ></button>
+          <button type="button" class="btn-close" aria-label="Fechar" (click)="fecharDetalhes()"></button>
         </div>
 
         <div class="modal-body p-4">
@@ -592,11 +457,8 @@
             </p>
           </div>
 
-          <div
-            *ngIf="item.status !== 'Pendente'"
-            class="alert mb-0"
-            [ngClass]="item.status === 'Aprovada' ? 'alert-success' : 'alert-danger'"
-          >
+          <div *ngIf="item.status !== 'Pendente'" class="alert mb-0"
+            [ngClass]="item.status === 'Aprovada' ? 'alert-success' : 'alert-danger'">
             <strong class="d-block mb-1">Parecer do RH</strong>
             <p class="mb-2">
               {{ item.observacaoAnalise || 'Nenhuma observação foi registrada.' }}
