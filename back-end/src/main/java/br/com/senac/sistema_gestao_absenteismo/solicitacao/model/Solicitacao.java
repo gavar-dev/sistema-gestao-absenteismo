@@ -39,19 +39,10 @@ public class Solicitacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*
-     * Funcionário que criou a solicitação.
-     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "funcionario_id", nullable = false)
     private Funcionario funcionario;
 
-    /*
-     * Registro de ponto relacionado à solicitação.
-     *
-     * Pode ser nulo, pois pode ainda não existir registro para
-     * a data informada.
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registro_ponto_id")
     private RegistroPonto registroPonto;
@@ -68,23 +59,12 @@ public class Solicitacao {
     @Column(nullable = false, length = 20)
     private PrioridadeSolicitacao prioridade;
 
-    /*
-     * Data relacionada à correção de ponto, falta
-     * ou correção cadastral.
-     */
     private LocalDate dataReferencia;
 
-    /*
-     * Campos utilizados por solicitações de férias.
-     */
     private LocalDate dataInicio;
 
     private LocalDate dataFim;
 
-    /*
-     * Horários sugeridos pelo funcionário para uma
-     * correção de ponto.
-     */
     private LocalTime entradaSolicitada;
 
     private LocalTime inicioIntervaloSolicitado;
@@ -93,13 +73,6 @@ public class Solicitacao {
 
     private LocalTime saidaSolicitada;
 
-    /*
-     * Campos utilizados por correção cadastral.
-     *
-     * Exemplo:
-     * campoCadastro = "telefone"
-     * novoValor = "(21) 99999-9999"
-     */
     @Column(length = 80)
     private String campoCadastro;
 
@@ -110,18 +83,29 @@ public class Solicitacao {
     private String justificativa;
 
     /*
-     * Nesta versão guardaremos somente o nome do arquivo.
-     * Não haverá upload real de anexos.
+     * Metadados do anexo.
+     *
+     * O conteúdo do arquivo fica no sistema de arquivos.
+     * O banco guarda apenas os metadados necessários para
+     * localizar e devolver o arquivo.
      */
     @Column(length = 255)
     private String nomeAnexo;
 
+    @Column(length = 255)
+    private String anexoNomeArmazenado;
+
+    @Column(length = 100)
+    private String anexoContentType;
+
+    private Long anexoTamanho;
+
+    @Column(length = 500)
+    private String anexoCaminhoRelativo;
+
     @Column(columnDefinition = "TEXT")
     private String observacaoAnalise;
 
-    /*
-     * RH responsável pela aprovação ou rejeição.
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analisado_por_id")
     private Funcionario analisadoPor;

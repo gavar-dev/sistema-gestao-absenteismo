@@ -2,7 +2,6 @@ package br.com.senac.sistema_gestao_absenteismo.funcionario.controller;
 
 import br.com.senac.sistema_gestao_absenteismo.arquivo.dto.ArquivoDownload;
 import br.com.senac.sistema_gestao_absenteismo.arquivo.service.FuncionarioArquivoService;
-import br.com.senac.sistema_gestao_absenteismo.funcionario.documento.dto.FuncionarioDocumentoResponse;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioCreateRequest;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioResponse;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioStatusRequest;
@@ -42,35 +41,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FuncionarioController {
 
-    private final FuncionarioService funcionarioService;
-    private final FuncionarioArquivoService funcionarioArquivoService;
+    private final FuncionarioService
+            funcionarioService;
+
+    private final FuncionarioArquivoService
+            funcionarioArquivoService;
 
     @PostMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE
+            consumes =
+                    MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<FuncionarioResponse> criar(
-            @Valid
-            @RequestBody
-            FuncionarioCreateRequest request
-    ) {
+    public ResponseEntity<FuncionarioResponse>
+            criar(
+                    @Valid
+                    @RequestBody
+                    FuncionarioCreateRequest request
+            ) {
         FuncionarioResponse funcionario =
-                funcionarioService.criar(request);
+                funcionarioService.criar(
+                        request
+                );
 
-        return ResponseEntity
-                .created(
-                        URI.create(
-                                "/api/funcionarios/"
-                                        + funcionario.id()
-                        )
-                )
-                .body(funcionario);
+        return respostaCriacao(
+                funcionario
+        );
     }
 
     @PostMapping(
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+            consumes =
+                    MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<FuncionarioResponse>
-            criarComArquivos(
+            criarComFoto(
                     @Valid
                     @RequestPart("dados")
                     FuncionarioCreateRequest request,
@@ -79,31 +81,17 @@ public class FuncionarioController {
                             value = "foto",
                             required = false
                     )
-                    MultipartFile foto,
-
-                    @RequestPart(
-                            value = "documentos",
-                            required = false
-                    )
-                    List<MultipartFile> documentos
+                    MultipartFile foto
             ) {
         FuncionarioResponse funcionario =
                 funcionarioService.criar(
                         request,
-                        foto,
-                        documentos == null
-                                ? List.of()
-                                : documentos
+                        foto
                 );
 
-        return ResponseEntity
-                .created(
-                        URI.create(
-                                "/api/funcionarios/"
-                                        + funcionario.id()
-                        )
-                )
-                .body(funcionario);
+        return respostaCriacao(
+                funcionario
+        );
     }
 
     @GetMapping
@@ -114,9 +102,10 @@ public class FuncionarioController {
         StatusFuncionario statusConvertido =
                 status == null
                         ? null
-                        : StatusFuncionario.fromValue(
-                                status
-                        );
+                        : StatusFuncionario
+                                .fromValue(
+                                        status
+                                );
 
         return funcionarioService.listar(
                 statusConvertido
@@ -124,12 +113,15 @@ public class FuncionarioController {
     }
 
     @GetMapping("/me")
-    public FuncionarioResponse buscarUsuarioLogado(
-            @AuthenticationPrincipal
-            Jwt jwt
-    ) {
+    public FuncionarioResponse
+            buscarUsuarioLogado(
+                    @AuthenticationPrincipal
+                    Jwt jwt
+            ) {
         Long funcionarioId =
-                extrairFuncionarioId(jwt);
+                extrairFuncionarioId(
+                        jwt
+                );
 
         return funcionarioService.buscarPorId(
                 funcionarioId
@@ -141,74 +133,27 @@ public class FuncionarioController {
             @PathVariable
             Long id
     ) {
-        return funcionarioService.buscarPorId(id);
+        return funcionarioService
+                .buscarPorId(
+                        id
+                );
     }
 
     @GetMapping("/{id}/foto")
-    public ResponseEntity<Resource> carregarFoto(
-            @PathVariable
-            Long id
-    ) {
-        ArquivoDownload arquivo =
-                funcionarioArquivoService
-                        .carregarFoto(id);
-
-        return montarRespostaArquivo(
-                arquivo,
-                false
-        );
-    }
-
-    @GetMapping("/{id}/documentos")
-    public List<FuncionarioDocumentoResponse>
-            listarDocumentos(
+    public ResponseEntity<Resource>
+            carregarFoto(
                     @PathVariable
                     Long id
             ) {
-        return funcionarioArquivoService
-                .listarDocumentos(id);
-    }
-
-    @GetMapping(
-            "/{id}/documentos/{documentoId}"
-    )
-    public ResponseEntity<Resource>
-            carregarDocumento(
-                    @PathVariable
-                    Long id,
-
-                    @PathVariable
-                    Long documentoId
-            ) {
         ArquivoDownload arquivo =
                 funcionarioArquivoService
-                        .carregarDocumento(
-                                id,
-                                documentoId
+                        .carregarFoto(
+                                id
                         );
 
-        return montarRespostaArquivo(
-                arquivo,
-                true
+        return montarRespostaFoto(
+                arquivo
         );
-    }
-
-    @DeleteMapping(
-            "/{id}/documentos/{documentoId}"
-    )
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluirDocumento(
-            @PathVariable
-            Long id,
-
-            @PathVariable
-            Long documentoId
-    ) {
-        funcionarioArquivoService
-                .excluirDocumento(
-                        id,
-                        documentoId
-                );
     }
 
     @PutMapping("/{id}")
@@ -220,10 +165,11 @@ public class FuncionarioController {
             @RequestBody
             FuncionarioUpdateRequest request
     ) {
-        return funcionarioService.atualizar(
-                id,
-                request
-        );
+        return funcionarioService
+                .atualizar(
+                        id,
+                        request
+                );
     }
 
     @PatchMapping("/{id}/status")
@@ -235,10 +181,11 @@ public class FuncionarioController {
             @RequestBody
             FuncionarioStatusRequest request
     ) {
-        return funcionarioService.alterarStatus(
-                id,
-                request.status()
-        );
+        return funcionarioService
+                .alterarStatus(
+                        id,
+                        request.status()
+                );
     }
 
     @DeleteMapping("/{id}")
@@ -247,13 +194,30 @@ public class FuncionarioController {
             @PathVariable
             Long id
     ) {
-        funcionarioService.desativar(id);
+        funcionarioService.desativar(
+                id
+        );
+    }
+
+    private ResponseEntity<FuncionarioResponse>
+            respostaCriacao(
+                    FuncionarioResponse funcionario
+            ) {
+        return ResponseEntity
+                .created(
+                        URI.create(
+                                "/api/funcionarios/"
+                                        + funcionario.id()
+                        )
+                )
+                .body(
+                        funcionario
+                );
     }
 
     private ResponseEntity<Resource>
-            montarRespostaArquivo(
-                    ArquivoDownload arquivo,
-                    boolean baixar
+            montarRespostaFoto(
+                    ArquivoDownload arquivo
             ) {
         MediaType mediaType =
                 MediaType.parseMediaType(
@@ -261,29 +225,24 @@ public class FuncionarioController {
                 );
 
         ContentDisposition disposicao =
-                baixar
-                        ? ContentDisposition
-                                .attachment()
-                                .filename(
-                                        arquivo.nomeOriginal(),
-                                        StandardCharsets.UTF_8
-                                )
-                                .build()
-                        : ContentDisposition
-                                .inline()
-                                .filename(
-                                        arquivo.nomeOriginal(),
-                                        StandardCharsets.UTF_8
-                                )
-                                .build();
+                ContentDisposition
+                        .inline()
+                        .filename(
+                                arquivo.nomeOriginal(),
+                                StandardCharsets.UTF_8
+                        )
+                        .build();
 
         return ResponseEntity.ok()
-                .contentType(mediaType)
+                .contentType(
+                        mediaType
+                )
                 .contentLength(
                         arquivo.tamanho()
                 )
                 .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
+                        HttpHeaders
+                                .CONTENT_DISPOSITION,
                         disposicao.toString()
                 )
                 .body(
@@ -295,7 +254,9 @@ public class FuncionarioController {
             Jwt jwt
     ) {
         Object valor =
-                jwt.getClaim("funcionarioId");
+                jwt.getClaim(
+                        "funcionarioId"
+                );
 
         if (valor instanceof Number numero) {
             return numero.longValue();

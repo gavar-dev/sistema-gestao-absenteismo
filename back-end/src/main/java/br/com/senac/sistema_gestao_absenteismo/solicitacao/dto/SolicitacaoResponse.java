@@ -39,7 +39,11 @@ public record SolicitacaoResponse(
         String novoValor,
 
         String justificativa,
+
         String nomeAnexo,
+        String anexoContentType,
+        Long anexoTamanho,
+        boolean possuiAnexo,
 
         String observacaoAnalise,
 
@@ -52,23 +56,56 @@ public record SolicitacaoResponse(
 
 ) {
 
-    public static SolicitacaoResponse from(Solicitacao solicitacao) {
+    public static SolicitacaoResponse from(
+            Solicitacao solicitacao
+    ) {
+        Long registroPontoId =
+                solicitacao.getRegistroPonto() == null
+                        ? null
+                        : solicitacao
+                                .getRegistroPonto()
+                                .getId();
 
-        Long registroPontoId = solicitacao.getRegistroPonto() == null ? null : solicitacao.getRegistroPonto().getId();
+        Long analisadoPorId =
+                solicitacao.getAnalisadoPor() == null
+                        ? null
+                        : solicitacao
+                                .getAnalisadoPor()
+                                .getId();
 
-        Long analisadoPorId = solicitacao.getAnalisadoPor() == null ? null : solicitacao.getAnalisadoPor().getId();
+        String nomeAnalisadoPor =
+                solicitacao.getAnalisadoPor() == null
+                        ? null
+                        : solicitacao
+                                .getAnalisadoPor()
+                                .getNomeCompleto();
 
-        String nomeAnalisadoPor = solicitacao.getAnalisadoPor() == null ? null : solicitacao.getAnalisadoPor().getNomeCompleto();
+        boolean possuiAnexo =
+                solicitacao.getAnexoCaminhoRelativo() != null
+                        && !solicitacao
+                                .getAnexoCaminhoRelativo()
+                                .isBlank();
 
         return new SolicitacaoResponse(
                 solicitacao.getId(),
-                String.format("#SOL-%04d", solicitacao.getId()),
+                String.format(
+                        "#SOL-%04d",
+                        solicitacao.getId()
+                ),
 
                 solicitacao.getFuncionario().getId(),
-                solicitacao.getFuncionario().getNomeCompleto(),
-                solicitacao.getFuncionario().getMatricula(),
-                solicitacao.getFuncionario().getSetor(),
-                solicitacao.getFuncionario().getCargo(),
+                solicitacao
+                        .getFuncionario()
+                        .getNomeCompleto(),
+                solicitacao
+                        .getFuncionario()
+                        .getMatricula(),
+                solicitacao
+                        .getFuncionario()
+                        .getSetor(),
+                solicitacao
+                        .getFuncionario()
+                        .getCargo(),
 
                 solicitacao.getTipo(),
                 solicitacao.getStatus(),
@@ -81,15 +118,21 @@ public record SolicitacaoResponse(
                 solicitacao.getDataFim(),
 
                 solicitacao.getEntradaSolicitada(),
-                solicitacao.getInicioIntervaloSolicitado(),
-                solicitacao.getFimIntervaloSolicitado(),
+                solicitacao
+                        .getInicioIntervaloSolicitado(),
+                solicitacao
+                        .getFimIntervaloSolicitado(),
                 solicitacao.getSaidaSolicitada(),
 
                 solicitacao.getCampoCadastro(),
                 solicitacao.getNovoValor(),
 
                 solicitacao.getJustificativa(),
+
                 solicitacao.getNomeAnexo(),
+                solicitacao.getAnexoContentType(),
+                solicitacao.getAnexoTamanho(),
+                possuiAnexo,
 
                 solicitacao.getObservacaoAnalise(),
 

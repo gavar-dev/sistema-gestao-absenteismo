@@ -1,7 +1,6 @@
 package br.com.senac.sistema_gestao_absenteismo.funcionario.service;
 
 import br.com.senac.sistema_gestao_absenteismo.arquivo.service.FuncionarioArquivoService;
-// import br.com.senac.sistema_gestao_absenteismo.arquivo.service.FuncionarioArquivoService;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioCreateRequest;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioResponse;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.dto.FuncionarioUpdateRequest;
@@ -23,10 +22,14 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class FuncionarioService {
 
-    private final FuncionarioRepository funcionarioRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final FuncionarioArquivoService funcionarioArquivoService;
+    private final FuncionarioRepository
+            funcionarioRepository;
 
+    private final PasswordEncoder
+            passwordEncoder;
+
+    private final FuncionarioArquivoService
+            funcionarioArquivoService;
 
     @Transactional
     public FuncionarioResponse criar(
@@ -34,16 +37,14 @@ public class FuncionarioService {
     ) {
         return criar(
                 request,
-                null,
-                List.of()
+                null
         );
     }
 
     @Transactional
     public FuncionarioResponse criar(
             FuncionarioCreateRequest request,
-            MultipartFile foto,
-            List<MultipartFile> documentos
+            MultipartFile foto
     ) {
         String email =
                 normalizarEmail(
@@ -67,64 +68,91 @@ public class FuncionarioService {
         Funcionario funcionario =
                 Funcionario.builder()
                         .nomeCompleto(
-                                request.nomeCompleto().trim()
+                                request
+                                        .nomeCompleto()
+                                        .trim()
                         )
-                        .emailCorporativo(email)
-                        .cpf(cpf)
+                        .emailCorporativo(
+                                email
+                        )
+                        .cpf(
+                                cpf
+                        )
                         .telefone(
-                                request.telefone().trim()
+                                request
+                                        .telefone()
+                                        .trim()
                         )
                         .dataNascimento(
-                                request.dataNascimento()
+                                request
+                                        .dataNascimento()
                         )
                         .estadoCivil(
                                 limparOpcional(
-                                        request.estadoCivil()
+                                        request
+                                                .estadoCivil()
                                 )
                         )
                         .nacionalidade(
-                                request.nacionalidade().trim()
+                                request
+                                        .nacionalidade()
+                                        .trim()
                         )
                         .naturalidade(
                                 limparOpcional(
-                                        request.naturalidade()
+                                        request
+                                                .naturalidade()
                                 )
                         )
-                        .matricula(matricula)
+                        .matricula(
+                                matricula
+                        )
                         .cargo(
-                                request.cargo().trim()
+                                request
+                                        .cargo()
+                                        .trim()
                         )
                         .setor(
-                                request.setor().trim()
+                                request
+                                        .setor()
+                                        .trim()
                         )
                         .dataAdmissao(
-                                request.dataAdmissao()
+                                request
+                                        .dataAdmissao()
                         )
                         .tipoVinculo(
-                                request.tipoVinculo()
+                                request
+                                        .tipoVinculo()
                         )
                         .cargaHorariaSemanal(
-                                request.cargaHorariaSemanal()
+                                request
+                                        .cargaHorariaSemanal()
                         )
                         .gestorImediato(
                                 limparOpcional(
-                                        request.gestorImediato()
+                                        request
+                                                .gestorImediato()
                                 )
                         )
                         .localTrabalho(
                                 limparOpcional(
-                                        request.localTrabalho()
+                                        request
+                                                .localTrabalho()
                                 )
                         )
                         .tipoAcesso(
-                                request.tipoAcesso()
+                                request
+                                        .tipoAcesso()
                         )
                         .status(
-                                request.status()
+                                request
+                                        .status()
                         )
                         .senhaHash(
                                 passwordEncoder.encode(
-                                        request.senhaProvisoria()
+                                        request
+                                                .senhaProvisoria()
                                 )
                         )
                         .build();
@@ -137,13 +165,6 @@ public class FuncionarioService {
         funcionarioArquivoService.salvarFoto(
                 funcionarioSalvo,
                 foto
-        );
-
-        funcionarioArquivoService.salvarDocumentos(
-                funcionarioSalvo,
-                documentos == null
-                        ? List.of()
-                        : documentos
         );
 
         Funcionario funcionarioAtualizado =
@@ -169,8 +190,11 @@ public class FuncionarioService {
                                         status
                                 );
 
-        return funcionarios.stream()
-                .map(FuncionarioResponse::from)
+        return funcionarios
+                .stream()
+                .map(
+                        FuncionarioResponse::from
+                )
                 .toList();
     }
 
@@ -179,7 +203,9 @@ public class FuncionarioService {
             Long id
     ) {
         return FuncionarioResponse.from(
-                buscarEntidade(id)
+                buscarEntidade(
+                        id
+                )
         );
     }
 
@@ -189,7 +215,9 @@ public class FuncionarioService {
             FuncionarioUpdateRequest request
     ) {
         Funcionario funcionario =
-                buscarEntidade(id);
+                buscarEntidade(
+                        id
+                );
 
         String email =
                 normalizarEmail(
@@ -215,8 +243,13 @@ public class FuncionarioService {
                 request.nomeCompleto().trim()
         );
 
-        funcionario.setEmailCorporativo(email);
-        funcionario.setCpf(cpf);
+        funcionario.setEmailCorporativo(
+                email
+        );
+
+        funcionario.setCpf(
+                cpf
+        );
 
         funcionario.setTelefone(
                 request.telefone().trim()
@@ -242,7 +275,9 @@ public class FuncionarioService {
                 )
         );
 
-        funcionario.setMatricula(matricula);
+        funcionario.setMatricula(
+                matricula
+        );
 
         funcionario.setCargo(
                 request.cargo().trim()
@@ -261,7 +296,8 @@ public class FuncionarioService {
         );
 
         funcionario.setCargaHorariaSemanal(
-                request.cargaHorariaSemanal()
+                request
+                        .cargaHorariaSemanal()
         );
 
         funcionario.setGestorImediato(
@@ -297,9 +333,13 @@ public class FuncionarioService {
             StatusFuncionario status
     ) {
         Funcionario funcionario =
-                buscarEntidade(id);
+                buscarEntidade(
+                        id
+                );
 
-        funcionario.setStatus(status);
+        funcionario.setStatus(
+                status
+        );
 
         return FuncionarioResponse.from(
                 funcionarioRepository.save(
@@ -313,7 +353,9 @@ public class FuncionarioService {
             Long id
     ) {
         Funcionario funcionario =
-                buscarEntidade(id);
+                buscarEntidade(
+                        id
+                );
 
         funcionario.setStatus(
                 StatusFuncionario.INATIVO
@@ -328,7 +370,9 @@ public class FuncionarioService {
             Long id
     ) {
         return funcionarioRepository
-                .findById(id)
+                .findById(
+                        id
+                )
                 .orElseThrow(
                         () ->
                                 new RecursoNaoEncontradoException(
@@ -356,7 +400,9 @@ public class FuncionarioService {
 
         if (
                 funcionarioRepository
-                        .existsByCpf(cpf)
+                        .existsByCpf(
+                                cpf
+                        )
         ) {
             throw new ConflitoDeDadosException(
                     "Já existe um funcionário com este CPF"
@@ -423,7 +469,9 @@ public class FuncionarioService {
     ) {
         return email
                 .trim()
-                .toLowerCase(Locale.ROOT);
+                .toLowerCase(
+                        Locale.ROOT
+                );
     }
 
     private String somenteDigitos(

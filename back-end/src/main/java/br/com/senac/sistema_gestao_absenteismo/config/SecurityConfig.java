@@ -64,9 +64,14 @@ public class SecurityConfig {
                                 "/api/solicitacoes/**").hasRole("RH")
                                 // Usuário autenticado consulta as próprias solicitações
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/solicitacoes/minhas",
+                                HttpMethod.GET,"/api/solicitacoes/minhas",
                                 "/api/solicitacoes/minhas/**").authenticated()
+                        /*
+                        * O conteúdo dos anexos pode ser
+                        * visualizado ou baixado pelo RH.
+                        * */
+                        .requestMatchers(HttpMethod.GET,"/api/solicitacoes/*/anexo/**")
+                        .hasRole("RH")
                         // RH e gestor consultam todas as solicitações
                         .requestMatchers(
                                 HttpMethod.GET,
