@@ -1,0 +1,213 @@
+<section class="alterar-senha-page">
+  <div class="alterar-senha-bg alterar-senha-bg-one"></div>
+
+  <div class="alterar-senha-bg alterar-senha-bg-two"></div>
+
+  <div class="container py-4 py-lg-5">
+    <div class="min-vh-100 d-flex align-items-center justify-content-center">
+      <div class="card alterar-senha-card border-0 shadow-lg">
+        <div class="card-body p-4 p-md-5">
+          <a routerLink="/login" class="btn btn-sm btn-outline-secondary mb-4">
+            <i class="bi bi-arrow-left me-2"></i>
+            Voltar ao login
+          </a>
+
+          <div class="d-flex align-items-start gap-3 mb-4">
+            <span
+              class="alterar-senha-icon d-inline-flex align-items-center justify-content-center rounded-4 flex-shrink-0">
+              <i class="bi bi-key-fill"></i>
+            </span>
+
+            <div>
+              <span class="text-secondary small fw-semibold">
+                Segurança da conta
+              </span>
+
+              <h1 class="h3 fw-bold mb-2">
+                Alterar senha
+              </h1>
+
+              <p class="text-secondary mb-0">
+                Informe seu e-mail, a senha atual e
+                defina uma nova senha.
+              </p>
+            </div>
+          </div>
+
+          <div *ngIf="erro" class="alert alert-danger d-flex align-items-start gap-2" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+
+            <span>{{ erro }}</span>
+          </div>
+
+          <div *ngIf="sucesso" class="alert alert-success d-flex align-items-start gap-2" role="status">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ sucesso }}</span>
+          </div>
+
+          <form [formGroup]="formulario" (ngSubmit)="salvar()" novalidate>
+            <div class="mb-3">
+              <label for="emailAlteracao" class="form-label fw-semibold">
+                E-mail corporativo
+              </label>
+
+              <div class="input-group input-group-lg">
+                <span class="input-group-text">
+                  <i class="bi bi-envelope"></i>
+                </span>
+
+                <input id="emailAlteracao" type="email" class="form-control" [class.is-invalid]="
+                    campoInvalido('email')
+                  " placeholder="nome@empresa.com" autocomplete="email" formControlName="email" />
+
+                <div class="invalid-feedback">
+                  Informe um e-mail válido.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="senhaAtual" class="form-label fw-semibold">
+                Senha atual
+              </label>
+
+              <div class="input-group input-group-lg">
+                <span class="input-group-text">
+                  <i class="bi bi-lock"></i>
+                </span>
+
+                <input id="senhaAtual" [type]="
+                    mostrarSenhaAtual
+                      ? 'text'
+                      : 'password'
+                  " class="form-control" [class.is-invalid]="
+                    campoInvalido('senhaAtual')
+                  " autocomplete="current-password" formControlName="senhaAtual" />
+
+                <button type="button" class="btn btn-outline-secondary" (click)="alternarSenhaAtual()"
+                  aria-label="Mostrar ou ocultar senha atual">
+                  <i class="bi" [class.bi-eye]="
+                      !mostrarSenhaAtual
+                    " [class.bi-eye-slash]="
+                      mostrarSenhaAtual
+                    "></i>
+                </button>
+
+                <div class="invalid-feedback">
+                  Informe sua senha atual.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="novaSenha" class="form-label fw-semibold">
+                Nova senha
+              </label>
+
+              <div class="input-group input-group-lg">
+                <span class="input-group-text">
+                  <i class="bi bi-key"></i>
+                </span>
+
+                <input id="novaSenha" [type]="
+                    mostrarNovaSenha
+                      ? 'text'
+                      : 'password'
+                  " class="form-control" [class.is-invalid]="
+                    campoInvalido('novaSenha')
+                  " autocomplete="new-password" formControlName="novaSenha" />
+
+                <button type="button" class="btn btn-outline-secondary" (click)="alternarNovaSenha()"
+                  aria-label="Mostrar ou ocultar nova senha">
+                  <i class="bi" [class.bi-eye]="
+                      !mostrarNovaSenha
+                    " [class.bi-eye-slash]="
+                      mostrarNovaSenha
+                    "></i>
+                </button>
+
+                <div class="invalid-feedback">
+                  Use entre 8 e 72 caracteres.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex justify-content-between small mb-2">
+                <span class="text-secondary">
+                  Força da nova senha
+                </span>
+
+                <strong>
+                  {{ rotuloForcaSenha }}
+                </strong>
+              </div>
+
+              <div class="progress alterar-senha-progress" role="progressbar" aria-label="Força da nova senha"
+                [attr.aria-valuenow]="forcaSenha" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" [style.width.%]="forcaSenha"></div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="confirmarSenha" class="form-label fw-semibold">
+                Confirmar nova senha
+              </label>
+
+              <div class="input-group input-group-lg">
+                <span class="input-group-text">
+                  <i class="bi bi-shield-check"></i>
+                </span>
+
+                <input id="confirmarSenha" [type]="
+                    mostrarConfirmacao
+                      ? 'text'
+                      : 'password'
+                  " class="form-control" [class.is-invalid]="
+                    campoInvalido(
+                      'confirmarSenha'
+                    )
+                  " autocomplete="new-password" formControlName="confirmarSenha" />
+
+                <button type="button" class="btn btn-outline-secondary" (click)="alternarConfirmacao()"
+                  aria-label="Mostrar ou ocultar confirmação">
+                  <i class="bi" [class.bi-eye]="
+                      !mostrarConfirmacao
+                    " [class.bi-eye-slash]="
+                      mostrarConfirmacao
+                    "></i>
+                </button>
+
+                <div class="invalid-feedback">
+                  Confirme a nova senha.
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold" [disabled]="salvando || sucesso">
+              <span *ngIf="salvando" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+
+              <i *ngIf="!salvando" class="bi bi-shield-lock me-2"></i>
+
+              {{
+              salvando
+              ? 'Alterando...'
+              : 'Alterar senha'
+              }}
+            </button>
+          </form>
+
+          <div class="alterar-senha-info rounded-4 mt-4 p-3 d-flex gap-3">
+            <i class="bi bi-info-circle-fill text-primary"></i>
+
+            <small class="text-secondary">
+              Este processo exige a senha atual. Caso
+              você não se lembre dela, será necessário
+              entrar em contato com o RH.
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

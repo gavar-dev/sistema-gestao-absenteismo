@@ -1,12 +1,15 @@
 import {
-  Component,
+  CommonModule,
   DOCUMENT,
+} from '@angular/common';
+
+import {
+  Component,
   Inject,
   OnInit,
   signal,
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
 import {
   Router,
   RouterOutlet,
@@ -64,19 +67,28 @@ export class App implements OnInit {
   }
 
   mostrarSidebar(): boolean {
-    return !this.router.url
-      .startsWith('/login');
+    const rotaAtual =
+      this.router.url.split('?')[0];
+
+    return (
+      rotaAtual !== '/login' &&
+      rotaAtual !== '/alterar-senha'
+    );
   }
 
   mostrarSidebarFuncionario(): boolean {
-    return this.mostrarSidebar()
-      && this.usuarioLogadoService
-        .ehFuncionario();
+    return (
+      this.mostrarSidebar() &&
+      this.usuarioLogadoService
+        .ehFuncionario()
+    );
   }
 
   mostrarSidebarGestaoOuRh(): boolean {
-    return this.mostrarSidebar()
-      && this.usuarioLogadoService
-        .ehGestorOuRh();
+    return (
+      this.mostrarSidebar() &&
+      this.usuarioLogadoService
+        .ehGestorOuRh()
+    );
   }
 }

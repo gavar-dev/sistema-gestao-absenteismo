@@ -13,7 +13,10 @@ import {
   OnInit,
 } from '@angular/core';
 
-import { Router } from '@angular/router';
+import {
+  Router,
+  RouterLink,
+} from '@angular/router';
 
 import {
   EMPTY,
@@ -25,9 +28,7 @@ import {
 } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
-
 import { FuncionarioService } from '../../core/services/funcionario';
-
 import { UsuarioLogadoService } from '../../core/services/usuario-logado.service';
 
 type Tema = 'light' | 'dark';
@@ -35,11 +36,15 @@ type Tema = 'light' | 'dark';
 @Component({
   selector: 'app-login-component',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+  ],
   templateUrl: './login-component.html',
   styleUrl: './login-component.css',
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent
+  implements OnInit {
 
   senhaVisivel = false;
   temaAtual: Tema = 'light';
@@ -123,115 +128,125 @@ export class LoginComponent implements OnInit {
         senha,
       })
       .pipe(
-        /*
-         * Encerra a tentativa caso o backend
-         * não responda em até 10 segundos.
-         */
         timeout(10000),
 
-        /*
-         * Depois do login, utiliza o token
-         * para consultar o perfil completo.
-         */
-        switchMap(() =>
-          this.funcionarioService
-            .buscarMeuPerfil()
-            .pipe(
-              timeout(10000)
-            )
+        switchMap(
+          () =>
+            this.funcionarioService
+              .buscarMeuPerfil()
+              .pipe(
+                timeout(10000)
+              )
         ),
 
-        /*
-         * Trata senha errada, servidor
-         * desligado, timeout e demais erros.
-         */
-        catchError((erro: unknown) => {
-          console.error(
-            'Erro durante o login:',
-            erro
-          );
+        catchError(
+          (
+            erro: unknown
+          ) => {
+            console.error(
+              'Erro durante o login:',
+              erro
+            );
 
-          this.usuarioLogadoService
-            .limparSessao();
+            this.usuarioLogadoService
+              .limparSessao();
 
-          this.mensagemErro =
-            this.obterMensagemErro(erro);
+            this.mensagemErro =
+              this.obterMensagemErro(
+                erro
+              );
 
-          return EMPTY;
-        }),
+            return EMPTY;
+          }
+        ),
 
-        /*
-         * Sempre desativa o carregamento,
-         * tanto no sucesso quanto no erro.
-         */
-        finalize(() => {
-          this.carregando = false;
-        })
+        finalize(
+          () => {
+            this.carregando = false;
+          }
+        )
       )
-      .subscribe((perfil) => {
-        this.usuarioLogadoService
-          .definirUsuarioLogado({
-            id: perfil.id,
-            nome: perfil.nomeCompleto,
-            email: perfil.emailCorporativo,
-            matricula: perfil.matricula,
-            cargo: perfil.cargo,
-            setor: perfil.setor,
-            iniciais: this.gerarIniciais(
-              perfil.nomeCompleto
-            ),
-            tipo: perfil.tipoAcesso,
-          });
-
-        this.router.navigateByUrl(
+      .subscribe(
+        (
+          perfil
+        ) => {
           this.usuarioLogadoService
-            .obterRotaInicial()
-        );
-      });
+            .definirUsuarioLogado({
+              id: perfil.id,
+              nome: perfil.nomeCompleto,
+              email:
+                perfil.emailCorporativo,
+              matricula:
+                perfil.matricula,
+              cargo: perfil.cargo,
+              setor: perfil.setor,
+              iniciais:
+                this.gerarIniciais(
+                  perfil.nomeCompleto
+                ),
+              tipo: perfil.tipoAcesso,
+            });
+
+          void this.router.navigateByUrl(
+            this.usuarioLogadoService
+              .obterRotaInicial()
+          );
+        }
+      );
   }
 
   private obterMensagemErro(
     erro: unknown
   ): string {
     if (erro instanceof TimeoutError) {
-      return 'O servidor demorou muito para responder.';
+      return (
+        'O servidor demorou muito para responder.'
+      );
     }
 
-    if (!(erro instanceof HttpErrorResponse)) {
-      return 'Não foi possível realizar o login.';
+    if (
+      !(erro instanceof HttpErrorResponse)
+    ) {
+      return (
+        'Não foi possível realizar o login.'
+      );
     }
 
     if (erro.status === 0) {
-      return 'Não foi possível conectar ao servidor.';
+      return (
+        'Não foi possível conectar ao servidor.'
+      );
     }
 
     if (erro.status === 401) {
-      return 'E-mail ou senha inválidos.';
+      return (
+        'E-mail ou senha inválidos.'
+      );
     }
 
     if (erro.status === 403) {
       if (
-        typeof erro.error?.mensagem
-        === 'string'
+        typeof erro.error?.mensagem ===
+        'string'
       ) {
         return erro.error.mensagem;
       }
 
-      return 'Este usuário não possui acesso ao sistema.';
+      return (
+        'Este usuário não possui acesso ao sistema.'
+      );
     }
 
-    /*
-     * Seu backend utiliza a propriedade
-     * "mensagem", não "message".
-     */
     if (
-      typeof erro.error?.mensagem
-      === 'string'
+      typeof erro.error?.mensagem ===
+      'string'
     ) {
       return erro.error.mensagem;
     }
 
-    return 'Não foi possível realizar o login.';
+    return (
+      'Não foi possível realizar o login.'
+    );
   }
 
   private gerarIniciais(
@@ -242,8 +257,11 @@ export class LoginComponent implements OnInit {
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
-      .map((parte) =>
-        parte.charAt(0).toUpperCase()
+      .map(
+        (
+          parte: string
+        ): string =>
+          parte.charAt(0).toUpperCase()
       )
       .join('');
   }

@@ -1,8 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import {
+  Observable,
+  tap,
+} from 'rxjs';
 
-import {LoginRequest,LoginResponse,} from '../../models/auth';
+import {
+  AlterarSenhaRequest,
+  LoginRequest,
+  LoginResponse,
+} from '../../models/auth';
 
 import { environment } from '../../../environments/environment';
 import { TokenStorageService } from './token-storage.service';
@@ -16,7 +23,9 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly tokenStorage: TokenStorageService
+
+    private readonly tokenStorage:
+      TokenStorageService
   ) {}
 
   login(
@@ -28,13 +37,26 @@ export class AuthService {
         dados
       )
       .pipe(
-        tap((response) => {
-          this.tokenStorage.salvarToken(
-            response.token,
-            response.expiraEm
-          );
-        })
+        tap(
+          (
+            response: LoginResponse
+          ): void => {
+            this.tokenStorage.salvarToken(
+              response.token,
+              response.expiraEm
+            );
+          }
+        )
       );
+  }
+
+  alterarSenha(
+    dados: AlterarSenhaRequest
+  ): Observable<void> {
+    return this.http.patch<void>(
+      `${this.url}/alterar-senha`,
+      dados
+    );
   }
 
   obterToken(): string | null {
@@ -42,7 +64,8 @@ export class AuthService {
   }
 
   estaAutenticado(): boolean {
-    return this.tokenStorage.possuiTokenValido();
+    return this.tokenStorage
+      .possuiTokenValido();
   }
 
   logout(): void {

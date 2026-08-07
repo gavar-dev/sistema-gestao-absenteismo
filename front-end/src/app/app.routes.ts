@@ -5,6 +5,7 @@ import { funcionarioGuard } from './core/guards/funcionario.guard';
 import { gestaoGuard } from './core/guards/gestao.guard';
 import { loginGuard } from './core/guards/login.guard';
 
+import { AlterarSenhaComponent } from './pages/alterar-senha-component/alterar-senha-component';
 import { LoginComponent } from './pages/login-component/login-component';
 
 import { AvisoComponente } from './pages/funcionario/aviso-componente/aviso-componente';
@@ -26,8 +27,12 @@ export const routes: Routes = [
     component: LoginComponent,
     canActivate: [loginGuard],
   },
+  {
+    path: 'alterar-senha',
+    component: AlterarSenhaComponent,
+    canActivate: [loginGuard],
+  },
 
-  // Área do funcionário
   {
     path: '',
     component: InicioComponente,
@@ -77,7 +82,6 @@ export const routes: Routes = [
     ],
   },
 
-  // Área de Gestão/RH
   {
     path: 'gestao',
     canActivate: [
@@ -133,6 +137,6 @@ export const routes: Routes = [
 
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'login',
   },
 ];

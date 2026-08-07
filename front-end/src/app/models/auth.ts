@@ -15,3 +15,9 @@ export interface LoginResponse {
   tipoToken: string;
   expiraEm: string;
 }
+
+export interface AlterarSenhaRequest {
+  email: string;
+  senhaAtual: string;
+  novaSenha: string;
+}

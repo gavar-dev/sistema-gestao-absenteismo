@@ -25,19 +25,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Login público
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.PATCH,"/api/auth/alterar-senha").permitAll()
                         // Qualquer usuário autenticado consulta os próprios dados
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/funcionarios/me").authenticated()
+                        .requestMatchers(HttpMethod.GET,"/api/funcionarios/me").authenticated()
                         // RH e gestor podem consultar funcionários
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/funcionarios",
                                 "/api/funcionarios/**").hasAnyRole("RH", "GESTOR")
                         // Apenas RH pode cadastrar
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/funcionarios").hasRole("RH")
+                        .requestMatchers(HttpMethod.POST,"/api/funcionarios").hasRole("RH")
                         // Apenas RH pode atualizar
                         .requestMatchers(
                                 HttpMethod.PUT,
