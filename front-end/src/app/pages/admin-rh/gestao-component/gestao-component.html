@@ -276,13 +276,8 @@
               ">
               <td>
                 <div class="d-flex align-items-center gap-3">
-                  <span class="funcionario-avatar">
-                    {{
-                    iniciais(
-                    funcionario.dados.nomeCompleto
-                    )
-                    }}
-                  </span>
+                  <app-funcionario-avatar [funcionarioId]="funcionario.dados.id"
+                    [nomeCompleto]="funcionario.dados.nomeCompleto" [tamanho]="48"></app-funcionario-avatar>
 
                   <div>
                     <strong class="d-block">

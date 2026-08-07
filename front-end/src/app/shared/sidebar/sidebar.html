@@ -30,7 +30,8 @@
   <div class="offcanvas-body sidebar-body">
     <section class="sidebar-user-card" aria-label="Usuário conectado">
       <div class="sidebar-avatar-wrap">
-        <span class="sidebar-avatar">{{ usuario.iniciais }}</span>
+        <app-funcionario-avatar [funcionarioId]="usuario.id" [nomeCompleto]="usuario.nome"
+          [tamanho]="58"></app-funcionario-avatar>
         <span class="sidebar-status-dot" title="Usuário conectado" aria-label="Usuário conectado"></span>
       </div>
 

@@ -1,6 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import {
+  catchError,
+  Observable,
+  of,
+  shareReplay,
+  throwError,
+} from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -15,8 +21,12 @@ import {
   providedIn: 'root',
 })
 export class FuncionarioService {
+
   private readonly url =
     `${environment.apiUrl}/funcionarios`;
+
+  private readonly cacheFotos =
+    new Map<number, Observable<Blob | null>>();
 
   constructor(
     private readonly http: HttpClient
@@ -59,6 +69,58 @@ export class FuncionarioService {
     );
   }
 
+  buscarFoto(
+    id: number
+  ): Observable<Blob | null> {
+
+    const fotoEmCache =
+      this.cacheFotos.get(id);
+
+    if (fotoEmCache) {
+      return fotoEmCache;
+    }
+
+    const requisicao =
+      this.http.get(
+        `${this.url}/${id}/foto`,
+        {
+          responseType: 'blob',
+        }
+      )
+        .pipe(
+          catchError(
+            (erro: {
+              status?: number;
+            }) => {
+              if (erro.status === 404) {
+                return of(null);
+              }
+
+              return throwError(
+                () => erro
+              );
+            }
+          ),
+          shareReplay({
+            bufferSize: 1,
+            refCount: false,
+          })
+        );
+
+    this.cacheFotos.set(
+      id,
+      requisicao
+    );
+
+    return requisicao;
+  }
+
+  limparCacheFoto(
+    id: number
+  ): void {
+    this.cacheFotos.delete(id);
+  }
+
   criar(
     request: FuncionarioCreateRequest,
     foto: File | null = null
@@ -90,7 +152,6 @@ export class FuncionarioService {
       );
     }
 
-
     return this.http.post<FuncionarioResponse>(
       this.url,
       formulario
@@ -113,7 +174,8 @@ export class FuncionarioService {
     status: StatusFuncionario
   ): Observable<FuncionarioResponse> {
 
-    const request: FuncionarioStatusRequest = {
+    const request:
+      FuncionarioStatusRequest = {
       status,
     };
 
@@ -123,7 +185,10 @@ export class FuncionarioService {
     );
   }
 
-  desativar(id: number): Observable<void> {
+  desativar(
+    id: number
+  ): Observable<void> {
+
     return this.http.delete<void>(
       `${this.url}/${id}`
     );

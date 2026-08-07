@@ -1,0 +1,72 @@
+:host {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.funcionario-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      135deg,
+      var(--bs-primary),
+      color-mix(
+        in srgb,
+        var(--bs-primary) 70%,
+        var(--bs-info)
+      )
+    );
+  color: #fff;
+  border: 2px solid
+    color-mix(
+      in srgb,
+      var(--bs-primary) 25%,
+      transparent
+    );
+  box-shadow:
+    0 0.35rem 0.85rem
+    rgba(15, 23, 42, 0.16);
+}
+
+.funcionario-avatar-imagem {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.funcionario-avatar-iniciais {
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.funcionario-avatar-loading {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.22),
+      transparent
+    );
+  transform: translateX(-100%);
+  animation:
+    funcionario-avatar-loading
+    1.1s infinite;
+}
+
+@keyframes funcionario-avatar-loading {
+  to {
+    transform: translateX(100%);
+  }
+}

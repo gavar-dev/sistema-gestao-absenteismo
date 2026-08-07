@@ -5,6 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { forkJoin, timeout } from 'rxjs';
 
+import {
+  FuncionarioAvatarComponent
+} from '../../../shared/funcionario-avatar/funcionario-avatar';
+
 import { FuncionarioService } from '../../../core/services/funcionario';
 import { PontoService } from '../../../core/services/ponto.service';
 import { UsuarioLogadoService } from '../../../core/services/usuario-logado.service';
@@ -58,6 +62,7 @@ interface ResultadoGestao {
     CommonModule,
     FormsModule,
     RouterLink,
+    FuncionarioAvatarComponent,
   ],
   templateUrl: './gestao-component.html',
   styleUrl: './gestao-component.css',

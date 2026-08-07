@@ -45,7 +45,11 @@
   <div class="offcanvas-body admin-sidebar-body">
     <section class="admin-sidebar-user-card" aria-label="Usuário conectado">
       <div class="admin-sidebar-avatar-wrap">
-        <span class="admin-sidebar-avatar">{{ usuario.iniciais }}</span>
+        <app-funcionario-avatar
+          [funcionarioId]="usuario.id"
+          [nomeCompleto]="usuario.nome"
+          [tamanho]="48"
+        ></app-funcionario-avatar>
         <span class="admin-sidebar-status-dot" title="Usuário conectado" aria-label="Usuário conectado"></span>
       </div>
 

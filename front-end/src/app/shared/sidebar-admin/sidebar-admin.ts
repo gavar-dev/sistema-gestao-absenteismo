@@ -16,6 +16,10 @@ import {
 
 import { UsuarioLogadoService } from '../../core/services/usuario-logado.service';
 
+import {
+  FuncionarioAvatarComponent
+} from '../funcionario-avatar/funcionario-avatar';
+
 type Tema =
   | 'light'
   | 'dark';
@@ -34,6 +38,7 @@ interface ItemMenuGestao {
     CommonModule,
     RouterLink,
     RouterLinkActive,
+    FuncionarioAvatarComponent,
   ],
   templateUrl:
     './sidebar-admin.html',
@@ -46,11 +51,12 @@ export class SidebarAdmin
   temaAtual: Tema = 'light';
 
   usuario = {
-    nome: 'Carla Mendes',
-    cargo: 'Gestora de RH',
-    setor: 'Recursos Humanos',
-    iniciais: 'CM',
-  };
+  id: 0,
+  nome: 'Carla Mendes',
+  cargo: 'Gestora de RH',
+  setor: 'Recursos Humanos',
+  iniciais: 'CM',
+};
 
   readonly menu:
     ItemMenuGestao[] = [
@@ -164,6 +170,7 @@ export class SidebarAdmin
     }
 
     this.usuario = {
+      id: usuarioLogado.id,
       nome: usuarioLogado.nome,
       cargo: usuarioLogado.cargo,
       setor: usuarioLogado.setor,
