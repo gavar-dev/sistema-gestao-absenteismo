@@ -37,6 +37,28 @@ export interface FuncionarioResponse {
   atualizadoEm: string;
 }
 
+export interface FuncionarioCreateRequest {
+  nomeCompleto: string;
+  emailCorporativo: string;
+  cpf: string;
+  telefone: string;
+  dataNascimento: string;
+  estadoCivil: string | null;
+  nacionalidade: string;
+  naturalidade: string | null;
+  matricula: string;
+  cargo: string;
+  setor: string;
+  dataAdmissao: string;
+  tipoVinculo: TipoVinculo;
+  cargaHorariaSemanal: number | null;
+  gestorImediato: string | null;
+  localTrabalho: string | null;
+  tipoAcesso: TipoUsuario;
+  status: StatusFuncionario;
+  senhaProvisoria: string;
+}
+
 export interface FuncionarioUpdateRequest {
   nomeCompleto: string;
   emailCorporativo: string;

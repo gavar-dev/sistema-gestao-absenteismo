@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
+  FuncionarioCreateRequest,
   FuncionarioResponse,
   FuncionarioStatusRequest,
   FuncionarioUpdateRequest,
@@ -55,6 +56,16 @@ export class FuncionarioService {
 
     return this.http.get<FuncionarioResponse>(
       `${this.url}/${id}`
+    );
+  }
+
+  criar(
+    request: FuncionarioCreateRequest
+  ): Observable<FuncionarioResponse> {
+
+    return this.http.post<FuncionarioResponse>(
+      this.url,
+      request
     );
   }
 
