@@ -239,8 +239,8 @@
             </div>
 
             <small class="text-body-secondary d-block mt-2">
-              A foto é somente uma pré-visualização.
-              A API atual ainda não armazena imagens.
+              A foto será enviada e armazenada ao salvar
+              o funcionário.
             </small>
           </div>
         </div>
@@ -470,8 +470,6 @@
                 </select>
               </div>
 
-              
-
               <div class="col-12">
                 <label for="senhaProvisoria" class="form-label">
                   Senha provisória
@@ -479,23 +477,44 @@
                 </label>
 
                 <div class="input-group">
-                  <input id="senhaProvisoria" [type]="senhaVisivel ? 'text' : 'password'" class="form-control"
-                    [class.is-invalid]="campoInvalido('senhaProvisoria')" placeholder="Entre 8 e 72 caracteres"
-                    formControlName="senhaProvisoria" />
+                  <input id="senhaProvisoria" [type]="
+                      senhaVisivel
+                        ? 'text'
+                        : 'password'
+                    " class="form-control" [class.is-invalid]="
+                      campoInvalido(
+                        'senhaProvisoria'
+                      )
+                    " placeholder="Entre 8 e 72 caracteres" formControlName="senhaProvisoria" />
 
-                  <button type="button" class="btn btn-outline-secondary" (click)="alternarVisibilidadeSenha()"
-                    title="Mostrar ou ocultar senha">
-                    <i class="bi" [class.bi-eye]="!senhaVisivel" [class.bi-eye-slash]="senhaVisivel"></i>
+                  <button type="button" class="btn btn-outline-secondary" (click)="
+                      alternarVisibilidadeSenha()
+                    ">
+                    <i class="bi" [class.bi-eye]="!senhaVisivel" [class.bi-eye-slash]="
+                        senhaVisivel
+                      "></i>
                   </button>
 
-                  <button type="button" class="btn btn-outline-secondary" (click)="gerarSenha()">
+                  <button type="button" class="btn btn-outline-secondary" [disabled]="salvando" (click)="gerarSenha()">
                     <i class="bi bi-magic me-1"></i>
-                    Gerar senha
+                    Gerar
                   </button>
 
                   <div class="invalid-feedback">
-                    A senha deve possuir entre 8 e 72 caracteres.
+                    A senha deve possuir entre 8 e
+                    72 caracteres.
                   </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="alert alert-info d-flex align-items-start gap-2 mb-0">
+                  <i class="bi bi-info-circle mt-1"></i>
+
+                  <span>
+                    A senha é armazenada de forma
+                    criptografada pelo backend.
+                  </span>
                 </div>
               </div>
             </div>

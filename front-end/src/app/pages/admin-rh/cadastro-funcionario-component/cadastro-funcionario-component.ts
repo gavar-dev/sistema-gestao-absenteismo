@@ -50,12 +50,15 @@ export class CadastroFuncionarioComponent
   inputArquivo?:
     ElementRef<HTMLInputElement>;
 
+
   readonly formulario: FormGroup;
 
   arrastandoArquivo = false;
   previewFoto:
     string | ArrayBuffer | null = null;
+  fotoSelecionada: File | null = null;
   erroFoto = '';
+
 
   senhaVisivel = false;
   salvando = false;
@@ -355,6 +358,7 @@ export class CadastroFuncionarioComponent
 
   removerFoto(): void {
     this.previewFoto = null;
+    this.fotoSelecionada = null;
     this.erroFoto = '';
 
     if (this.inputArquivo) {
@@ -369,72 +373,34 @@ export class CadastroFuncionarioComponent
   }
 
   gerarSenha(): void {
-    const letrasMaiusculas =
-      'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const caracteres =
+      'ABCDEFGHJKLMNPQRSTUVWXYZ' +
+      'abcdefghijkmnpqrstuvwxyz' +
+      '23456789!@#$%';
 
-    const letrasMinusculas =
-      'abcdefghijkmnpqrstuvwxyz';
+    let senha = '';
 
-    const numeros = '23456789';
-    const especiais = '!@#$%';
-
-    const todos =
-      letrasMaiusculas +
-      letrasMinusculas +
-      numeros +
-      especiais;
-
-    let senha =
-      letrasMaiusculas[
-      Math.floor(
-        Math.random() *
-        letrasMaiusculas.length
-      )
-      ] +
-      letrasMinusculas[
-      Math.floor(
-        Math.random() *
-        letrasMinusculas.length
-      )
-      ] +
-      numeros[
-      Math.floor(
-        Math.random() *
-        numeros.length
-      )
-      ] +
-      especiais[
-      Math.floor(
-        Math.random() *
-        especiais.length
-      )
-      ];
-
-    while (senha.length < 12) {
-      senha +=
-        todos[
+    for (
+      let indice = 0;
+      indice < 12;
+      indice += 1
+    ) {
+      const posicao =
         Math.floor(
           Math.random() *
-          todos.length
-        )
-        ];
-    }
+          caracteres.length
+        );
 
-    const senhaEmbaralhada =
-      senha
-        .split('')
-        .sort(() => Math.random() - 0.5)
-        .join('');
+      senha +=
+        caracteres.charAt(posicao);
+    }
 
     const campoSenha =
       this.formulario.get(
         'senhaProvisoria'
       );
 
-    campoSenha?.setValue(
-      senhaEmbaralhada
-    );
-
+    campoSenha?.setValue(senha);
     campoSenha?.markAsDirty();
     campoSenha?.markAsTouched();
     campoSenha?.updateValueAndValidity();
@@ -492,8 +458,11 @@ export class CadastroFuncionarioComponent
     this.salvando = true;
 
     this.funcionarioService
-      .criar(request)
-      .pipe(timeout(10000))
+      .criar(
+        request,
+        this.fotoSelecionada
+      )
+      .pipe(timeout(30000))
       .subscribe({
         next: (
           funcionario:
@@ -596,13 +565,13 @@ export class CadastroFuncionarioComponent
       cargaHorariaSemanal:
         valor.cargaHorariaSemanal ===
           null ||
-          valor.cargaHorariaSemanal ===
+        valor.cargaHorariaSemanal ===
           ''
           ? null
           : Number(
-            valor
-              .cargaHorariaSemanal
-          ),
+              valor
+                .cargaHorariaSemanal
+            ),
 
       gestorImediato:
         this.valorOpcional(
@@ -669,6 +638,7 @@ export class CadastroFuncionarioComponent
     }
 
     this.erroFoto = '';
+    this.fotoSelecionada = arquivo;
 
     const leitor =
       new FileReader();

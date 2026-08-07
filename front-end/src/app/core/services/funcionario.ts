@@ -60,12 +60,40 @@ export class FuncionarioService {
   }
 
   criar(
-    request: FuncionarioCreateRequest
+    request: FuncionarioCreateRequest,
+    foto: File | null = null
   ): Observable<FuncionarioResponse> {
+
+    const formulario =
+      new FormData();
+
+    const dados =
+      new Blob(
+        [
+          JSON.stringify(request),
+        ],
+        {
+          type: 'application/json',
+        }
+      );
+
+    formulario.append(
+      'dados',
+      dados
+    );
+
+    if (foto) {
+      formulario.append(
+        'foto',
+        foto,
+        foto.name
+      );
+    }
+
 
     return this.http.post<FuncionarioResponse>(
       this.url,
-      request
+      formulario
     );
   }
 
