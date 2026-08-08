@@ -20,203 +20,139 @@ import java.util.UUID;
 @Service
 public class ArmazenamentoArquivoService {
 
-    private final Path diretorioBase;
+        private final Path diretorioBase;
 
-    public ArmazenamentoArquivoService(
-            @Value("${app.upload.diretorio}") String diretorioBase) {
-        this.diretorioBase = Path.of(diretorioBase)
-                .toAbsolutePath()
-                .normalize();
-    }
-
-    public ArquivoArmazenado salvar(
-            MultipartFile arquivo,
-            String subdiretorio,
-            Set<String> tiposPermitidos,
-            long tamanhoMaximoBytes) {
-        validarArquivo(
-                arquivo,
-                tiposPermitidos,
-                tamanhoMaximoBytes);
-
-        String nomeOriginal = obterNomeOriginalSeguro(arquivo);
-
-        String extensao = obterExtensao(nomeOriginal);
-
-        String nomeArmazenado = UUID.randomUUID()
-                .toString()
-                + extensao;
-
-        Path diretorioDestino = resolverSubdiretorioSeguro(
-                subdiretorio);
-
-        Path arquivoDestino = diretorioDestino
-                .resolve(nomeArmazenado)
-                .normalize();
-
-        validarCaminhoDentroDoDiretorio(
-                arquivoDestino,
-                diretorioDestino);
-
-        try {
-            Files.createDirectories(
-                    diretorioDestino);
-
-            try (
-                    InputStream inputStream = arquivo.getInputStream()) {
-                Files.copy(
-                        inputStream,
-                        arquivoDestino,
-                        StandardCopyOption.REPLACE_EXISTING);
-            }
-        } catch (IOException exception) {
-            throw new IllegalStateException(
-                    "Não foi possível armazenar o arquivo",
-                    exception);
+        public ArmazenamentoArquivoService(@Value("${app.upload.diretorio}") String diretorioBase) {
+                this.diretorioBase = Path.of(diretorioBase).toAbsolutePath().normalize();
         }
 
-        String caminhoRelativo = diretorioBase
-                .relativize(
-                        arquivoDestino)
-                .toString()
-                .replace('\\', '/');
+        public ArquivoArmazenado salvar(MultipartFile arquivo, String subdiretorio, Set<String> tiposPermitidos,
+                        long tamanhoMaximoBytes) {
+                validarArquivo(arquivo, tiposPermitidos, tamanhoMaximoBytes);
 
-        return new ArquivoArmazenado(
-                nomeOriginal,
-                nomeArmazenado,
-                arquivo.getContentType(),
-                arquivo.getSize(),
-                caminhoRelativo);
-    }
+                String nomeOriginal = obterNomeOriginalSeguro(arquivo);
 
-    public Resource carregar(
-            String caminhoRelativo) {
-        Path caminhoCompleto = diretorioBase
-                .resolve(caminhoRelativo)
-                .normalize();
+                String extensao = obterExtensao(nomeOriginal);
 
-        validarCaminhoDentroDoDiretorio(
-                caminhoCompleto,
-                diretorioBase);
+                String nomeArmazenado = UUID.randomUUID().toString() + extensao;
 
-        try {
-            Resource recurso = new UrlResource(
-                    caminhoCompleto.toUri());
+                Path diretorioDestino = resolverSubdiretorioSeguro(subdiretorio);
 
-            if (!recurso.exists() ||
-                    !recurso.isReadable()) {
-                throw new IllegalArgumentException(
-                        "Arquivo não encontrado");
-            }
+                Path arquivoDestino = diretorioDestino.resolve(nomeArmazenado).normalize();
 
-            return recurso;
-        } catch (MalformedURLException exception) {
-            throw new IllegalStateException(
-                    "Não foi possível carregar o arquivo",
-                    exception);
-        }
-    }
+                validarCaminhoDentroDoDiretorio(arquivoDestino, diretorioDestino);
 
-    public void excluir(
-            String caminhoRelativo) {
-        if (caminhoRelativo == null ||
-                caminhoRelativo.isBlank()) {
-            return;
+                try {
+
+                        Files.createDirectories(diretorioDestino);
+
+                        try (InputStream inputStream = arquivo.getInputStream()) {
+                                Files.copy(inputStream, arquivoDestino, StandardCopyOption.REPLACE_EXISTING);
+                        }
+
+                } catch (IOException exception) {
+                        throw new IllegalStateException("Não foi possível armazenar o arquivo", exception);
+                }
+
+                String caminhoRelativo = diretorioBase.relativize(arquivoDestino).toString().replace('\\', '/');
+
+                return new ArquivoArmazenado(nomeOriginal, nomeArmazenado,
+                                arquivo.getContentType(), arquivo.getSize(), caminhoRelativo);
         }
 
-        Path caminhoCompleto = diretorioBase
-                .resolve(caminhoRelativo)
-                .normalize();
+        public Resource carregar(String caminhoRelativo) {
 
-        validarCaminhoDentroDoDiretorio(
-                caminhoCompleto,
-                diretorioBase);
+                Path caminhoCompleto = diretorioBase.resolve(caminhoRelativo).normalize();
 
-        try {
-            Files.deleteIfExists(
-                    caminhoCompleto);
-        } catch (IOException exception) {
-            throw new IllegalStateException(
-                    "Não foi possível excluir o arquivo",
-                    exception);
-        }
-    }
+                validarCaminhoDentroDoDiretorio(caminhoCompleto, diretorioBase);
 
-    private void validarArquivo(
-            MultipartFile arquivo,
-            Set<String> tiposPermitidos,
-            long tamanhoMaximoBytes) {
-        if (arquivo == null ||
-                arquivo.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "O arquivo está vazio");
+                try {
+
+                        Resource recurso = new UrlResource(caminhoCompleto.toUri());
+
+                        if (!recurso.exists() || !recurso.isReadable()) {
+                                throw new IllegalArgumentException("Arquivo não encontrado");
+                        }
+
+                        return recurso;
+
+                } catch (MalformedURLException exception) {
+                        throw new IllegalStateException("Não foi possível carregar o arquivo", exception);
+                }
         }
 
-        if (arquivo.getSize() > tamanhoMaximoBytes) {
-            throw new IllegalArgumentException(
-                    "O arquivo excede o tamanho máximo permitido");
+        public void excluir(String caminhoRelativo) {
+
+                if (caminhoRelativo == null || caminhoRelativo.isBlank()) {
+                        return;
+                }
+
+                Path caminhoCompleto = diretorioBase.resolve(caminhoRelativo).normalize();
+
+                validarCaminhoDentroDoDiretorio(caminhoCompleto, diretorioBase);
+
+                try {
+
+                        Files.deleteIfExists(caminhoCompleto);
+
+                } catch (IOException exception) {
+
+                        throw new IllegalStateException("Não foi possível excluir o arquivo", exception);
+                }
         }
 
-        String contentType = arquivo.getContentType();
+        private void validarArquivo(MultipartFile arquivo, Set<String> tiposPermitidos, long tamanhoMaximoBytes) {
 
-        if (contentType == null ||
-                !tiposPermitidos.contains(
-                        contentType
-                                .toLowerCase(
-                                        Locale.ROOT))) {
-            throw new IllegalArgumentException(
-                    "Formato de arquivo não permitido");
-        }
-    }
+                if (arquivo == null || arquivo.isEmpty()) {
+                        throw new IllegalArgumentException("O arquivo está vazio");
+                }
 
-    private String obterNomeOriginalSeguro(
-            MultipartFile arquivo) {
-        String nomeOriginal = arquivo.getOriginalFilename();
+                if (arquivo.getSize() > tamanhoMaximoBytes) {
+                        throw new IllegalArgumentException("O arquivo excede o tamanho máximo permitido");
+                }
 
-        if (nomeOriginal == null ||
-                nomeOriginal.isBlank()) {
-            return "arquivo";
+                String contentType = arquivo.getContentType();
+
+                if (contentType == null || !tiposPermitidos.contains(contentType.toLowerCase(Locale.ROOT))) {
+                        throw new IllegalArgumentException("Formato de arquivo não permitido");
+                }
         }
 
-        return Path.of(nomeOriginal)
-                .getFileName()
-                .toString();
-    }
+        private String obterNomeOriginalSeguro(MultipartFile arquivo) {
 
-    private String obterExtensao(
-            String nomeArquivo) {
-        int ultimoPonto = nomeArquivo.lastIndexOf('.');
+                String nomeOriginal = arquivo.getOriginalFilename();
 
-        if (ultimoPonto < 0 ||
-                ultimoPonto == nomeArquivo.length() - 1) {
-            return "";
+                if (nomeOriginal == null || nomeOriginal.isBlank()) {
+                        return "arquivo";
+                }
+
+                return Path.of(nomeOriginal).getFileName().toString();
         }
 
-        return nomeArquivo
-                .substring(ultimoPonto)
-                .toLowerCase(Locale.ROOT);
-    }
+        private String obterExtensao(String nomeArquivo) {
 
-    private Path resolverSubdiretorioSeguro(
-            String subdiretorio) {
-        Path diretorioDestino = diretorioBase
-                .resolve(subdiretorio)
-                .normalize();
+                int ultimoPonto = nomeArquivo.lastIndexOf('.');
 
-        validarCaminhoDentroDoDiretorio(
-                diretorioDestino,
-                diretorioBase);
+                if (ultimoPonto < 0 || ultimoPonto == nomeArquivo.length() - 1) {
+                        return "";
+                }
 
-        return diretorioDestino;
-    }
-
-    private void validarCaminhoDentroDoDiretorio(
-            Path caminho,
-            Path diretorioPermitido) {
-        if (!caminho.startsWith(
-                diretorioPermitido)) {
-            throw new IllegalArgumentException(
-                    "Caminho de arquivo inválido");
+                return nomeArquivo.substring(ultimoPonto).toLowerCase(Locale.ROOT);
         }
-    }
+
+        private Path resolverSubdiretorioSeguro(String subdiretorio) {
+
+                Path diretorioDestino = diretorioBase.resolve(subdiretorio).normalize();
+
+                validarCaminhoDentroDoDiretorio(diretorioDestino, diretorioBase);
+
+                return diretorioDestino;
+        }
+
+        private void validarCaminhoDentroDoDiretorio(Path caminho, Path diretorioPermitido) {
+
+                if (!caminho.startsWith(diretorioPermitido)) {
+                        throw new IllegalArgumentException("Caminho de arquivo inválido");
+                }
+        }
 }
