@@ -23,6 +23,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Requisições de preflight do Angular
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Swagger / OpenAPI
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**").permitAll()
                         // Login público
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.PATCH,"/api/auth/alterar-senha").permitAll()
