@@ -9,6 +9,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import br.com.senac.sistema_gestao_absenteismo.auth.security.PrimeiroAcessoFilter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -30,6 +32,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**").permitAll()
                         // Login público
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.PATCH,"/api/auth/primeiro-acesso").authenticated()
                         .requestMatchers(HttpMethod.PATCH,"/api/auth/alterar-senha").permitAll()
                         // Qualquer usuário autenticado consulta os próprios dados
                         .requestMatchers(HttpMethod.GET,"/api/funcionarios/me").authenticated()
@@ -64,9 +67,7 @@ public class SecurityConfig {
                                 "/api/pontos/indicadores/**",
                                 "/api/pontos/funcionarios/**").hasAnyRole("RH", "GESTOR")
                         // Apenas RH pode analisar solicitações
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/api/solicitacoes/**").hasRole("RH")
+                        .requestMatchers(HttpMethod.PATCH,"/api/solicitacoes/**").hasRole("RH")
                                 // Usuário autenticado consulta as próprias solicitações
                         .requestMatchers(
                                 HttpMethod.GET,"/api/solicitacoes/minhas",
@@ -82,7 +83,7 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/api/solicitacoes",
                                 "/api/solicitacoes/**").hasAnyRole("RH", "GESTOR")
-                                // Qualquer usuário autenticado consulta seus avisos
+                        // Qualquer usuário autenticado consulta seus avisos
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/avisos/meus").authenticated()
@@ -106,7 +107,9 @@ public class SecurityConfig {
                         // Demais endpoints exigem login
                         .anyRequest()
                         .authenticated()
-                ).oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
+                .addFilterAfter( new PrimeiroAcessoFilter(), BearerTokenAuthenticationFilter.class);
 
         return http.build();
 

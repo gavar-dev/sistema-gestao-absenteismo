@@ -3,6 +3,7 @@ package br.com.senac.sistema_gestao_absenteismo.auth.controller;
 import br.com.senac.sistema_gestao_absenteismo.auth.dto.AlterarSenhaRequest;
 import br.com.senac.sistema_gestao_absenteismo.auth.dto.LoginRequest;
 import br.com.senac.sistema_gestao_absenteismo.auth.dto.LoginResponse;
+import br.com.senac.sistema_gestao_absenteismo.auth.dto.PrimeiroAcessoRequest;
 import br.com.senac.sistema_gestao_absenteismo.auth.service.AuthService;
 import br.com.senac.sistema_gestao_absenteismo.shared.exception.ApiError;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +44,29 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @Operation(summary = "Concluir primeiro acesso",
+    description = "Substitui a senha provisória pela senha definitiva e retorna um novo token JWT.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Primeiro acesso concluído",
+        content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+        @ApiResponse(responseCode = "400",
+        description = "Senhas inválidas ou primeiro acesso já concluído",
+        content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Token inválido ou ausente")
+    })
+    @PatchMapping("/primeiro-acesso")
+    public LoginResponse concluirPrimeiroAcesso(@AuthenticationPrincipal Jwt jwt, 
+        @Valid @RequestBody PrimeiroAcessoRequest request) {
+
+        Object valor = jwt.getClaim("funcionarioId");
+
+        if (!(valor instanceof Number numero)) {
+            throw new IllegalArgumentException("O token não contém o identificador do funcionário");
+        }
+
+        return authService.concluirPrimeiroAcesso(numero.longValue(),request);
     }
 
     @Operation(summary = "Alterar senha", description = "Altera a senha após validar o e-mail e a senha atual.")

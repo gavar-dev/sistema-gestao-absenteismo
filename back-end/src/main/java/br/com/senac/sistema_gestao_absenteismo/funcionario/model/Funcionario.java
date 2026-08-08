@@ -1,5 +1,8 @@
 package br.com.senac.sistema_gestao_absenteismo.funcionario.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,9 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "funcionarios")
@@ -91,6 +91,10 @@ public class Funcionario {
 
     @Column(nullable = false, length = 100)
     private String senhaHash;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean primeiroAcesso = false;
 
     @Column(length = 255)
     private String fotoNomeOriginal;

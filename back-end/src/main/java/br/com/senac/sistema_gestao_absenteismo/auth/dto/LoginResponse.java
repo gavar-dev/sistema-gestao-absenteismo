@@ -11,24 +11,23 @@ public record LoginResponse(
         String emailCorporativo,
         String matricula,
         TipoUsuario tipoAcesso,
+        boolean primeiroAcesso,
         String token,
         String tipoToken,
-        Instant expiraEm
-) {
+        Instant expiraEm) {
 
-    public static LoginResponse from(
-            Funcionario funcionario,
-            TokenGerado tokenGerado
-    ) {
-        return new LoginResponse(
-                funcionario.getId(),
-                funcionario.getNomeCompleto(),
-                funcionario.getEmailCorporativo(),
-                funcionario.getMatricula(),
-                funcionario.getTipoAcesso(),
-                tokenGerado.token(),
-                "Bearer",
-                tokenGerado.expiraEm()
-        );
-    }
+        public static LoginResponse from(Funcionario funcionario, TokenGerado tokenGerado) {
+
+                return new LoginResponse(
+                        funcionario.getId(),
+                        funcionario.getNomeCompleto(),
+                        funcionario.getEmailCorporativo(),
+                        funcionario.getMatricula(),
+                        funcionario.getTipoAcesso(),
+                        funcionario.isPrimeiroAcesso(),
+                        tokenGerado.token(),
+                        "Bearer",
+                        tokenGerado.expiraEm()
+                );
+        }
 }

@@ -22,474 +22,185 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class FuncionarioService {
 
-    private final FuncionarioRepository
-            funcionarioRepository;
+    private final FuncionarioRepository funcionarioRepository;
 
-    private final PasswordEncoder
-            passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    private final FuncionarioArquivoService
-            funcionarioArquivoService;
+    private final FuncionarioArquivoService funcionarioArquivoService;
 
     @Transactional
-    public FuncionarioResponse criar(
-            FuncionarioCreateRequest request
-    ) {
-        return criar(
-                request,
-                null
-        );
+    public FuncionarioResponse criar(FuncionarioCreateRequest request) {
+        return criar(request,null);
     }
 
     @Transactional
-    public FuncionarioResponse criar(
-            FuncionarioCreateRequest request,
-            MultipartFile foto
-    ) {
-        String email =
-                normalizarEmail(
-                        request.emailCorporativo()
-                );
+    public FuncionarioResponse criar(FuncionarioCreateRequest request,MultipartFile foto) {
 
-        String cpf =
-                somenteDigitos(
-                        request.cpf()
-                );
+        String email = normalizarEmail(request.emailCorporativo());
 
-        String matricula =
-                request.matricula().trim();
+        String cpf = somenteDigitos(request.cpf());
 
-        validarDuplicidadesParaCriacao(
-                email,
-                cpf,
-                matricula
-        );
+        String matricula = request.matricula().trim();
 
-        Funcionario funcionario =
-                Funcionario.builder()
-                        .nomeCompleto(
-                                request
-                                        .nomeCompleto()
-                                        .trim()
-                        )
-                        .emailCorporativo(
-                                email
-                        )
-                        .cpf(
-                                cpf
-                        )
-                        .telefone(
-                                request
-                                        .telefone()
-                                        .trim()
-                        )
-                        .dataNascimento(
-                                request
-                                        .dataNascimento()
-                        )
-                        .estadoCivil(
-                                limparOpcional(
-                                        request
-                                                .estadoCivil()
-                                )
-                        )
-                        .nacionalidade(
-                                request
-                                        .nacionalidade()
-                                        .trim()
-                        )
-                        .naturalidade(
-                                limparOpcional(
-                                        request
-                                                .naturalidade()
-                                )
-                        )
-                        .matricula(
-                                matricula
-                        )
-                        .cargo(
-                                request
-                                        .cargo()
-                                        .trim()
-                        )
-                        .setor(
-                                request
-                                        .setor()
-                                        .trim()
-                        )
-                        .dataAdmissao(
-                                request
-                                        .dataAdmissao()
-                        )
-                        .tipoVinculo(
-                                request
-                                        .tipoVinculo()
-                        )
-                        .cargaHorariaSemanal(
-                                request
-                                        .cargaHorariaSemanal()
-                        )
-                        .gestorImediato(
-                                limparOpcional(
-                                        request
-                                                .gestorImediato()
-                                )
-                        )
-                        .localTrabalho(
-                                limparOpcional(
-                                        request
-                                                .localTrabalho()
-                                )
-                        )
-                        .tipoAcesso(
-                                request
-                                        .tipoAcesso()
-                        )
-                        .status(
-                                request
-                                        .status()
-                        )
-                        .senhaHash(
-                                passwordEncoder.encode(
-                                        request
-                                                .senhaProvisoria()
-                                )
-                        )
-                        .build();
+        validarDuplicidadesParaCriacao(email,cpf,matricula);
 
-        Funcionario funcionarioSalvo =
-                funcionarioRepository.save(
-                        funcionario
-                );
+        Funcionario funcionario = Funcionario.builder()
+        .nomeCompleto(request.nomeCompleto().trim()).emailCorporativo(email)
+        .cpf(cpf).telefone(request.telefone().trim()).dataNascimento(request.dataNascimento())
+        .estadoCivil(limparOpcional(request.estadoCivil())).nacionalidade(request.nacionalidade().trim())
+        .naturalidade(limparOpcional(request.naturalidade())).matricula(matricula)
+        .cargo(request.cargo().trim()).setor(request.setor().trim()).dataAdmissao(request.dataAdmissao())
+        .tipoVinculo(request.tipoVinculo()).cargaHorariaSemanal(request.cargaHorariaSemanal())
+        .gestorImediato(limparOpcional(request.gestorImediato()))
+        .localTrabalho(limparOpcional(request.localTrabalho()))
+        .tipoAcesso(request.tipoAcesso()).status(request.status())
+        .senhaHash(passwordEncoder.encode(request.senhaProvisoria()))
+        .primeiroAcesso(true).build();
 
-        funcionarioArquivoService.salvarFoto(
-                funcionarioSalvo,
-                foto
-        );
+        Funcionario funcionarioSalvo = funcionarioRepository.save(funcionario);
 
-        Funcionario funcionarioAtualizado =
-                funcionarioRepository.save(
-                        funcionarioSalvo
-                );
+        funcionarioArquivoService.salvarFoto(funcionarioSalvo,foto);
 
-        return FuncionarioResponse.from(
-                funcionarioAtualizado
-        );
+        Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionarioSalvo);
+
+        return FuncionarioResponse.from(funcionarioAtualizado);
     }
 
     @Transactional(readOnly = true)
-    public List<FuncionarioResponse> listar(
-            StatusFuncionario status
-    ) {
-        List<Funcionario> funcionarios =
-                status == null
-                        ? funcionarioRepository
-                                .findAllByOrderByNomeCompletoAsc()
-                        : funcionarioRepository
-                                .findByStatusOrderByNomeCompletoAsc(
-                                        status
-                                );
+    public List<FuncionarioResponse> listar(StatusFuncionario status) {
 
-        return funcionarios
-                .stream()
-                .map(
-                        FuncionarioResponse::from
-                )
-                .toList();
+        List<Funcionario> funcionarios = status == null ? funcionarioRepository.findAllByOrderByNomeCompletoAsc() : funcionarioRepository.findByStatusOrderByNomeCompletoAsc(status);
+
+        return funcionarios.stream().map(FuncionarioResponse::from).toList();
+
     }
 
     @Transactional(readOnly = true)
-    public FuncionarioResponse buscarPorId(
-            Long id
-    ) {
-        return FuncionarioResponse.from(
-                buscarEntidade(
-                        id
-                )
-        );
+    public FuncionarioResponse buscarPorId(Long id) {
+
+        return FuncionarioResponse.from(buscarEntidade(id));
+
     }
 
     @Transactional
-    public FuncionarioResponse atualizar(
-            Long id,
-            FuncionarioUpdateRequest request
-    ) {
-        Funcionario funcionario =
-                buscarEntidade(
-                        id
-                );
+    public FuncionarioResponse atualizar(Long id, FuncionarioUpdateRequest request) {
 
-        String email =
-                normalizarEmail(
-                        request.emailCorporativo()
-                );
+        Funcionario funcionario = buscarEntidade(id);
 
-        String cpf =
-                somenteDigitos(
-                        request.cpf()
-                );
+        String email = normalizarEmail(request.emailCorporativo());
 
-        String matricula =
-                request.matricula().trim();
+        String cpf = somenteDigitos(request.cpf());
 
-        validarDuplicidadesParaAtualizacao(
-                id,
-                email,
-                cpf,
-                matricula
-        );
+        String matricula = request.matricula().trim();
 
-        funcionario.setNomeCompleto(
-                request.nomeCompleto().trim()
-        );
+        validarDuplicidadesParaAtualizacao(id, email, cpf, matricula);
 
-        funcionario.setEmailCorporativo(
-                email
-        );
+        funcionario.setNomeCompleto(request.nomeCompleto().trim());
 
-        funcionario.setCpf(
-                cpf
-        );
+        funcionario.setEmailCorporativo(email);
 
-        funcionario.setTelefone(
-                request.telefone().trim()
-        );
+        funcionario.setCpf(cpf);
 
-        funcionario.setDataNascimento(
-                request.dataNascimento()
-        );
+        funcionario.setTelefone(request.telefone().trim());
 
-        funcionario.setEstadoCivil(
-                limparOpcional(
-                        request.estadoCivil()
-                )
-        );
+        funcionario.setDataNascimento(request.dataNascimento());
 
-        funcionario.setNacionalidade(
-                request.nacionalidade().trim()
-        );
+        funcionario.setEstadoCivil(limparOpcional(request.estadoCivil()));
 
-        funcionario.setNaturalidade(
-                limparOpcional(
-                        request.naturalidade()
-                )
-        );
+        funcionario.setNacionalidade(request.nacionalidade().trim());
 
-        funcionario.setMatricula(
-                matricula
-        );
+        funcionario.setNaturalidade(limparOpcional(request.naturalidade()));
 
-        funcionario.setCargo(
-                request.cargo().trim()
-        );
+        funcionario.setMatricula(matricula);
 
-        funcionario.setSetor(
-                request.setor().trim()
-        );
+        funcionario.setCargo(request.cargo().trim());
 
-        funcionario.setDataAdmissao(
-                request.dataAdmissao()
-        );
+        funcionario.setSetor(request.setor().trim());
 
-        funcionario.setTipoVinculo(
-                request.tipoVinculo()
-        );
+        funcionario.setDataAdmissao(request.dataAdmissao());
 
-        funcionario.setCargaHorariaSemanal(
-                request
-                        .cargaHorariaSemanal()
-        );
+        funcionario.setTipoVinculo(request.tipoVinculo());
 
-        funcionario.setGestorImediato(
-                limparOpcional(
-                        request.gestorImediato()
-                )
-        );
+        funcionario.setCargaHorariaSemanal(request.cargaHorariaSemanal());
 
-        funcionario.setLocalTrabalho(
-                limparOpcional(
-                        request.localTrabalho()
-                )
-        );
+        funcionario.setGestorImediato(limparOpcional(request.gestorImediato()));
 
-        funcionario.setTipoAcesso(
-                request.tipoAcesso()
-        );
+        funcionario.setLocalTrabalho(limparOpcional(request.localTrabalho()));
 
-        funcionario.setStatus(
-                request.status()
-        );
+        funcionario.setTipoAcesso(request.tipoAcesso());
 
-        return FuncionarioResponse.from(
-                funcionarioRepository.save(
-                        funcionario
-                )
-        );
+        funcionario.setStatus(request.status());
+
+        return FuncionarioResponse.from(funcionarioRepository.save(funcionario));
+
     }
 
     @Transactional
-    public FuncionarioResponse alterarStatus(
-            Long id,
-            StatusFuncionario status
-    ) {
-        Funcionario funcionario =
-                buscarEntidade(
-                        id
-                );
+    public FuncionarioResponse alterarStatus(Long id, StatusFuncionario status) {
+        
+        Funcionario funcionario = buscarEntidade(id);
 
-        funcionario.setStatus(
-                status
-        );
+        funcionario.setStatus(status);
 
-        return FuncionarioResponse.from(
-                funcionarioRepository.save(
-                        funcionario
-                )
-        );
+        return FuncionarioResponse.from(funcionarioRepository.save(funcionario));
+
     }
 
     @Transactional
-    public void desativar(
-            Long id
-    ) {
-        Funcionario funcionario =
-                buscarEntidade(
-                        id
-                );
+    public void desativar(Long id) {
 
-        funcionario.setStatus(
-                StatusFuncionario.INATIVO
-        );
+        Funcionario funcionario = buscarEntidade(id);
 
-        funcionarioRepository.save(
-                funcionario
-        );
+        funcionario.setStatus(StatusFuncionario.INATIVO);
+
+        funcionarioRepository.save(funcionario);
     }
 
-    private Funcionario buscarEntidade(
-            Long id
-    ) {
-        return funcionarioRepository
-                .findById(
-                        id
-                )
-                .orElseThrow(
-                        () ->
-                                new RecursoNaoEncontradoException(
-                                        "Funcionário não encontrado com o id "
-                                                + id
-                                )
-                );
+    private Funcionario buscarEntidade(Long id) {
+
+        return funcionarioRepository.findById(id)
+        .orElseThrow(() -> new RecursoNaoEncontradoException("Funcionário não encontrado com o id " + id));
     }
 
-    private void validarDuplicidadesParaCriacao(
-            String email,
-            String cpf,
-            String matricula
-    ) {
-        if (
-                funcionarioRepository
-                        .existsByEmailCorporativoIgnoreCase(
-                                email
-                        )
-        ) {
-            throw new ConflitoDeDadosException(
-                    "Já existe um funcionário com este e-mail"
-            );
+    private void validarDuplicidadesParaCriacao(String email, String cpf, String matricula) {
+
+        if (funcionarioRepository.existsByEmailCorporativoIgnoreCase(email)) {
+            throw new ConflitoDeDadosException("Já existe um funcionário com este e-mail");
         }
 
-        if (
-                funcionarioRepository
-                        .existsByCpf(
-                                cpf
-                        )
-        ) {
-            throw new ConflitoDeDadosException(
-                    "Já existe um funcionário com este CPF"
-            );
+        if (funcionarioRepository.existsByCpf(cpf)) {
+            throw new ConflitoDeDadosException("Já existe um funcionário com este CPF");
         }
 
-        if (
-                funcionarioRepository
-                        .existsByMatriculaIgnoreCase(
-                                matricula
-                        )
-        ) {
-            throw new ConflitoDeDadosException(
-                    "Já existe um funcionário com esta matrícula"
-            );
+        if (funcionarioRepository.existsByMatriculaIgnoreCase(matricula)) {
+            throw new ConflitoDeDadosException("Já existe um funcionário com esta matrícula");
         }
     }
 
-    private void validarDuplicidadesParaAtualizacao(
-            Long id,
-            String email,
-            String cpf,
-            String matricula
-    ) {
-        if (
-                funcionarioRepository
-                        .existsByEmailCorporativoIgnoreCaseAndIdNot(
-                                email,
-                                id
-                        )
-        ) {
-            throw new ConflitoDeDadosException(
-                    "Já existe outro funcionário com este e-mail"
-            );
+    private void validarDuplicidadesParaAtualizacao(Long id,String email,String cpf,String matricula) {
+        if (funcionarioRepository.existsByEmailCorporativoIgnoreCaseAndIdNot(email, id)) {
+            throw new ConflitoDeDadosException("Já existe outro funcionário com este e-mail");
         }
 
-        if (
-                funcionarioRepository
-                        .existsByCpfAndIdNot(
-                                cpf,
-                                id
-                        )
-        ) {
-            throw new ConflitoDeDadosException(
-                    "Já existe outro funcionário com este CPF"
-            );
+        if (funcionarioRepository.existsByCpfAndIdNot(cpf, id)) {
+            throw new ConflitoDeDadosException("Já existe outro funcionário com este CPF");
         }
 
-        if (
-                funcionarioRepository
-                        .existsByMatriculaIgnoreCaseAndIdNot(
-                                matricula,
-                                id
-                        )
-        ) {
-            throw new ConflitoDeDadosException(
-                    "Já existe outro funcionário com esta matrícula"
-            );
+        if (funcionarioRepository.existsByMatriculaIgnoreCaseAndIdNot(matricula, id)) {
+            throw new ConflitoDeDadosException("Já existe outro funcionário com esta matrícula");
         }
     }
 
-    private String normalizarEmail(
-            String email
-    ) {
-        return email
-                .trim()
-                .toLowerCase(
-                        Locale.ROOT
-                );
+    private String normalizarEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
     }
 
-    private String somenteDigitos(
-            String valor
-    ) {
-        return valor.replaceAll(
-                "\\D",
-                ""
-        );
+    private String somenteDigitos(String valor) {
+        return valor.replaceAll("\\D", "");
     }
 
-    private String limparOpcional(
-            String valor
-    ) {
-        if (
-                valor == null ||
-                valor.isBlank()
-        ) {
+    private String limparOpcional(String valor) {
+        if (valor == null || valor.isBlank()) {
             return null;
         }
 

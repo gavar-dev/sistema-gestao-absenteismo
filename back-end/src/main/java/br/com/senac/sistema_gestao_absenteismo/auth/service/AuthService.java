@@ -3,6 +3,7 @@ package br.com.senac.sistema_gestao_absenteismo.auth.service;
 import br.com.senac.sistema_gestao_absenteismo.auth.dto.AlterarSenhaRequest;
 import br.com.senac.sistema_gestao_absenteismo.auth.dto.LoginRequest;
 import br.com.senac.sistema_gestao_absenteismo.auth.dto.LoginResponse;
+import br.com.senac.sistema_gestao_absenteismo.auth.dto.PrimeiroAcessoRequest;
 import br.com.senac.sistema_gestao_absenteismo.auth.dto.TokenGerado;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.model.Funcionario;
 import br.com.senac.sistema_gestao_absenteismo.funcionario.model.StatusFuncionario;
@@ -24,134 +25,102 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
+
+
     @Transactional(readOnly = true)
-    public LoginResponse login(
-            LoginRequest request
-    ) {
-        String email = normalizarEmail(
-                request.email()
-        );
+    public LoginResponse login(LoginRequest request) {
 
-        Funcionario funcionario =
-                buscarPorEmailParaAutenticacao(
-                        email
-                );
+        String email = normalizarEmail(request.email());
 
-        boolean senhaCorreta =
-                passwordEncoder.matches(
-                        request.senha(),
-                        funcionario.getSenhaHash()
-                );
+        Funcionario funcionario = buscarPorEmailParaAutenticacao(email);
+
+        boolean senhaCorreta = passwordEncoder.matches(request.senha(),funcionario.getSenhaHash());
 
         if (!senhaCorreta) {
-            throw new CredenciaisInvalidasException(
-                    "E-mail ou senha inválidos"
-            );
+            throw new CredenciaisInvalidasException("E-mail ou senha inválidos");
         }
 
         validarUsuarioAtivo(funcionario);
 
-        TokenGerado tokenGerado =
-                tokenService.gerarToken(
-                        funcionario
-                );
+        TokenGerado tokenGerado = tokenService.gerarToken(funcionario);
 
-        return LoginResponse.from(
-                funcionario,
-                tokenGerado
-        );
+        return LoginResponse.from(funcionario,tokenGerado);
     }
+
 
     @Transactional
-    public void alterarSenha(
-            AlterarSenhaRequest request
-    ) {
-        String email = normalizarEmail(
-                request.email()
-        );
+public LoginResponse concluirPrimeiroAcesso(Long funcionarioId,PrimeiroAcessoRequest request) {
 
-        Funcionario funcionario =
-                funcionarioRepository
-                        .findByEmailCorporativoIgnoreCase(
-                                email
-                        )
-                        .orElseThrow(
-                                () ->
-                                        new CredenciaisInvalidasException(
-                                                "E-mail ou senha atual inválidos"
-                                        )
-                        );
+    Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+    .orElseThrow(() -> new CredenciaisInvalidasException("Usuário não encontrado"));
 
-        boolean senhaAtualCorreta =
-                passwordEncoder.matches(
-                        request.senhaAtual(),
-                        funcionario.getSenhaHash()
-                );
+    validarUsuarioAtivo(funcionario);
+
+    if (!funcionario.isPrimeiroAcesso()) {
+        throw new IllegalArgumentException("O primeiro acesso deste usuário já foi concluído");
+    }
+
+    if (!request.novaSenha().equals(request.confirmacaoSenha())) {
+        throw new IllegalArgumentException("A confirmação da senha não corresponde à nova senha");
+    }
+
+    if (passwordEncoder.matches(request.novaSenha(),funcionario.getSenhaHash())) {
+        throw new IllegalArgumentException("A nova senha deve ser diferente da senha provisória");
+    }
+
+    funcionario.setSenhaHash(passwordEncoder.encode(request.novaSenha()));
+
+    funcionario.setPrimeiroAcesso(false);
+
+    Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
+
+    TokenGerado tokenGerado = tokenService.gerarToken(funcionarioAtualizado);
+
+    return LoginResponse.from(funcionarioAtualizado,tokenGerado);
+}
+
+    @Transactional
+    public void alterarSenha(AlterarSenhaRequest request) {
+
+        String email = normalizarEmail(request.email());
+
+        Funcionario funcionario = funcionarioRepository.findByEmailCorporativoIgnoreCase(email)
+        .orElseThrow(() -> new CredenciaisInvalidasException("E-mail ou senha atual inválidos"));
+
+        boolean senhaAtualCorreta = passwordEncoder.matches(request.senhaAtual(),
+        funcionario.getSenhaHash());
 
         if (!senhaAtualCorreta) {
-            throw new CredenciaisInvalidasException(
-                    "E-mail ou senha atual inválidos"
-            );
+            throw new CredenciaisInvalidasException("E-mail ou senha atual inválidos");
         }
 
         validarUsuarioAtivo(funcionario);
 
-        if (
-                request.senhaAtual()
-                        .equals(request.novaSenha())
-        ) {
-            throw new IllegalArgumentException(
-                    "A nova senha deve ser diferente da senha atual"
-            );
+        if (request.senhaAtual().equals(request.novaSenha())) {
+            throw new IllegalArgumentException("A nova senha deve ser diferente da senha atual");
         }
 
-        funcionario.setSenhaHash(
-                passwordEncoder.encode(
-                        request.novaSenha()
-                )
-        );
+        funcionario.setSenhaHash(passwordEncoder.encode(request.novaSenha()));
+        
+        funcionario.setPrimeiroAcesso(false);
 
-        funcionarioRepository.save(
-                funcionario
-        );
+        funcionarioRepository.save(funcionario);
     }
 
-    private Funcionario buscarPorEmailParaAutenticacao(
-            String email
-    ) {
-        return funcionarioRepository
-                .findByEmailCorporativoIgnoreCase(
-                        email
-                )
-                .orElseThrow(
-                        () ->
-                                new CredenciaisInvalidasException(
-                                        "E-mail ou senha inválidos"
-                                )
-                );
+    private Funcionario buscarPorEmailParaAutenticacao(String email) {
+
+        return funcionarioRepository.findByEmailCorporativoIgnoreCase(email)
+        .orElseThrow(() ->new CredenciaisInvalidasException("E-mail ou senha inválidos"));
     }
 
-    private void validarUsuarioAtivo(
-            Funcionario funcionario
-    ) {
-        if (
-                funcionario.getStatus() !=
-                StatusFuncionario.ATIVO
-        ) {
-            throw new UsuarioInativoException(
-                    "Usuário sem acesso. Status atual: "
-                            + funcionario
-                                    .getStatus()
-                                    .getDescricao()
-            );
+    private void validarUsuarioAtivo(Funcionario funcionario) {
+        if (funcionario.getStatus() != StatusFuncionario.ATIVO) {
+            throw new UsuarioInativoException("Usuário sem acesso. Status atual: " + funcionario
+            .getStatus().getDescricao());
         }
     }
 
-    private String normalizarEmail(
-            String email
-    ) {
-        return email
-                .trim()
-                .toLowerCase(Locale.ROOT);
+    private String normalizarEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
     }
 }
