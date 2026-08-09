@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.PATCH,"/api/auth/primeiro-acesso").authenticated()
                         .requestMatchers(HttpMethod.PATCH,"/api/auth/alterar-senha").permitAll()
+                        .requestMatchers(HttpMethod.PATCH,"/api/auth/recuperar-senha").permitAll()
                         // Qualquer usuário autenticado consulta os próprios dados
                         .requestMatchers(HttpMethod.GET,"/api/funcionarios/me").authenticated()
                         // RH e gestor podem consultar funcionários
