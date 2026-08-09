@@ -1,10 +1,7 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+
 import {
   AbstractControl,
   FormBuilder,
@@ -12,19 +9,27 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+
 import { HttpErrorResponse } from '@angular/common/http';
+
 import { Router } from '@angular/router';
-import { timeout } from 'rxjs';
+
+import { finalize, timeout } from 'rxjs';
 
 import { FuncionarioService } from '../../../core/services/funcionario';
+
 import { UsuarioLogadoService } from '../../../core/services/usuario-logado.service';
+
 import {
   FuncionarioCreateRequest,
   FuncionarioResponse,
   StatusFuncionario,
   TipoVinculo,
 } from '../../../models/funcionario';
+
 import { TipoUsuario } from '../../../models/tipoUsuario';
+
+import { cpfValidator } from '../../../shared/validators/cpf.validator';
 
 interface OpcaoAcesso {
   valor: TipoUsuario;
@@ -33,36 +38,35 @@ interface OpcaoAcesso {
 
 @Component({
   selector: 'app-cadastro-funcionario-component',
+
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-  ],
-  templateUrl:
-    './cadastro-funcionario-component.html',
-  styleUrl:
-    './cadastro-funcionario-component.css',
+
+  imports: [CommonModule, ReactiveFormsModule],
+
+  templateUrl: './cadastro-funcionario-component.html',
+
+  styleUrl: './cadastro-funcionario-component.css',
 })
-export class CadastroFuncionarioComponent
-  implements OnInit {
-
+export class CadastroFuncionarioComponent implements OnInit {
   @ViewChild('inputArquivo')
-  inputArquivo?:
-    ElementRef<HTMLInputElement>;
-
+  inputArquivo?: ElementRef<HTMLInputElement>;
 
   readonly formulario: FormGroup;
 
   arrastandoArquivo = false;
-  previewFoto:
-    string | ArrayBuffer | null = null;
+
+  previewFoto: string | ArrayBuffer | null = null;
+
   fotoSelecionada: File | null = null;
+
   erroFoto = '';
 
-
   senhaVisivel = false;
+
   salvando = false;
+
   erroCadastro = '';
+
   mensagemSucesso = '';
 
   readonly cargos = [
@@ -90,21 +94,9 @@ export class CadastroFuncionarioComponent
     'União estável',
   ];
 
-  readonly tiposVinculo:
-    TipoVinculo[] = [
-      'CLT',
-      'PJ',
-      'Estágio',
-      'Temporário',
-      'Aprendiz',
-    ];
+  readonly tiposVinculo: TipoVinculo[] = ['CLT', 'PJ', 'Estágio', 'Temporário', 'Aprendiz'];
 
-  readonly gestores = [
-    'Ana Ribeiro',
-    'Bruno Castro',
-    'Carla Menezes',
-    'Diego Fontes',
-  ];
+  readonly gestores = ['Ana Ribeiro', 'Bruno Castro', 'Carla Menezes', 'Diego Fontes'];
 
   readonly locaisTrabalho = [
     'Matriz - São Paulo',
@@ -113,184 +105,81 @@ export class CadastroFuncionarioComponent
     'Híbrido',
   ];
 
-  readonly tiposAcesso:
-    OpcaoAcesso[] = [
-      {
-        valor: 'funcionario',
-        rotulo: 'Funcionário',
-      },
-      {
-        valor: 'gestor',
-        rotulo: 'Gestor',
-      },
-      {
-        valor: 'rh',
-        rotulo: 'RH / Administrador',
-      },
-    ];
+  readonly tiposAcesso: OpcaoAcesso[] = [
+    {
+      valor: 'funcionario',
+      rotulo: 'Funcionário',
+    },
+    {
+      valor: 'gestor',
+      rotulo: 'Gestor',
+    },
+    {
+      valor: 'rh',
+      rotulo: 'RH / Administrador',
+    },
+  ];
 
-  readonly statusDisponiveis:
-    StatusFuncionario[] = [
-      'Ativo',
-      'Férias',
-      'Afastado',
-      'Inativo',
-    ];
+  readonly statusDisponiveis: StatusFuncionario[] = ['Ativo', 'Férias', 'Afastado', 'Inativo'];
 
   constructor(
-    private readonly formBuilder:
-      FormBuilder,
+    private readonly formBuilder: FormBuilder,
 
-    private readonly router:
-      Router,
+    private readonly router: Router,
 
-    private readonly funcionarioService:
-      FuncionarioService,
+    private readonly funcionarioService: FuncionarioService,
 
-    private readonly usuarioLogadoService:
-      UsuarioLogadoService
+    private readonly usuarioLogadoService: UsuarioLogadoService,
+
+    private readonly cdr: ChangeDetectorRef,
   ) {
-    this.formulario =
-      this.formBuilder.group({
-        nomeCompleto: [
-          '',
-          [
-            Validators.required,
-            Validators.maxLength(150),
-          ],
-        ],
+    this.formulario = this.formBuilder.group({
+      nomeCompleto: ['', [Validators.required, Validators.maxLength(150)]],
 
-        emailCorporativo: [
-          '',
-          [
-            Validators.required,
-            Validators.email,
-            Validators.maxLength(150),
-          ],
-        ],
+      emailCorporativo: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
 
-        cpf: [
-          '',
-          [
-            Validators.required,
-            Validators.pattern(
-              /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/
-            ),
-          ],
-        ],
+      cpf: ['', [Validators.required, cpfValidator]],
 
-        telefone: [
-          '',
-          [
-            Validators.required,
-            Validators.maxLength(20),
-          ],
-        ],
+      telefone: ['', [Validators.required, Validators.maxLength(20)]],
 
-        dataNascimento: [
-          '',
-          Validators.required,
-        ],
+      dataNascimento: ['', Validators.required],
 
-        estadoCivil: [
-          '',
-          Validators.maxLength(40),
-        ],
+      estadoCivil: ['', Validators.maxLength(40)],
 
-        nacionalidade: [
-          'Brasileira',
-          [
-            Validators.required,
-            Validators.maxLength(60),
-          ],
-        ],
+      nacionalidade: ['Brasileira', [Validators.required, Validators.maxLength(60)]],
 
-        naturalidade: [
-          '',
-          Validators.maxLength(80),
-        ],
+      naturalidade: ['', Validators.maxLength(80)],
 
-        matricula: [
-          '',
-          [
-            Validators.required,
-            Validators.maxLength(30),
-          ],
-        ],
+      matricula: ['', [Validators.required, Validators.maxLength(30)]],
 
-        cargo: [
-          '',
-          [
-            Validators.required,
-            Validators.maxLength(100),
-          ],
-        ],
+      cargo: ['', [Validators.required, Validators.maxLength(100)]],
 
-        setor: [
-          '',
-          [
-            Validators.required,
-            Validators.maxLength(100),
-          ],
-        ],
+      setor: ['', [Validators.required, Validators.maxLength(100)]],
 
-        dataAdmissao: [
-          '',
-          Validators.required,
-        ],
+      dataAdmissao: ['', Validators.required],
 
-        tipoVinculo: [
-          '',
-          Validators.required,
-        ],
+      tipoVinculo: ['', Validators.required],
 
-        cargaHorariaSemanal: [
-          null,
-          [
-            Validators.min(1),
-            Validators.max(60),
-          ],
-        ],
+      cargaHorariaSemanal: [null, [Validators.min(1), Validators.max(60)]],
 
-        gestorImediato: [
-          '',
-          Validators.maxLength(150),
-        ],
+      gestorImediato: ['', Validators.maxLength(150)],
 
-        localTrabalho: [
-          '',
-          Validators.maxLength(120),
-        ],
+      localTrabalho: ['', Validators.maxLength(120)],
 
-        tipoAcesso: [
-          'funcionario',
-          Validators.required,
-        ],
+      tipoAcesso: ['funcionario', Validators.required],
 
-        status: [
-          'Ativo',
-          Validators.required,
-        ],
+      status: ['Ativo', Validators.required],
 
-        senhaProvisoria: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(8),
-            Validators.maxLength(72),
-          ],
-        ],
-      });
+      senhaProvisoria: [
+        '',
+        [Validators.required, Validators.minLength(8), Validators.maxLength(72)],
+      ],
+    });
   }
 
   ngOnInit(): void {
-    if (
-      this.usuarioLogadoService
-        .obterTipoUsuario() !== 'rh'
-    ) {
-      void this.router.navigate(
-        ['/gestao/funcionarios']
-      );
+    if (this.usuarioLogadoService.obterTipoUsuario() !== 'rh') {
+      void this.router.navigate(['/gestao/funcionarios']);
     }
   }
 
@@ -301,54 +190,40 @@ export class CadastroFuncionarioComponent
   }
 
   campoInvalido(nome: string): boolean {
-    const campo =
-      this.formulario.get(nome);
+    const campo = this.formulario.get(nome);
 
-    return Boolean(
-      campo &&
-      campo.invalid &&
-      (campo.touched || campo.dirty)
-    );
+    return Boolean(campo && campo.invalid && (campo.touched || campo.dirty));
   }
 
   abrirSeletorArquivo(): void {
-    this.inputArquivo
-      ?.nativeElement.click();
+    this.inputArquivo?.nativeElement.click();
   }
 
-  aoSelecionarArquivo(
-    evento: Event
-  ): void {
-    const input =
-      evento.target as HTMLInputElement;
+  aoSelecionarArquivo(evento: Event): void {
+    const input = evento.target as HTMLInputElement;
 
-    const arquivo =
-      input.files?.[0];
+    const arquivo = input.files?.[0];
 
     if (arquivo) {
       this.processarArquivo(arquivo);
     }
   }
 
-  aoSoltarArquivo(
-    evento: DragEvent
-  ): void {
+  aoSoltarArquivo(evento: DragEvent): void {
     evento.preventDefault();
+
     this.arrastandoArquivo = false;
 
-    const arquivo =
-      evento.dataTransfer
-        ?.files?.[0];
+    const arquivo = evento.dataTransfer?.files?.[0];
 
     if (arquivo) {
       this.processarArquivo(arquivo);
     }
   }
 
-  aoArrastarSobre(
-    evento: DragEvent
-  ): void {
+  aoArrastarSobre(evento: DragEvent): void {
     evento.preventDefault();
+
     this.arrastandoArquivo = true;
   }
 
@@ -358,51 +233,39 @@ export class CadastroFuncionarioComponent
 
   removerFoto(): void {
     this.previewFoto = null;
+
     this.fotoSelecionada = null;
+
     this.erroFoto = '';
 
     if (this.inputArquivo) {
-      this.inputArquivo
-        .nativeElement.value = '';
+      this.inputArquivo.nativeElement.value = '';
     }
   }
 
   alternarVisibilidadeSenha(): void {
-    this.senhaVisivel =
-      !this.senhaVisivel;
+    this.senhaVisivel = !this.senhaVisivel;
   }
 
   gerarSenha(): void {
-    const caracteres =
-      'ABCDEFGHJKLMNPQRSTUVWXYZ' +
-      'abcdefghijkmnpqrstuvwxyz' +
-      '23456789!@#$%';
+    const caracteres = 'ABCDEFGHJKLMNPQRSTUVWXYZ' + 'abcdefghijkmnpqrstuvwxyz' + '23456789!@#$%';
 
     let senha = '';
 
-    for (
-      let indice = 0;
-      indice < 12;
-      indice += 1
-    ) {
-      const posicao =
-        Math.floor(
-          Math.random() *
-          caracteres.length
-        );
+    for (let indice = 0; indice < 12; indice += 1) {
+      const posicao = Math.floor(Math.random() * caracteres.length);
 
-      senha +=
-        caracteres.charAt(posicao);
+      senha += caracteres.charAt(posicao);
     }
 
-    const campoSenha =
-      this.formulario.get(
-        'senhaProvisoria'
-      );
+    const campoSenha = this.formulario.get('senhaProvisoria');
 
     campoSenha?.setValue(senha);
+
     campoSenha?.markAsDirty();
+
     campoSenha?.markAsTouched();
+
     campoSenha?.updateValueAndValidity();
 
     this.senhaVisivel = true;
@@ -413,9 +276,7 @@ export class CadastroFuncionarioComponent
       return;
     }
 
-    void this.router.navigate(
-      ['/gestao/funcionarios']
-    );
+    void this.router.navigate(['/gestao/funcionarios']);
   }
 
   limparFormulario(): void {
@@ -425,13 +286,18 @@ export class CadastroFuncionarioComponent
 
     this.formulario.reset({
       nacionalidade: 'Brasileira',
+
       tipoAcesso: 'funcionario',
+
       status: 'Ativo',
+
       cargaHorariaSemanal: null,
     });
 
     this.erroCadastro = '';
+
     this.mensagemSucesso = '';
+
     this.removerFoto();
   }
 
@@ -441,260 +307,186 @@ export class CadastroFuncionarioComponent
     }
 
     this.erroCadastro = '';
+
     this.mensagemSucesso = '';
 
     if (this.formulario.invalid) {
       this.formulario.markAllAsTouched();
 
-      this.erroCadastro =
-        'Revise os campos obrigatórios e os valores informados.';
+      this.erroCadastro = 'Revise os campos obrigatórios e os valores informados.';
+
+      this.cdr.detectChanges();
 
       return;
     }
 
-    const request =
-      this.criarRequest();
+    const request = this.criarRequest();
 
     this.salvando = true;
 
-    this.funcionarioService
-      .criar(
-        request,
-        this.fotoSelecionada
-      )
-      .pipe(timeout(30000))
-      .subscribe({
-        next: (
-          funcionario:
-            FuncionarioResponse
-        ) => {
-          this.mensagemSucesso =
-            `${funcionario.nomeCompleto} foi cadastrado com sucesso.`;
+    this.cdr.detectChanges();
 
+    this.funcionarioService
+      .criar(request, this.fotoSelecionada)
+      .pipe(
+        timeout(30000),
+
+        finalize(() => {
+          /*
+           * Sempre libera o botão:
+           * sucesso, erro ou timeout.
+           */
           this.salvando = false;
 
-          window.setTimeout(
-            () => {
-              void this.router.navigate(
-                ['/gestao/funcionarios']
-              );
-            },
-            900
-          );
+          this.cdr.detectChanges();
+        }),
+      )
+      .subscribe({
+        next: (funcionario: FuncionarioResponse) => {
+          this.mensagemSucesso = `${funcionario.nomeCompleto} foi cadastrado com sucesso.`;
+
+          this.cdr.detectChanges();
+
+          window.setTimeout(() => {
+            void this.router.navigate(['/gestao/funcionarios']);
+          }, 900);
         },
 
         error: (erro: unknown) => {
-          console.error(
-            'Erro ao cadastrar funcionário:',
-            erro
+          console.error('Erro ao cadastrar funcionário:', erro);
+
+          this.erroCadastro = this.obterMensagemErro(
+            erro,
+            'Não foi possível cadastrar o funcionário.',
           );
 
-          this.erroCadastro =
-            this.obterMensagemErro(
-              erro,
-              'Não foi possível cadastrar o funcionário.'
-            );
-
-          this.salvando = false;
+          this.cdr.detectChanges();
         },
       });
   }
 
-  private criarRequest():
-    FuncionarioCreateRequest {
-
-    const valor =
-      this.formulario.getRawValue();
+  private criarRequest(): FuncionarioCreateRequest {
+    const valor = this.formulario.getRawValue();
 
     return {
-      nomeCompleto:
-        String(
-          valor.nomeCompleto
-        ).trim(),
+      nomeCompleto: String(valor.nomeCompleto).trim(),
 
-      emailCorporativo:
-        String(
-          valor.emailCorporativo
-        ).trim(),
+      emailCorporativo: String(valor.emailCorporativo).trim().toLowerCase(),
 
-      cpf:
-        String(valor.cpf).trim(),
+      cpf: String(valor.cpf).replace(/\D/g, ''),
 
-      telefone:
-        String(valor.telefone).trim(),
+      telefone: String(valor.telefone).trim(),
 
-      dataNascimento:
-        String(
-          valor.dataNascimento
-        ),
+      dataNascimento: String(valor.dataNascimento),
 
-      estadoCivil:
-        this.valorOpcional(
-          valor.estadoCivil
-        ),
+      estadoCivil: this.valorOpcional(valor.estadoCivil),
 
-      nacionalidade:
-        String(
-          valor.nacionalidade
-        ).trim(),
+      nacionalidade: String(valor.nacionalidade).trim(),
 
-      naturalidade:
-        this.valorOpcional(
-          valor.naturalidade
-        ),
+      naturalidade: this.valorOpcional(valor.naturalidade),
 
-      matricula:
-        String(
-          valor.matricula
-        ).trim(),
+      matricula: String(valor.matricula).trim(),
 
-      cargo:
-        String(valor.cargo).trim(),
+      cargo: String(valor.cargo).trim(),
 
-      setor:
-        String(valor.setor).trim(),
+      setor: String(valor.setor).trim(),
 
-      dataAdmissao:
-        String(
-          valor.dataAdmissao
-        ),
+      dataAdmissao: String(valor.dataAdmissao),
 
-      tipoVinculo:
-        valor.tipoVinculo as TipoVinculo,
+      tipoVinculo: valor.tipoVinculo as TipoVinculo,
 
       cargaHorariaSemanal:
-        valor.cargaHorariaSemanal ===
-          null ||
-        valor.cargaHorariaSemanal ===
-          ''
+        valor.cargaHorariaSemanal === null || valor.cargaHorariaSemanal === ''
           ? null
-          : Number(
-              valor
-                .cargaHorariaSemanal
-            ),
+          : Number(valor.cargaHorariaSemanal),
 
-      gestorImediato:
-        this.valorOpcional(
-          valor.gestorImediato
-        ),
+      gestorImediato: this.valorOpcional(valor.gestorImediato),
 
-      localTrabalho:
-        this.valorOpcional(
-          valor.localTrabalho
-        ),
+      localTrabalho: this.valorOpcional(valor.localTrabalho),
 
-      tipoAcesso:
-        valor.tipoAcesso as TipoUsuario,
+      tipoAcesso: valor.tipoAcesso as TipoUsuario,
 
-      status:
-        valor.status as StatusFuncionario,
+      status: valor.status as StatusFuncionario,
 
-      senhaProvisoria:
-        String(
-          valor.senhaProvisoria
-        ),
+      senhaProvisoria: String(valor.senhaProvisoria),
     };
   }
 
-  private valorOpcional(
-    valor: unknown
-  ): string | null {
-    const texto =
-      String(valor ?? '').trim();
+  private valorOpcional(valor: unknown): string | null {
+    const texto = String(valor ?? '').trim();
 
     return texto || null;
   }
 
-  private processarArquivo(
-    arquivo: File
-  ): void {
-    const formatosAceitos = [
-      'image/jpeg',
-      'image/png',
-    ];
+  private processarArquivo(arquivo: File): void {
+    const formatosAceitos = ['image/jpeg', 'image/png'];
 
-    const tamanhoMaximoBytes =
-      2 * 1024 * 1024;
+    const tamanhoMaximoBytes = 2 * 1024 * 1024;
 
-    if (
-      !formatosAceitos.includes(
-        arquivo.type
-      )
-    ) {
-      this.erroFoto =
-        'Formato inválido. Envie um arquivo JPG ou PNG.';
+    if (!formatosAceitos.includes(arquivo.type)) {
+      this.erroFoto = 'Formato inválido. Envie um arquivo JPG ou PNG.';
 
       return;
     }
 
-    if (
-      arquivo.size >
-      tamanhoMaximoBytes
-    ) {
-      this.erroFoto =
-        'O arquivo excede o tamanho máximo de 2 MB.';
+    if (arquivo.size > tamanhoMaximoBytes) {
+      this.erroFoto = 'O arquivo excede o tamanho máximo de 2 MB.';
 
       return;
     }
 
     this.erroFoto = '';
+
     this.fotoSelecionada = arquivo;
 
-    const leitor =
-      new FileReader();
+    const leitor = new FileReader();
 
     leitor.onload = () => {
-      this.previewFoto =
-        leitor.result;
+      this.previewFoto = leitor.result;
+
+      this.cdr.detectChanges();
     };
 
     leitor.readAsDataURL(arquivo);
   }
 
-  private obterMensagemErro(
-    erro: unknown,
-    mensagemPadrao: string
-  ): string {
-    if (
-      erro instanceof
-      HttpErrorResponse
-    ) {
+  private obterMensagemErro(erro: unknown, mensagemPadrao: string): string {
+    if (erro instanceof HttpErrorResponse) {
       if (erro.status === 0) {
-        return (
-          'Não foi possível conectar ao servidor.'
-        );
+        return 'Não foi possível conectar ao servidor.';
+      }
+
+      if (erro.status === 400) {
+        if (typeof erro.error?.campos?.cpf === 'string') {
+          return erro.error.campos.cpf;
+        }
       }
 
       if (erro.status === 403) {
-        return (
-          'Apenas usuários do RH podem cadastrar funcionários.'
-        );
+        return 'Apenas usuários do RH podem cadastrar funcionários.';
       }
 
-      if (
-        typeof erro.error?.mensagem ===
-        'string'
-      ) {
+      if (erro.status === 409) {
+        if (typeof erro.error?.mensagem === 'string') {
+          return erro.error.mensagem;
+        }
+
+        return 'Já existe um funcionário com algum dos dados informados.';
+      }
+
+      if (typeof erro.error?.mensagem === 'string') {
         return erro.error.mensagem;
       }
 
-      if (
-        typeof erro.error?.message ===
-        'string'
-      ) {
+      if (typeof erro.error?.message === 'string') {
         return erro.error.message;
       }
 
-      if (
-        typeof erro.error?.erro ===
-        'string'
-      ) {
+      if (typeof erro.error?.erro === 'string') {
         return erro.error.erro;
       }
 
-      if (
-        typeof erro.error === 'string'
-      ) {
+      if (typeof erro.error === 'string') {
         return erro.error;
       }
     }
@@ -705,9 +497,7 @@ export class CadastroFuncionarioComponent
       'name' in erro &&
       erro.name === 'TimeoutError'
     ) {
-      return (
-        'O servidor demorou muito para responder.'
-      );
+      return 'O servidor demorou muito para responder.';
     }
 
     return mensagemPadrao;
