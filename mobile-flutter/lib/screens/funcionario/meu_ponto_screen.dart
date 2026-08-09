@@ -56,7 +56,17 @@ class MeuPontoScreen extends StatelessWidget {
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.fingerprint),
                         label: Text('Registrar ${proxima.label.toLowerCase()}'),
-                        onPressed: () => dados.registrarPonto(proxima),
+                        onPressed: () async {
+                          try {
+                            await dados.registrarPonto(proxima);
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString())),
+                              );
+                            }
+                          }
+                        },
                       ),
                     ),
                 ],
@@ -100,9 +110,9 @@ class MeuPontoScreen extends StatelessWidget {
     switch (tipo) {
       case TipoMarcacao.entrada:
         return Icons.login;
-      case TipoMarcacao.almoco:
+      case TipoMarcacao.inicioIntervalo:
         return Icons.lunch_dining_outlined;
-      case TipoMarcacao.retorno:
+      case TipoMarcacao.fimIntervalo:
         return Icons.keyboard_return;
       case TipoMarcacao.saida:
         return Icons.logout;

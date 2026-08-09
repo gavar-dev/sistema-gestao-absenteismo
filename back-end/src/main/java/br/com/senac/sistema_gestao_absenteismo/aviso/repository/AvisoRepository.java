@@ -8,9 +8,9 @@ import java.util.List;
 public interface AvisoRepository
         extends JpaRepository<Aviso, Long> {
 
-    List<Aviso> findAllByOrderByPublicadoEmDesc();
+    List<Aviso> findAllByOrderByFixadoDescPublicadoEmDesc();
 
-    List<Aviso> findByAtivoTrueOrderByPublicadoEmDesc();
+    List<Aviso> findByAtivoTrueOrderByFixadoDescPublicadoEmDesc();
 
-    List<Aviso> findByAtivoOrderByPublicadoEmDesc(Boolean ativo);
+    List<Aviso> findByAtivoOrderByFixadoDescPublicadoEmDesc(Boolean ativo);
 }

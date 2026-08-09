@@ -1,1 +1,0 @@
- C:\\Users\\nsdas\\Downloads\\gestao_pessoas_app\\gestao_pessoas_app\\.dart_tool\\flutter_build\\2c17ae6888db10b25556204e2d246ff7\\native_assets.json: 

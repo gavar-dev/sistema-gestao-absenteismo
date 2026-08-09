@@ -26,9 +26,10 @@ class _HistoricoScreenState extends State<HistoricoScreen> {
 
   Color _corStatus(StatusDia status) {
     switch (status) {
-      case StatusDia.completo:
+      case StatusDia.concluido:
         return StatusColors.positivo;
-      case StatusDia.incompleto:
+      case StatusDia.emAndamento:
+      case StatusDia.pendente:
       case StatusDia.atraso:
         return StatusColors.atencao;
       case StatusDia.faltaJustificada:

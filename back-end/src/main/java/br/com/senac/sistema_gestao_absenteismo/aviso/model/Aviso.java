@@ -67,6 +67,13 @@ public class Aviso {
     private Boolean ativo;
 
     /*
+     * Quando true, o aviso aparece sempre no topo da lista,
+     * acima dos demais, independente da data de publicação.
+     */
+    @Column(nullable = false)
+    private Boolean fixado;
+
+    /*
      * Momento a partir do qual o aviso será exibido.
      *
      * Quando não informado, será usada a data atual.
@@ -105,6 +112,10 @@ public class Aviso {
 
         if (ativo == null) {
             ativo = true;
+        }
+
+        if (fixado == null) {
+            fixado = false;
         }
     }
 

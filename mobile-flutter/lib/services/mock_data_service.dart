@@ -1,168 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/aviso.dart';
 import '../models/funcionario.dart';
 import '../models/registro_ponto.dart';
 import '../models/solicitacao.dart';
+import '../models/usuario.dart';
+import 'api_client.dart';
 
-/// Guarda, em memória, todos os dados usados pelo app: registros de ponto,
-/// histórico, avisos, solicitações e a lista de funcionários da gestão.
+/// Antes era só uma lista em memória (dados fake). Agora busca tudo da API
+/// real do back-end (`back-end/`). Mantivemos o nome `MockDataService` para
+/// não precisar tocar nos imports/Provider das telas — mas não é mais mock.
 ///
-/// É o equivalente mobile dos services `Ponto`, `Solicitacao`, `Aviso` e
-/// `Funcionario` do projeto Angular — só que, como lá, ainda sem back-end:
-/// os dados vivem apenas na memória do app (reiniciam ao fechar o app).
-/// O próximo passo natural seria trocar essas listas por chamadas a uma
-/// API REST (com `http`/`dio`) apontando para o back-end de
-/// sistema-gestao-absenteismo.
+/// Fluxo: depois do login, chame [carregarDados] passando o usuário logado;
+/// isso popula todas as listas abaixo de uma vez, de acordo com o perfil
+/// (funcionário só vê os próprios dados; RH/gestor vê os dados de gestão).
 class MockDataService extends ChangeNotifier {
+  final ApiClient _api = ApiClient.instancia;
+
+  bool carregando = false;
+  String? erroCarregamento;
+
   // ---------------------------------------------------------------------
-  // PONTO DO DIA (tela "Meu Ponto")
+  // PONTO DO DIA + HISTÓRICO
   // ---------------------------------------------------------------------
-  final List<RegistroPonto> registrosHoje = [
-    const RegistroPonto(tipo: TipoMarcacao.entrada, horario: '08:03'),
-    const RegistroPonto(tipo: TipoMarcacao.almoco, horario: '12:05'),
-  ];
+  RegistroPontoDia _hoje = RegistroPontoDia(
+    data: DateTime.now(),
+    status: StatusDia.pendente,
+    proximaMarcacao: TipoMarcacao.entrada,
+  );
 
-  TipoMarcacao? get proximaMarcacao {
-    for (final tipo in TipoMarcacao.values) {
-      if (!registrosHoje.any((r) => r.tipo == tipo)) return tipo;
-    }
-    return null;
-  }
+  List<RegistroHistorico> historico = [];
 
-  bool jaRegistrado(TipoMarcacao tipo) =>
-      registrosHoje.any((r) => r.tipo == tipo);
+  TipoMarcacao? get proximaMarcacao => _hoje.proximaMarcacao;
+  bool jaRegistrado(TipoMarcacao tipo) => _hoje.jaRegistrado(tipo);
+  String? horarioDe(TipoMarcacao tipo) => _hoje.horarioDe(tipo);
+  double get percentualJornada => _hoje.percentualJornada;
 
-  String? horarioDe(TipoMarcacao tipo) {
-    final registro = registrosHoje.where((r) => r.tipo == tipo).toList();
-    return registro.isEmpty ? null : registro.first.horario;
-  }
-
-  /// Registra a marcação de ponto informada com o horário atual do
-  /// dispositivo (equivalente a `registrarPonto()` no Angular).
-  void registrarPonto(TipoMarcacao tipo) {
-    if (jaRegistrado(tipo)) return;
-    final agora = TimeOfDay.now();
-    final horario =
-        '${agora.hour.toString().padLeft(2, '0')}:${agora.minute.toString().padLeft(2, '0')}';
-    registrosHoje.add(RegistroPonto(tipo: tipo, horario: horario));
+  /// Registra a marcação no back-end (usa o horário do servidor).
+  /// Lança [ApiException] se der erro (ex.: marcação fora de ordem).
+  Future<void> registrarPonto(TipoMarcacao tipo) async {
+    final json = await _api.post('/pontos/marcar', corpo: {'tipo': tipo.valorJson}) as Map<String, dynamic>;
+    _hoje = RegistroPontoDia.fromJson(json);
     notifyListeners();
   }
 
-  double get percentualJornada =>
-      registrosHoje.length / TipoMarcacao.values.length;
-
   // ---------------------------------------------------------------------
-  // HISTÓRICO DE PONTO
+  // AVISOS
   // ---------------------------------------------------------------------
-  final List<RegistroHistorico> historico = const [
-    RegistroHistorico(
-      data: '08/07/2026',
-      diaSemana: 'Quarta-feira',
-      entrada: '08:03',
-      almoco: '12:05',
-      retorno: '13:00',
-      saida: '17:04',
-      horas: '08h01',
-      status: StatusDia.completo,
-      observacao: 'Jornada normal',
-    ),
-    RegistroHistorico(
-      data: '07/07/2026',
-      diaSemana: 'Terça-feira',
-      entrada: '08:41',
-      almoco: '12:10',
-      retorno: '13:08',
-      saida: '17:30',
-      horas: '07h51',
-      status: StatusDia.atraso,
-      observacao: 'Entrada acima da tolerância',
-    ),
-    RegistroHistorico(
-      data: '03/07/2026',
-      diaSemana: 'Sexta-feira',
-      entrada: '08:05',
-      almoco: '12:03',
-      retorno: '--:--',
-      saida: '17:02',
-      horas: '07h59',
-      status: StatusDia.incompleto,
-      observacao: 'Retorno do almoço não registrado',
-    ),
-    RegistroHistorico(
-      data: '02/07/2026',
-      diaSemana: 'Quinta-feira',
-      entrada: '--:--',
-      almoco: '--:--',
-      retorno: '--:--',
-      saida: '--:--',
-      horas: '00h00',
-      status: StatusDia.faltaJustificada,
-      observacao: 'Atestado enviado para análise',
-    ),
-    RegistroHistorico(
-      data: '01/07/2026',
-      diaSemana: 'Quarta-feira',
-      entrada: '08:08',
-      almoco: '12:04',
-      retorno: '13:02',
-      saida: '17:06',
-      horas: '07h58',
-      status: StatusDia.completo,
-      observacao: 'Jornada normal',
-    ),
-  ];
-
-  // ---------------------------------------------------------------------
-  // AVISOS (notificações do funcionário)
-  // ---------------------------------------------------------------------
-  final List<Aviso> avisos = [
-    Aviso(
-      id: 1,
-      titulo: 'Prazo para justificar falta termina amanhã',
-      descricao:
-          'A falta do dia 29/07 ainda precisa de justificativa. Envie a solicitação em até 48 horas.',
-      data: '31/07/2026',
-      horario: '08:10',
-      tipo: TipoAviso.urgente,
-      categoria: 'Ponto',
-      lido: false,
-    ),
-    Aviso(
-      id: 2,
-      titulo: 'Retorno do almoço ainda não registrado',
-      descricao:
-          'O sistema não encontrou o registro de retorno do almoço de hoje.',
-      data: '31/07/2026',
-      horario: '13:18',
-      tipo: TipoAviso.atencao,
-      categoria: 'Ponto',
-      lido: false,
-    ),
-    Aviso(
-      id: 3,
-      titulo: 'Correção cadastral concluída',
-      descricao:
-          'A solicitação de atualização do telefone foi aprovada pelo RH.',
-      data: '30/07/2026',
-      horario: '16:42',
-      tipo: TipoAviso.sucesso,
-      categoria: 'Cadastro',
-      lido: true,
-    ),
-    Aviso(
-      id: 4,
-      titulo: 'Solicitação de correção em análise',
-      descricao: 'O RH iniciou a análise do protocolo #SOL-1024.',
-      data: '30/07/2026',
-      horario: '10:05',
-      tipo: TipoAviso.info,
-      categoria: 'Solicitação',
-      lido: false,
-    ),
-  ];
+  List<Aviso> avisos = [];
 
   int get avisosNaoLidos => avisos.where((a) => !a.lido).length;
 
+  /// Só altera o estado local (o back-end não guarda leitura por
+  /// funcionário) — some ao trocar de sessão.
   void marcarAvisoComoLido(Aviso aviso) {
     aviso.lido = true;
     notifyListeners();
@@ -175,129 +65,236 @@ class MockDataService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Fixa/desafixa um aviso (PATCH /avisos/{id}/fixar). Só o RH pode
+  /// chamar isso de verdade — o back-end rejeita com 403 se não for RH.
+  /// Depois de fixar, reordena a lista trazendo os fixados para o topo.
+  Future<void> fixarAviso(Aviso aviso) async {
+    final json = await _api.patch('/avisos/${aviso.id}/fixar') as Map<String, dynamic>;
+    final atualizado = Aviso.fromJson(json);
+
+    final indice = avisos.indexWhere((a) => a.id == aviso.id);
+    if (indice != -1) {
+      atualizado.lido = avisos[indice].lido;
+      avisos[indice] = atualizado;
+    }
+
+    avisos.sort((a, b) {
+      if (a.fixado != b.fixado) return a.fixado ? -1 : 1;
+      return b.publicadoEm.compareTo(a.publicadoEm);
+    });
+
+    notifyListeners();
+  }
+
   // ---------------------------------------------------------------------
-  // SOLICITAÇÕES (usado tanto pelo funcionário quanto pela gestão/RH)
+  // SOLICITAÇÕES
   // ---------------------------------------------------------------------
-  final List<Solicitacao> solicitacoes = [
-    Solicitacao(
-      codigo: '#SOL-1024',
-      funcionario: 'Maria Silva',
-      tipo: TipoSolicitacao.correcaoPonto,
-      data: '27/07/2026',
-      status: StatusSolicitacao.pendente,
-      descricao: 'Retorno do almoço do dia 03/07 não registrado.',
-    ),
-    Solicitacao(
-      codigo: '#SOL-1018',
-      funcionario: 'Pedro Santos',
-      tipo: TipoSolicitacao.justificativaFalta,
-      data: '21/07/2026',
-      status: StatusSolicitacao.pendente,
-      descricao: 'Atestado médico referente ao dia 20/07.',
-    ),
-    Solicitacao(
-      codigo: '#SOL-1009',
-      funcionario: 'Camila Rocha',
-      tipo: TipoSolicitacao.solicitacaoFerias,
-      data: '14/07/2026',
-      status: StatusSolicitacao.concluida,
-    ),
-    Solicitacao(
-      codigo: '#SOL-1004',
-      funcionario: 'João Pereira',
-      tipo: TipoSolicitacao.correcaoCadastro,
-      data: '08/07/2026',
-      status: StatusSolicitacao.negada,
-    ),
-  ];
+  /// Para funcionário: só as próprias. Para RH/gestor: todas (gerencial).
+  List<Solicitacao> solicitacoes = [];
 
   int get solicitacoesPendentes =>
       solicitacoes.where((s) => s.status == StatusSolicitacao.pendente).length;
 
-  /// Cria uma nova solicitação enviada pelo funcionário logado
-  /// (equivalente a `criarSolicitacao()` no Angular).
-  void criarSolicitacao({
+  /// Cria uma solicitação em nome do usuário logado (o back-end identifica
+  /// quem está criando pelo token, então [funcionario] é só exibido na UI).
+  /// Os campos extras (datas, horários, campo de cadastro) são obrigatórios
+  /// ou não dependendo de [tipo] — quem decide isso é a tela que chama.
+  Future<void> criarSolicitacao({
     required String funcionario,
     required TipoSolicitacao tipo,
     required String descricao,
-  }) {
-    final numero = 1025 + solicitacoes.length;
-    solicitacoes.insert(
-      0,
-      Solicitacao(
-        codigo: '#SOL-$numero',
-        funcionario: funcionario,
-        tipo: tipo,
-        data: _dataDeHoje(),
-        status: StatusSolicitacao.pendente,
-        descricao: descricao,
-      ),
+    DateTime? dataReferencia,
+    DateTime? dataInicio,
+    DateTime? dataFim,
+    String? entradaSolicitada,
+    String? inicioIntervaloSolicitado,
+    String? fimIntervaloSolicitado,
+    String? saidaSolicitada,
+    String? campoCadastro,
+    String? novoValor,
+  }) async {
+    String? dataIso(DateTime? data) => data == null
+        ? null
+        : '${data.year.toString().padLeft(4, '0')}-${data.month.toString().padLeft(2, '0')}-${data.day.toString().padLeft(2, '0')}';
+
+    final json = await _api.post('/solicitacoes', corpo: {
+      'tipo': tipo.valorJson,
+      'justificativa': descricao,
+      'dataReferencia': dataIso(dataReferencia),
+      'dataInicio': dataIso(dataInicio),
+      'dataFim': dataIso(dataFim),
+      'entradaSolicitada': entradaSolicitada,
+      'inicioIntervaloSolicitado': inicioIntervaloSolicitado,
+      'fimIntervaloSolicitado': fimIntervaloSolicitado,
+      'saidaSolicitada': saidaSolicitada,
+      'campoCadastro': campoCadastro,
+      'novoValor': novoValor,
+    }) as Map<String, dynamic>;
+
+    solicitacoes.insert(0, Solicitacao.fromJson(json));
+    notifyListeners();
+  }
+
+  /// Usado pela tela de gestão/RH para aprovar um pedido.
+  Future<void> aprovarSolicitacao(Solicitacao solicitacao, {String? observacao}) async {
+    final json = await _api.patch(
+      '/solicitacoes/${solicitacao.id}/aprovar',
+      corpo: {'observacao': observacao},
+    ) as Map<String, dynamic>;
+
+    _substituirSolicitacao(Solicitacao.fromJson(json));
+  }
+
+  /// Usado pela tela de gestão/RH para rejeitar um pedido. O back-end
+  /// exige um motivo com pelo menos 5 caracteres.
+  Future<void> rejeitarSolicitacao(Solicitacao solicitacao, String motivo) async {
+    final json = await _api.patch(
+      '/solicitacoes/${solicitacao.id}/rejeitar',
+      corpo: {'observacao': motivo},
+    ) as Map<String, dynamic>;
+
+    _substituirSolicitacao(Solicitacao.fromJson(json));
+  }
+
+  void _substituirSolicitacao(Solicitacao atualizada) {
+    final indice = solicitacoes.indexWhere((s) => s.id == atualizada.id);
+    if (indice != -1) {
+      solicitacoes[indice] = atualizada;
+    }
+    notifyListeners();
+  }
+
+  // ---------------------------------------------------------------------
+  // GESTÃO DE FUNCIONÁRIOS (só para RH/gestor)
+  // ---------------------------------------------------------------------
+  List<Funcionario> funcionarios = [];
+
+  // ---------------------------------------------------------------------
+  // CARREGAMENTO GERAL — chamar logo após o login
+  // ---------------------------------------------------------------------
+
+  /// Busca tudo que a tela do perfil logado precisa. Funcionário: ponto de
+  /// hoje, histórico, avisos e as próprias solicitações. RH/gestor: além
+  /// disso, a lista de funcionários, todas as solicitações e um ranking de
+  /// atrasos (últimos 30 dias) para preencher a coluna "atrasos" da tela de
+  /// gestão.
+  Future<void> carregarDados(Usuario usuario) async {
+    carregando = true;
+    erroCarregamento = null;
+    notifyListeners();
+
+    try {
+      final hojeJson = await _api.get('/pontos/hoje');
+      _hoje = hojeJson == null
+          ? RegistroPontoDia(data: DateTime.now(), status: StatusDia.pendente, proximaMarcacao: TipoMarcacao.entrada)
+          : RegistroPontoDia.fromJson(hojeJson as Map<String, dynamic>);
+
+      final historicoJson = await _api.get('/pontos/meu-historico') as List<dynamic>;
+      historico = historicoJson
+          .map((j) => RegistroPontoDia.fromJson(j as Map<String, dynamic>))
+          .map(_paraHistoricoExibicao)
+          .toList();
+
+      final avisosJson = await _api.get('/avisos/meus') as List<dynamic>;
+      avisos = avisosJson.map((j) => Aviso.fromJson(j as Map<String, dynamic>)).toList();
+
+      if (usuario.tipo.ehGestorOuRh) {
+        final funcionariosJson = await _api.get('/funcionarios') as List<dynamic>;
+        funcionarios = funcionariosJson.map((j) => Funcionario.fromJson(j as Map<String, dynamic>)).toList();
+
+        final solicitacoesJson = await _api.get('/solicitacoes') as List<dynamic>;
+        solicitacoes = solicitacoesJson.map((j) => Solicitacao.fromJson(j as Map<String, dynamic>)).toList();
+
+        await _carregarRankingAtrasos();
+      } else {
+        final minhasJson = await _api.get('/solicitacoes/minhas') as List<dynamic>;
+        solicitacoes = minhasJson.map((j) => Solicitacao.fromJson(j as Map<String, dynamic>)).toList();
+      }
+    } catch (e) {
+      erroCarregamento = e.toString();
+      rethrow;
+    } finally {
+      carregando = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _carregarRankingAtrasos() async {
+    final fim = DateTime.now();
+    final inicio = fim.subtract(const Duration(days: 30));
+    final formato = DateFormat('yyyy-MM-dd');
+
+    try {
+      final ranking = await _api.get('/pontos/indicadores/ranking-atrasos', query: {
+        'inicio': formato.format(inicio),
+        'fim': formato.format(fim),
+        'limite': '${funcionarios.length}',
+      }) as List<dynamic>;
+
+      for (final item in ranking) {
+        final funcionarioId = item['funcionarioId'] as int;
+        final quantidade = item['quantidadeAtrasos'] as int;
+        final funcionario = funcionarios.where((f) => f.id == funcionarioId).firstOrNull;
+        funcionario?.atrasos = quantidade;
+      }
+    } catch (_) {
+      // Indicadores são um "extra" no dashboard - se falhar, a tela
+      // continua funcionando só sem esse número.
+    }
+  }
+
+  RegistroHistorico _paraHistoricoExibicao(RegistroPontoDia dia) {
+    final data = DateFormat('dd/MM/yyyy').format(dia.data);
+    var diaSemana = DateFormat('EEEE', 'pt_BR').format(dia.data);
+    diaSemana = diaSemana.isEmpty ? diaSemana : diaSemana[0].toUpperCase() + diaSemana.substring(1);
+
+    String observacao;
+    switch (dia.status) {
+      case StatusDia.concluido:
+        observacao = 'Jornada normal';
+        break;
+      case StatusDia.atraso:
+        observacao = dia.atrasoMinutos != null
+            ? 'Atraso de ${dia.atrasoMinutos} minuto(s)'
+            : 'Entrada acima da tolerância';
+        break;
+      case StatusDia.faltaJustificada:
+        observacao = 'Falta justificada';
+        break;
+      case StatusDia.falta:
+        observacao = 'Nenhuma marcação registrada';
+        break;
+      case StatusDia.emAndamento:
+      case StatusDia.pendente:
+        observacao = 'Uma ou mais marcações não foram registradas';
+        break;
+    }
+
+    return RegistroHistorico(
+      data: data,
+      diaSemana: diaSemana,
+      entrada: dia.entrada ?? '--:--',
+      almoco: dia.inicioIntervalo ?? '--:--',
+      retorno: dia.fimIntervalo ?? '--:--',
+      saida: dia.saida ?? '--:--',
+      horas: dia.horasFormatadas,
+      status: dia.status,
+      observacao: observacao,
     );
+  }
+
+  /// Limpa tudo (chamar no logout, pra não vazar dados de uma sessão para
+  /// a próxima nesse mesmo Provider).
+  void limpar() {
+    _hoje = RegistroPontoDia(data: DateTime.now(), status: StatusDia.pendente, proximaMarcacao: TipoMarcacao.entrada);
+    historico = [];
+    avisos = [];
+    solicitacoes = [];
+    funcionarios = [];
     notifyListeners();
   }
+}
 
-  /// Usado pela tela de gestão/RH para aprovar ou negar um pedido.
-  void atualizarStatusSolicitacao(Solicitacao solicitacao, StatusSolicitacao novoStatus) {
-    solicitacao.status = novoStatus;
-    notifyListeners();
-  }
-
-  // ---------------------------------------------------------------------
-  // GESTÃO DE FUNCIONÁRIOS (telas do gestor/RH)
-  // ---------------------------------------------------------------------
-  final List<Funcionario> funcionarios = [
-    const Funcionario(
-      nome: 'Maria Silva',
-      setor: 'Comercial',
-      cargo: 'Analista de Vendas',
-      status: StatusFuncionario.ativo,
-      atrasos: 2,
-      faltas: 0,
-    ),
-    const Funcionario(
-      nome: 'João Pereira',
-      setor: 'Operações',
-      cargo: 'Auxiliar Operacional',
-      status: StatusFuncionario.ativo,
-      atrasos: 5,
-      faltas: 1,
-    ),
-    const Funcionario(
-      nome: 'Camila Rocha',
-      setor: 'Administrativo',
-      cargo: 'Assistente Administrativo',
-      status: StatusFuncionario.ferias,
-      atrasos: 0,
-      faltas: 0,
-    ),
-    const Funcionario(
-      nome: 'Pedro Santos',
-      setor: 'Tecnologia',
-      cargo: 'Desenvolvedor Jr.',
-      status: StatusFuncionario.ativo,
-      atrasos: 1,
-      faltas: 0,
-    ),
-    const Funcionario(
-      nome: 'Bruna Lima',
-      setor: 'Operações',
-      cargo: 'Supervisora',
-      status: StatusFuncionario.inativo,
-      atrasos: 0,
-      faltas: 2,
-    ),
-  ];
-
-  /// Cadastra um novo funcionário (equivalente ao `salvar()` do
-  /// `cadastro-funcionario-component.ts`).
-  void cadastrarFuncionario(Funcionario funcionario) {
-    funcionarios.add(funcionario);
-    notifyListeners();
-  }
-
-  String _dataDeHoje() {
-    final agora = DateTime.now();
-    return '${agora.day.toString().padLeft(2, '0')}/'
-        '${agora.month.toString().padLeft(2, '0')}/${agora.year}';
-  }
+extension _FirstOrNull<T> on Iterable<T> {
+  T? get firstOrNull => isEmpty ? null : first;
 }

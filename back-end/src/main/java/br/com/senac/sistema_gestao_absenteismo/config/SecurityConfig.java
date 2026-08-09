@@ -99,6 +99,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/avisos/**").hasRole("RH")
+                        // Apenas RH fixa/desafixa avisos
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/avisos/**").hasRole("RH")
                         // Apenas RH remove avisos
                         .requestMatchers(
                                 HttpMethod.DELETE,

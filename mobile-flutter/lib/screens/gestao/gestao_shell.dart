@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/mock_data_service.dart';
+import '../funcionario/avisos_screen.dart';
 import 'funcionarios_screen.dart';
 import 'home_gestao_screen.dart';
 import 'solicitacoes_gestao_screen.dart';
 
 /// Casca de navegação do gestor/RH: equivalente às rotas `/gestao/inicio`,
-/// `/gestao/funcionarios` e `/gestao/solicitacoes` do Angular.
+/// `/gestao/funcionarios`, `/gestao/solicitacoes` e `/gestao/avisos` do
+/// Angular. A aba de Avisos reaproveita a mesma tela do funcionário — o RH
+/// ganha um botão extra ali para fixar/desafixar avisos.
 class GestaoShell extends StatefulWidget {
   const GestaoShell({super.key});
 
@@ -27,6 +30,7 @@ class _GestaoShellState extends State<GestaoShell> {
       HomeGestaoScreen(aoNavegar: irParaAba),
       const FuncionariosScreen(),
       const SolicitacoesGestaoScreen(),
+      const AvisosScreen(),
     ];
 
     return Scaffold(
@@ -52,6 +56,11 @@ class _GestaoShellState extends State<GestaoShell> {
               child: const Icon(Icons.assignment_outlined),
             ),
             label: 'Solicitações',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.campaign_outlined),
+            selectedIcon: Icon(Icons.campaign),
+            label: 'Avisos',
           ),
         ],
       ),

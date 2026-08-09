@@ -7,6 +7,7 @@ import '../../services/auth_service.dart';
 import '../../services/mock_data_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/resumo_card.dart';
+import '../funcionario/meus_dados_screen.dart';
 import '../login/login_screen.dart';
 
 /// Equivalente à `inicio-component` (área admin-rh) do Angular: indicadores
@@ -41,6 +42,20 @@ class HomeGestaoScreen extends StatelessWidget {
         title: Text('Gestão · ${usuario.tipo.label}'),
         actions: [
           IconButton(
+            tooltip: 'Meus dados',
+            icon: CircleAvatar(
+              radius: 14,
+              backgroundColor: Colors.white24,
+              child: Text(
+                usuario.iniciais,
+                style: const TextStyle(fontSize: 12, color: Colors.white),
+              ),
+            ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const MeusDadosScreen()),
+            ),
+          ),
+          IconButton(
             tooltip: 'Alternar tema',
             icon: Icon(context.watch<ThemeService>().isEscuro
                 ? Icons.light_mode_outlined
@@ -50,12 +65,15 @@ class HomeGestaoScreen extends StatelessWidget {
           IconButton(
             tooltip: 'Sair',
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              auth.sair();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (route) => false,
-              );
+            onPressed: () async {
+              context.read<MockDataService>().limpar();
+              await auth.sair();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                );
+              }
             },
           ),
         ],

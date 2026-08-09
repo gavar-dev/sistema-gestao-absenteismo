@@ -20,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -87,6 +88,16 @@ public class AvisoController {
     @PutMapping("/{id}")
     public AvisoResponse atualizar(    @Parameter(description = "ID do aviso", example = "1") @PathVariable Long id,@Valid @RequestBody AvisoRequest request) {
         return avisoService.atualizar(id, request);
+    }
+
+    @Operation(summary = "Fixar/desafixar aviso", description = "Alterna se o aviso fica fixado no topo da lista para todos. Operação restrita ao RH.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Aviso atualizado", content = @Content(schema = @Schema(implementation = AvisoResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Aviso não encontrado", content = @Content(schema = @Schema(implementation = ApiError.class)))
+    })
+    @PatchMapping("/{id}/fixar")
+    public AvisoResponse alternarFixado(@Parameter(description = "ID do aviso", example = "1") @PathVariable Long id) {
+        return avisoService.alternarFixado(id);
     }
 
     @Operation(summary = "Excluir aviso", description = "Remove um aviso. Operação restrita ao RH.")

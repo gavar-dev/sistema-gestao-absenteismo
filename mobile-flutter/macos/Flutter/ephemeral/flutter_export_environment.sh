@@ -1,8 +1,8 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
 export "FLUTTER_ROOT=C:\Users\nsdas\Develop\flutter"
-export "FLUTTER_APPLICATION_PATH=C:\Users\nsdas\Downloads\gestao_pessoas_app\gestao_pessoas_app"
-export "FLUTTER_FRAMEWORK_SWIFT_PACKAGE_PATH=C:\Users\nsdas\Downloads\gestao_pessoas_app\gestao_pessoas_app\macos\Flutter\ephemeral\Packages\.packages\FlutterFramework"
+export "FLUTTER_APPLICATION_PATH=C:\Users\nsdas\OneDrive\Documentos\Projeto Integrador GP\sistema-gestao-absenteismo\mobile-flutter"
+export "FLUTTER_FRAMEWORK_SWIFT_PACKAGE_PATH=C:\Users\nsdas\OneDrive\Documentos\Projeto Integrador GP\sistema-gestao-absenteismo\mobile-flutter\macos\Flutter\ephemeral\Packages\.packages\FlutterFramework"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=0.1.0"

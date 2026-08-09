@@ -45,7 +45,7 @@ public class AvisoService {
 
     @Transactional(readOnly = true)
     public List<AvisoResponse> listarGerencial(Boolean ativo) {
-        List<Aviso> avisos = ativo == null ? avisoRepository.findAllByOrderByPublicadoEmDesc() : avisoRepository.findByAtivoOrderByPublicadoEmDesc(ativo);
+        List<Aviso> avisos = ativo == null ? avisoRepository.findAllByOrderByFixadoDescPublicadoEmDesc() : avisoRepository.findByAtivoOrderByFixadoDescPublicadoEmDesc(ativo);
 
         return avisos.stream().map(AvisoResponse::from).toList();
     }
@@ -57,7 +57,7 @@ public class AvisoService {
 
         LocalDateTime agora = LocalDateTime.now().withNano(0);
 
-        return avisoRepository.findByAtivoTrueOrderByPublicadoEmDesc().stream().filter(aviso -> avisoDisponivelNaData(aviso,agora))
+        return avisoRepository.findByAtivoTrueOrderByFixadoDescPublicadoEmDesc().stream().filter(aviso -> avisoDisponivelNaData(aviso,agora))
         .filter(aviso -> avisoDestinadoAoFuncionario(aviso,funcionario)).map(AvisoResponse::from).toList();
     }
 
@@ -88,6 +88,18 @@ public class AvisoService {
         aviso.setPublicadoEm(definirDataPublicacao(request));
 
         aviso.setExpiraEm(request.expiraEm());
+
+        Aviso atualizado = avisoRepository.save(aviso);
+
+        return AvisoResponse.from(atualizado);
+    }
+
+    @Transactional
+    public AvisoResponse alternarFixado(Long avisoId) {
+
+        Aviso aviso = buscarAviso(avisoId);
+
+        aviso.setFixado(!Boolean.TRUE.equals(aviso.getFixado()));
 
         Aviso atualizado = avisoRepository.save(aviso);
 

@@ -51,12 +51,15 @@ class HomeFuncionarioScreen extends StatelessWidget {
           IconButton(
             tooltip: 'Sair',
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              auth.sair();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (route) => false,
-              );
+            onPressed: () async {
+              context.read<MockDataService>().limpar();
+              await auth.sair();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                );
+              }
             },
           ),
         ],
