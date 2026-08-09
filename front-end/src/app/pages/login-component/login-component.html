@@ -3,10 +3,17 @@
   <div class="login-bg-shape shape-two"></div>
   <div class="login-bg-shape shape-three"></div>
 
-  <button type="button" class="btn app-theme-toggle app-theme-toggle--login login-theme-toggle" (click)="alternarTema()"
-    [attr.aria-label]="temaAtual === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'">
+  <button
+    type="button"
+    class="btn app-theme-toggle app-theme-toggle--login login-theme-toggle"
+    (click)="alternarTema()"
+    [attr.aria-label]="temaAtual === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+  >
     <i class="bi" [ngClass]="temaAtual === 'dark' ? 'bi-sun' : 'bi-moon-stars'"></i>
-    <span>{{ temaAtual === 'dark' ? 'claro' : 'escuro' }}</span>
+
+    <span>
+      {{ temaAtual === 'dark' ? 'claro' : 'escuro' }}
+    </span>
   </button>
 
   <div class="login-container">
@@ -14,13 +21,18 @@
       <div class="col-12 col-lg-6 col-xl-7 d-none d-lg-block">
         <div class="login-hero text-white">
           <div class="login-brand d-flex align-items-center gap-3 mb-5">
-            <div class="brand-icon d-inline-flex align-items-center justify-content-center rounded-4">
+            <div
+              class="brand-icon d-inline-flex align-items-center justify-content-center rounded-4"
+            >
               <i class="bi bi-building-check"></i>
             </div>
 
             <div>
               <h1 class="h3 fw-bold mb-0">NexusRH</h1>
-              <span class="text-white-50 text-uppercase fw-semibold small">Intranet corporativa</span>
+
+              <span class="text-white-50 text-uppercase fw-semibold small">
+                Intranet corporativa
+              </span>
             </div>
           </div>
 
@@ -34,21 +46,28 @@
           </h2>
 
           <p class="lead text-white-75 mb-5">
-            Acesse sua jornada, acompanhe solicitações e fique por dentro dos avisos internos da empresa.
+            Acesse sua jornada, acompanhe solicitações e fique por dentro dos avisos internos da
+            empresa.
           </p>
 
           <div class="hero-panel position-relative">
             <div class="pulse-ring"></div>
+
             <div class="hero-card main-card shadow-lg">
               <div class="d-flex align-items-center gap-3">
-                <div class="hero-card-icon rounded-4 d-inline-flex align-items-center justify-content-center">
+                <div
+                  class="hero-card-icon rounded-4 d-inline-flex align-items-center justify-content-center"
+                >
                   <i class="bi bi-clock-history"></i>
                 </div>
+
                 <div>
-                  <small class="text-white-50">Status da intranet</small>
-                  <strong class="d-block">Sistema operacional</strong>
+                  <small class="text-white-50"> Status da intranet </small>
+
+                  <strong class="d-block"> Sistema operacional </strong>
                 </div>
               </div>
+
               <span class="status-dot"></span>
             </div>
 
@@ -68,10 +87,14 @@
       <div class="col-12 col-md-9 col-lg-6 col-xl-5">
         <div class="login-card-wrapper mx-auto">
           <div class="login-mobile-brand d-lg-none text-center mb-4">
-            <div class="brand-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3">
+            <div
+              class="brand-icon d-inline-flex align-items-center justify-content-center rounded-4 mb-3"
+            >
               <i class="bi bi-building-check"></i>
             </div>
+
             <h1 class="h3 fw-bold mb-1">NexusRH</h1>
+
             <p class="text-secondary mb-0">Intranet corporativa</p>
           </div>
 
@@ -82,33 +105,51 @@
                   <i class="bi bi-lock-fill me-1"></i>
                   Acesso restrito
                 </span>
+
                 <h2 class="h3 fw-bold mb-2 titulo-login">Entrar na intranet</h2>
+
                 <p class="text-secondary mb-0">
                   Use suas credenciais corporativas para acessar o painel.
                 </p>
               </div>
 
-              <div *ngIf="mensagemErro" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+              <div
+                *ngIf="mensagemErro"
+                class="alert alert-danger d-flex align-items-center gap-2"
+                role="alert"
+              >
                 <i class="bi bi-exclamation-triangle-fill"></i>
 
-                <span>{{ mensagemErro }}</span>
+                <span>
+                  {{ mensagemErro }}
+                </span>
               </div>
 
               <form (submit)="entrar($event, email.value, senha.value)">
                 <div class="mb-3">
-                  <label for="email" class="form-label fw-semibold">E-mail corporativo</label>
+                  <label for="email" class="form-label fw-semibold"> E-mail corporativo </label>
+
                   <div class="input-group input-group-lg login-input-group">
                     <span class="input-group-text">
                       <i class="bi bi-envelope"></i>
                     </span>
-                    <input type="email" #email id="email" class="form-control" placeholder="nome@empresa.com"
-                      autocomplete="email" required />
+
+                    <input
+                      type="email"
+                      #email
+                      id="email"
+                      class="form-control"
+                      placeholder="nome@empresa.com"
+                      autocomplete="email"
+                      required
+                    />
                   </div>
                 </div>
 
                 <div class="mb-3">
                   <div class="d-flex justify-content-between align-items-center gap-3">
-                    <label for="senha" class="form-label fw-semibold mb-0">Senha</label>
+                    <label for="senha" class="form-label fw-semibold mb-0"> Senha </label>
+
                     <a routerLink="/alterar-senha" class="small fw-semibold text-decoration-none">
                       Esqueci minha senha
                     </a>
@@ -118,10 +159,23 @@
                     <span class="input-group-text">
                       <i class="bi bi-key"></i>
                     </span>
-                    <input [type]="senhaVisivel ? 'text' : 'password'" #senha id="senha" class="form-control"
-                      placeholder="Digite sua senha" autocomplete="current-password" required />
-                    <button type="button" class="btn btn-outline-secondary" (click)="alternarVisibilidade()"
-                      [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'">
+
+                    <input
+                      #senha
+                      id="senha"
+                      [type]="senhaVisivel ? 'text' : 'password'"
+                      class="form-control"
+                      placeholder="Digite sua senha"
+                      autocomplete="current-password"
+                      required
+                    />
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      (click)="alternarVisibilidade()"
+                      [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
+                    >
                       <i class="bi" [ngClass]="senhaVisivel ? 'bi-eye-slash' : 'bi-eye'"></i>
                     </button>
                   </div>
@@ -134,20 +188,33 @@
                   </span>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 login-submit fw-semibold"
-                  [disabled]="carregando">
-                  <span *ngIf="carregando" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                  {{carregando ? 'Entrando...' : 'Acessar sistema'}}
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-lg w-100 login-submit fw-semibold"
+                  [disabled]="carregando"
+                >
+                  <span
+                    *ngIf="carregando"
+                    class="spinner-border spinner-border-sm me-2"
+                    aria-hidden="true"
+                  ></span>
+
+                  {{ carregando ? 'Entrando...' : 'Acessar sistema' }}
+
                   <i *ngIf="!carregando" class="bi bi-arrow-right ms-2"></i>
                 </button>
               </form>
 
               <div class="login-help rounded-4 mt-4 p-3 d-flex gap-3 align-items-start">
-                <div class="help-icon rounded-3 d-inline-flex align-items-center justify-content-center">
+                <div
+                  class="help-icon rounded-3 d-inline-flex align-items-center justify-content-center"
+                >
                   <i class="bi bi-headset"></i>
                 </div>
+
                 <div>
-                  <strong class="d-block ajuda">Precisa de ajuda?</strong>
+                  <strong class="d-block ajuda"> Precisa de ajuda? </strong>
+
                   <small class="text-secondary">
                     Entre em contato com o RH ou suporte interno para recuperar seu acesso.
                   </small>
@@ -164,3 +231,136 @@
     </div>
   </div>
 </section>
+
+<!-- Modal obrigatório de primeiro acesso -->
+<div *ngIf="primeiroAcessoPendente" class="primeiro-acesso-backdrop">
+  <section
+    class="primeiro-acesso-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tituloPrimeiroAcesso"
+  >
+    <div class="primeiro-acesso-icon">
+      <i class="bi bi-shield-lock-fill"></i>
+    </div>
+
+    <div class="text-center mb-4">
+      <span class="badge rounded-pill text-bg-primary mb-3">
+        <i class="bi bi-person-lock me-1"></i>
+        Primeiro acesso
+      </span>
+
+      <h2 id="tituloPrimeiroAcesso" class="h3 fw-bold mb-2">Crie sua nova senha</h2>
+
+      <p class="text-secondary mb-0">
+        Olá,
+        <strong>
+          {{ nomePrimeiroAcesso }} </strong
+        >. Por segurança, você precisa substituir sua senha provisória antes de acessar o sistema.
+      </p>
+    </div>
+
+    <div
+      *ngIf="mensagemErroPrimeiroAcesso"
+      class="alert alert-danger d-flex align-items-start gap-2"
+      role="alert"
+    >
+      <i class="bi bi-exclamation-triangle-fill"></i>
+
+      <span>
+        {{ mensagemErroPrimeiroAcesso }}
+      </span>
+    </div>
+
+    <form (submit)="concluirPrimeiroAcesso($event, novaSenha.value, confirmacaoSenha.value)">
+      <div class="mb-3">
+        <label for="novaSenhaPrimeiroAcesso" class="form-label fw-semibold"> Nova senha </label>
+
+        <div class="input-group input-group-lg login-input-group">
+          <span class="input-group-text">
+            <i class="bi bi-key"></i>
+          </span>
+
+          <input
+            #novaSenha
+            id="novaSenhaPrimeiroAcesso"
+            [type]="novaSenhaVisivel ? 'text' : 'password'"
+            class="form-control"
+            placeholder="Digite sua nova senha"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="72"
+            required
+          />
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="alternarNovaSenha()"
+            [attr.aria-label]="novaSenhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
+          >
+            <i class="bi" [ngClass]="novaSenhaVisivel ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="confirmacaoSenhaPrimeiroAcesso" class="form-label fw-semibold">
+          Confirmar nova senha
+        </label>
+
+        <div class="input-group input-group-lg login-input-group">
+          <span class="input-group-text">
+            <i class="bi bi-shield-check"></i>
+          </span>
+
+          <input
+            #confirmacaoSenha
+            id="confirmacaoSenhaPrimeiroAcesso"
+            [type]="confirmacaoSenhaVisivel ? 'text' : 'password'"
+            class="form-control"
+            placeholder="Digite novamente"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="72"
+            required
+          />
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="alternarConfirmacaoSenha()"
+            [attr.aria-label]="confirmacaoSenhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
+          >
+            <i class="bi" [ngClass]="confirmacaoSenhaVisivel ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="primeiro-acesso-info mb-4">
+        <i class="bi bi-info-circle-fill"></i>
+
+        <span>
+          A nova senha deve possuir entre 8 e 72 caracteres e precisa ser diferente da senha
+          provisória.
+        </span>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-lg w-100 fw-semibold"
+        [disabled]="alterandoSenhaPrimeiroAcesso"
+      >
+        <span
+          *ngIf="alterandoSenhaPrimeiroAcesso"
+          class="spinner-border spinner-border-sm me-2"
+          aria-hidden="true"
+        ></span>
+
+        <i *ngIf="!alterandoSenhaPrimeiroAcesso" class="bi bi-check-circle me-2"></i>
+
+        {{ alterandoSenhaPrimeiroAcesso ? 'Alterando senha...' : 'Definir nova senha' }}
+      </button>
+    </form>
+  </section>
+</div>
