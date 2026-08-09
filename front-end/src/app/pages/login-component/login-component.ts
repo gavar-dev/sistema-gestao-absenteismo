@@ -2,7 +2,7 @@ import { CommonModule, DOCUMENT } from '@angular/common';
 
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 
 import { Router, RouterLink } from '@angular/router';
 
@@ -63,6 +63,8 @@ export class LoginComponent implements OnInit {
 
     private readonly tokenStorage: TokenStorageService,
 
+    private readonly changeDetectorRef: ChangeDetectorRef,
+
     @Inject(DOCUMENT)
     private readonly document: Document,
   ) {}
@@ -122,41 +124,87 @@ export class LoginComponent implements OnInit {
 
     this.mensagemErroPrimeiroAcesso = '';
 
+    /*
+     * Garante que o botão entre
+     * imediatamente no estado
+     * de carregamento.
+     */
+    this.changeDetectorRef.markForCheck();
+
+    /*
+     * Limpa qualquer sessão anterior
+     * antes de realizar um novo login.
+     */
     this.usuarioLogadoService.limparSessao();
 
     this.authService
       .login({
         email: emailNormalizado,
-
         senha,
       })
       .pipe(
         timeout(10000),
 
         switchMap((respostaLogin) => {
+          /*
+           * Primeiro acesso:
+           * o token recebido no login
+           * já foi salvo pelo AuthService.
+           *
+           * Não buscamos o perfil ainda.
+           * Primeiro obrigamos o usuário
+           * a substituir a senha provisória.
+           */
           if (respostaLogin.primeiroAcesso) {
             this.nomePrimeiroAcesso = respostaLogin.nomeCompleto;
 
             this.primeiroAcessoPendente = true;
 
+            this.changeDetectorRef.markForCheck();
+
             return EMPTY;
           }
 
+          /*
+           * Login normal:
+           * busca os dados completos
+           * do funcionário.
+           */
           return this.funcionarioService.buscarMeuPerfil().pipe(timeout(10000));
         }),
 
         catchError((erro: unknown) => {
           console.error('Erro durante o login:', erro);
 
+          /*
+           * Remove token e qualquer
+           * dado parcial da sessão.
+           */
           this.usuarioLogadoService.limparSessao();
 
           this.mensagemErro = this.obterMensagemErro(erro);
+
+          /*
+           * Força o Angular a perceber
+           * a alteração da mensagem.
+           */
+          this.changeDetectorRef.markForCheck();
 
           return EMPTY;
         }),
 
         finalize(() => {
+          /*
+           * Este trecho roda tanto
+           * no sucesso quanto no erro.
+           *
+           * Portanto o botão nunca deve
+           * permanecer travado em
+           * "Entrando...".
+           */
           this.carregando = false;
+
+          this.changeDetectorRef.markForCheck();
         }),
       )
       .subscribe((perfil) => {
@@ -193,6 +241,8 @@ export class LoginComponent implements OnInit {
 
     this.alterandoSenhaPrimeiroAcesso = true;
 
+    this.changeDetectorRef.markForCheck();
+
     this.authService
       .concluirPrimeiroAcesso({
         novaSenha,
@@ -208,15 +258,21 @@ export class LoginComponent implements OnInit {
 
           this.mensagemErroPrimeiroAcesso = this.obterMensagemErro(erro);
 
+          this.changeDetectorRef.markForCheck();
+
           return EMPTY;
         }),
 
         finalize(() => {
           this.alterandoSenhaPrimeiroAcesso = false;
+
+          this.changeDetectorRef.markForCheck();
         }),
       )
       .subscribe((perfil) => {
         this.primeiroAcessoPendente = false;
+
+        this.changeDetectorRef.markForCheck();
 
         this.finalizarLogin(perfil);
       });
