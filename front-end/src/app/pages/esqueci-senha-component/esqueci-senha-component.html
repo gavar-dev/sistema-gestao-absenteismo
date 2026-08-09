@@ -1,0 +1,377 @@
+<section class="recuperar-senha-page">
+
+  <div class="recuperar-senha-bg recuperar-senha-bg-one"></div>
+  <div class="recuperar-senha-bg recuperar-senha-bg-two"></div>
+
+  <div class="container py-4 py-lg-5">
+
+    <div class="min-vh-100 d-flex align-items-center justify-content-center">
+
+      <div class="card recuperar-senha-card border-0 shadow-lg">
+
+        <div class="card-body p-4 p-md-5">
+
+          <a
+            routerLink="/login"
+            class="btn btn-sm btn-outline-secondary mb-4"
+          >
+            <i class="bi bi-arrow-left me-2"></i>
+            Voltar ao login
+          </a>
+
+          <div class="d-flex align-items-start gap-3 mb-4">
+
+            <span
+              class="recuperar-senha-icon d-inline-flex align-items-center justify-content-center rounded-4 flex-shrink-0"
+            >
+              <i class="bi bi-shield-lock-fill"></i>
+            </span>
+
+            <div>
+
+              <span class="text-secondary small fw-semibold">
+                Recuperação de acesso
+              </span>
+
+              <h1 class="h3 fw-bold mb-2">
+                Esqueci minha senha
+              </h1>
+
+              <p class="text-secondary mb-0">
+                Confirme seus dados cadastrais e defina uma nova senha.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div
+            *ngIf="erro"
+            class="alert alert-danger d-flex align-items-start gap-2"
+            role="alert"
+          >
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ erro }}</span>
+          </div>
+
+          <div
+            *ngIf="sucesso"
+            class="alert alert-success d-flex align-items-start gap-2"
+            role="status"
+          >
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ sucesso }}</span>
+          </div>
+
+          <form
+            [formGroup]="formulario"
+            (ngSubmit)="recuperar()"
+            novalidate
+          >
+
+            <div class="mb-3">
+
+              <label
+                for="email"
+                class="form-label fw-semibold"
+              >
+                E-mail corporativo
+              </label>
+
+              <div class="input-group input-group-lg">
+
+                <span class="input-group-text">
+                  <i class="bi bi-envelope"></i>
+                </span>
+
+                <input
+                  id="email"
+                  type="email"
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('email')"
+                  placeholder="nome@empresa.com"
+                  autocomplete="email"
+                  formControlName="email"
+                />
+
+                <div class="invalid-feedback">
+                  Informe um e-mail válido.
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="row g-3 mb-3">
+
+              <div class="col-12 col-md-6">
+
+                <label
+                  for="cpf"
+                  class="form-label fw-semibold"
+                >
+                  CPF
+                </label>
+
+                <div class="input-group input-group-lg">
+
+                  <span class="input-group-text">
+                    <i class="bi bi-person-vcard"></i>
+                  </span>
+
+                  <input
+                    id="cpf"
+                    type="text"
+                    class="form-control"
+                    [class.is-invalid]="campoInvalido('cpf')"
+                    placeholder="000.000.000-00"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    formControlName="cpf"
+                  />
+
+                  <div class="invalid-feedback">
+                    Informe o CPF cadastrado.
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="col-12 col-md-6">
+
+                <label
+                  for="matricula"
+                  class="form-label fw-semibold"
+                >
+                  Matrícula
+                </label>
+
+                <div class="input-group input-group-lg">
+
+                  <span class="input-group-text">
+                    <i class="bi bi-person-badge"></i>
+                  </span>
+
+                  <input
+                    id="matricula"
+                    type="text"
+                    class="form-control"
+                    [class.is-invalid]="campoInvalido('matricula')"
+                    placeholder="Ex.: 1001"
+                    autocomplete="off"
+                    formControlName="matricula"
+                  />
+
+                  <div class="invalid-feedback">
+                    Informe sua matrícula.
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="mb-4">
+
+              <label
+                for="dataNascimento"
+                class="form-label fw-semibold"
+              >
+                Data de nascimento
+              </label>
+
+              <div class="input-group input-group-lg">
+
+                <span class="input-group-text">
+                  <i class="bi bi-calendar-event"></i>
+                </span>
+
+                <input
+                  id="dataNascimento"
+                  type="date"
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('dataNascimento')"
+                  formControlName="dataNascimento"
+                />
+
+                <div class="invalid-feedback">
+                  Informe sua data de nascimento.
+                </div>
+
+              </div>
+
+            </div>
+
+            <hr class="my-4">
+
+            <div class="mb-3">
+
+              <label
+                for="novaSenha"
+                class="form-label fw-semibold"
+              >
+                Nova senha
+              </label>
+
+              <div class="input-group input-group-lg">
+
+                <span class="input-group-text">
+                  <i class="bi bi-key"></i>
+                </span>
+
+                <input
+                  id="novaSenha"
+                  [type]="mostrarNovaSenha ? 'text' : 'password'"
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('novaSenha')"
+                  autocomplete="new-password"
+                  formControlName="novaSenha"
+                />
+
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="alternarNovaSenha()"
+                  aria-label="Mostrar ou ocultar nova senha"
+                >
+                  <i
+                    class="bi"
+                    [class.bi-eye]="!mostrarNovaSenha"
+                    [class.bi-eye-slash]="mostrarNovaSenha"
+                  ></i>
+                </button>
+
+                <div class="invalid-feedback">
+                  Use entre 8 e 72 caracteres.
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="mb-3">
+
+              <div class="d-flex justify-content-between small mb-2">
+
+                <span class="text-secondary">
+                  Força da senha
+                </span>
+
+                <strong>
+                  {{ rotuloForcaSenha }}
+                </strong>
+
+              </div>
+
+              <div
+                class="progress recuperar-senha-progress"
+                role="progressbar"
+                aria-label="Força da senha"
+                [attr.aria-valuenow]="forcaSenha"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div
+                  class="progress-bar"
+                  [style.width.%]="forcaSenha"
+                ></div>
+              </div>
+
+            </div>
+
+            <div class="mb-4">
+
+              <label
+                for="confirmacaoSenha"
+                class="form-label fw-semibold"
+              >
+                Confirmar nova senha
+              </label>
+
+              <div class="input-group input-group-lg">
+
+                <span class="input-group-text">
+                  <i class="bi bi-shield-check"></i>
+                </span>
+
+                <input
+                  id="confirmacaoSenha"
+                  [type]="mostrarConfirmacao ? 'text' : 'password'"
+                  class="form-control"
+                  [class.is-invalid]="campoInvalido('confirmacaoSenha')"
+                  autocomplete="new-password"
+                  formControlName="confirmacaoSenha"
+                />
+
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="alternarConfirmacao()"
+                  aria-label="Mostrar ou ocultar confirmação"
+                >
+                  <i
+                    class="bi"
+                    [class.bi-eye]="!mostrarConfirmacao"
+                    [class.bi-eye-slash]="mostrarConfirmacao"
+                  ></i>
+                </button>
+
+                <div class="invalid-feedback">
+                  Confirme a nova senha.
+                </div>
+
+              </div>
+
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg w-100 fw-semibold"
+              [disabled]="salvando || sucesso"
+            >
+
+              <span
+                *ngIf="salvando"
+                class="spinner-border spinner-border-sm me-2"
+                aria-hidden="true"
+              ></span>
+
+              <i
+                *ngIf="!salvando"
+                class="bi bi-shield-check me-2"
+              ></i>
+
+              {{
+                salvando
+                  ? 'Redefinindo...'
+                  : 'Redefinir senha'
+              }}
+
+            </button>
+
+          </form>
+
+          <div
+            class="recuperar-senha-info rounded-4 mt-4 p-3 d-flex gap-3"
+          >
+
+            <i class="bi bi-info-circle-fill text-primary"></i>
+
+            <small class="text-secondary">
+              Os dados informados devem corresponder exatamente
+              ao cadastro realizado pelo RH.
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

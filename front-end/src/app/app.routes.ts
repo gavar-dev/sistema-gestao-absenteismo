@@ -20,11 +20,17 @@ import { CadastroFuncionarioComponent } from './pages/admin-rh/cadastro-funciona
 import { GestaoComponent } from './pages/admin-rh/gestao-component/gestao-component';
 import { InicioComponent as AdminInicioComponent } from './pages/admin-rh/inicio-component/inicio-component';
 import { SolicitacoesComponent } from './pages/admin-rh/solicitacoes-component/solicitacoes-component';
+import { EsqueciSenhaComponent } from './pages/esqueci-senha-component/esqueci-senha-component';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    canActivate: [loginGuard],
+  },
+  {
+    path: 'esqueci-senha',
+    component: EsqueciSenhaComponent,
     canActivate: [loginGuard],
   },
   {
@@ -36,62 +42,38 @@ export const routes: Routes = [
   {
     path: '',
     component: InicioComponente,
-    canActivate: [
-      authGuard,
-      funcionarioGuard,
-    ],
+    canActivate: [authGuard, funcionarioGuard],
   },
   {
     path: 'meus-pontos',
     component: MeuPontoComponente,
-    canActivate: [
-      authGuard,
-      funcionarioGuard,
-    ],
+    canActivate: [authGuard, funcionarioGuard],
   },
   {
     path: 'solicitacao',
     component: SolicitacaoComponente,
-    canActivate: [
-      authGuard,
-      funcionarioGuard,
-    ],
+    canActivate: [authGuard, funcionarioGuard],
   },
   {
     path: 'historico',
     component: HistoricoComponente,
-    canActivate: [
-      authGuard,
-      funcionarioGuard,
-    ],
+    canActivate: [authGuard, funcionarioGuard],
   },
   {
     path: 'meus-dados',
     component: MeusDadosComponente,
-    canActivate: [
-      authGuard,
-      funcionarioGuard,
-    ],
+    canActivate: [authGuard, funcionarioGuard],
   },
   {
     path: 'avisos',
     component: AvisoComponente,
-    canActivate: [
-      authGuard,
-      funcionarioGuard,
-    ],
+    canActivate: [authGuard, funcionarioGuard],
   },
 
   {
     path: 'gestao',
-    canActivate: [
-      authGuard,
-      gestaoGuard,
-    ],
-    canActivateChild: [
-      authGuard,
-      gestaoGuard,
-    ],
+    canActivate: [authGuard, gestaoGuard],
+    canActivateChild: [authGuard, gestaoGuard],
     children: [
       {
         path: '',

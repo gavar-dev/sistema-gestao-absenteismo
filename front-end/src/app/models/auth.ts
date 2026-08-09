@@ -27,3 +27,12 @@ export interface PrimeiroAcessoRequest {
   novaSenha: string;
   confirmacaoSenha: string;
 }
+
+export interface RecuperarSenhaRequest {
+  email: string;
+  cpf: string;
+  matricula: string;
+  dataNascimento: string;
+  novaSenha: string;
+  confirmacaoSenha: string;
+}

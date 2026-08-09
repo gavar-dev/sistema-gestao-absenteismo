@@ -7,6 +7,7 @@ import {
   LoginRequest,
   LoginResponse,
   PrimeiroAcessoRequest,
+  RecuperarSenhaRequest,
 } from '../../models/auth';
 
 import { environment } from '../../../environments/environment';
@@ -33,6 +34,10 @@ export class AuthService {
 
   alterarSenha(dados: AlterarSenhaRequest): Observable<void> {
     return this.http.patch<void>(`${this.url}/alterar-senha`, dados);
+  }
+
+  recuperarSenha(dados: RecuperarSenhaRequest): Observable<void> {
+    return this.http.patch<void>(`${this.url}/recuperar-senha`, dados);
   }
 
   obterToken(): string | null {
